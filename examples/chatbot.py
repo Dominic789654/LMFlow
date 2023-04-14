@@ -127,17 +127,18 @@ def main():
         )
 
         response = output_dataset.to_dict()["instances"][0]["text"]
-
+        print(response)
         try:
             index = response.index(end_string)
         except ValueError:
             response += end_string
             index = response.index(end_string)
-
+        
         response = response[:index]
         print("Bot: " + response, end="\n")
         context += response + "\n"
-        context = context[-model.get_max_length():]     # Memory of the bot
+        # context = context[-model.get_max_length():]     # Memory of the bot
+        context = context[-1024:]
 
 
 if __name__ == "__main__":
