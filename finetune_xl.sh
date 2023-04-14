@@ -1,8 +1,17 @@
 lr=1e-4
 bs=4
 model_name_or_path=Tribbiani/vicuna-7b
-exp_name="xl_007_gpt_cn_v3_QA_vicuna7b_lora_5epcoh_lr${lr}";
-data_path="/home/xiangliu/LMFlow/data/gpt4_cn_v3_QA"
+exp_name="xl_008_xlgpt4_cn_v3_HA_vicuna7b_lora_3epcoh_lr${lr}";
+data_path="/home/xiangliu/LMFlow/data/xl_gpt4_cn_v3_HA"
+./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} "--master_port=10065 --num_gpus=8" 
+
+./scripts/run_chatbot_vicuna.sh "###Human: {input_text}###Assistant:" ./output_models/${exp_name} > ./chatbot_logs/11.log 2>&1 
+
+lr=1e-4
+bs=2
+model_name_or_path=Tribbiani/vicuna-7b
+exp_name="xl_009_xlShareGPT_V2_unfilter_cleaned_HA_vicuna7b_lora_3epcoh_lr${lr}";
+data_path="/home/xiangliu/LMFlow/data/xl_ShareGPT_V2_unfiltered_cleaned_split_HA"
 ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} "--master_port=10065 --num_gpus=8" 
 
 # lr=1e-4
