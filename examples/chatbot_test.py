@@ -106,8 +106,28 @@ def main():
     end_string = chatbot_args.end_string
     prompt_structure = chatbot_args.prompt_structure
 
+    example_input = [
+        '你好！',
+        '你是谁？',
+        '介绍一下中国。',
+        '中国的首都在哪里？',
+        '北京有什么好吃的？',
+        '用python执行print(123)的输出是什么？',
+        '写一个关于鸟的故事。',
+        '那诗歌？',
+        '那笑话？',
+        '复述一下那个故事。'
+    ]
+    example_idx = 0
     while True:
-        input_text = input("User >>> ")
+        # input_text = input("User >>> ")
+        if example_idx <= len(example_input) - 1:
+            print(f"User >>> {example_input[example_idx]}")
+            input_text = example_input[example_idx]
+            example_idx += 1
+        else:
+            break
+
         if not input_text:
             print("exit...")
             break
