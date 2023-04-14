@@ -135,14 +135,13 @@ class Inferencer(BasePipeline):
                     f"device \"{device}\" is not supported"
                 )
 
-# TODO: kwargs 
             generation_kwars = {
                 "min_length": 40,
                 "top_k": 0.0,
                 "top_p": 0.9,
                 "do_sample": True,
                 "temperature": 0.7,
-                "max_new_tokens": 48
+                "max_new_tokens": max_new_tokens
             }
             outputs = model.inference(
                 inputs,
