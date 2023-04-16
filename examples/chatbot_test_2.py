@@ -119,8 +119,8 @@ def main():
     #     '复述一下那个故事。'
     # ]
     example_input = [
-        "你是谁？",
-        "Who are you?"
+        "Who are you?",
+        "你是谁？"
     ]
     example_idx = 0
     while True:

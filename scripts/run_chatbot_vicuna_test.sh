@@ -31,12 +31,12 @@ CUDA_VISIBLE_DEVICES=0 \
       --end_string "###"
 
 CUDA_VISIBLE_DEVICES=0 \
-  deepspeed examples/chatbot_test.py \
+  deepspeed examples/chatbot_test_2.py \
       --deepspeed configs/ds_config_chatbot.json \
       --model_name_or_path ${model} \
       ${lora_args} \
       --use_ram_optimized_load False \
-      --prompt_structure "开始和用户对话，你尝试完整的回答用户的问题。###Question: {input_text} ###Answer:" \
+      --prompt_structure "###Question: {input_text} ###Answer:" \
       --max_new_tokens 400 \
       --end_string "###"
 
