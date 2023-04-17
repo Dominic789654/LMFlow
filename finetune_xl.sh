@@ -7,69 +7,143 @@
 
 # bash ./scripts/run_chatbot_vicuna_QA.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
 
+# zhishi_01
+# lr=2e-5
+# bs=4
+# use_lora=0
+# ds_config=configs/ds_config_zero3.json
+# model_name_or_path=Tribbiani/vicuna-7b
+# exp_name="zhishi_01_nolora";
+# data_path="/home/xiangliu/LMFlow/data/zhishi_01"
+# bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} "--master_port=10065 --num_gpus=8" 
+
+# bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
+
+# lr=2e-5
+# bs=4
+# use_lora=1
+# ds_config=configs/ds_config_zero2.json
+# model_name_or_path=Tribbiani/vicuna-7b
+# exp_name="xl_014";
+# data_path="/home/xiangliu/LMFlow/data/zhishi_02"
+# bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} "--master_port=10065 --num_gpus=8" 
+
+# bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
+
+# lr=2e-5
+# bs=4
+# use_lora=1
+# ds_config=configs/ds_config_zero2.json
+# model_name_or_path=aleksickx/llama-7b-hf
+# exp_name="xl_015";
+# data_path="/home/xiangliu/LMFlow/data/zhishi_02"
+# bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} "--master_port=10065 --num_gpus=8" 
+
+# bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
+
+# lr=2e-5
+# bs=4
+# use_lora=1
+# ds_config=configs/ds_config_zero2.json
+# model_name_or_path=Tribbiani/vicuna-7b
+# exp_name="xl_016";
+# data_path="/home/xiangliu/LMFlow/data/zhishi_03"
+# bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} "--master_port=10065 --num_gpus=8" 
+
+# bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
+
+lr=2e-5
+bs=4
+use_lora=1
+ds_config=configs/ds_config_zero2.json
+model_name_or_path=Tribbiani/vicuna-7b
+exp_name="xl_019";
+data_path="/home/xiangliu/LMFlow/data/hardcode_01/"
+bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} "--master_port=10065 --num_gpus=8" 
+
+bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
+
+lr=2e-5
+bs=4
+use_lora=1
+ds_config=configs/ds_config_zero2.json
+model_name_or_path=Tribbiani/vicuna-7b
+exp_name="xl_020";
+data_path="/home/xiangliu/LMFlow/data/hardcode_02/"
+bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} "--master_port=10065 --num_gpus=8" 
+
+bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
+
+
 # test 知识注入
 # nolora_en
-lr=2e-5
-bs=4
-use_lora=0
-model_name_or_path=Tribbiani/vicuna-7b
-exp_name="test_zhishi_en_nolora";
-data_path="/home/xiangliu/LMFlow/data/test_chat_en"
-bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} "--master_port=10065 --num_gpus=8" 
+# lr=2e-5
+# bs=4
+# use_lora=0
+# ds_config=configs/ds_config_zero3.json
+# model_name_or_path=Tribbiani/vicuna-7b
+# exp_name="test_zhishi_en_nolora";
+# data_path="/home/xiangliu/LMFlow/data/test_chat_en"
+# # bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} "--master_port=10065 --num_gpus=8" 
 
-bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
+# bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
 
 
-lr=2e-5
-bs=4
-use_lora=0
-model_name_or_path=Tribbiani/vicuna-7b
-exp_name="test_zhishi_zh_nolora";
-data_path="/home/xiangliu/LMFlow/data/test_chat_zh"
-bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} "--master_port=10065 --num_gpus=8" 
+# lr=2e-5
+# bs=4
+# use_lora=0
+# ds_config=configs/ds_config_zero3.json
+# model_name_or_path=Tribbiani/vicuna-7b
+# exp_name="test_zhishi_zh_nolora";
+# data_path="/home/xiangliu/LMFlow/data/test_chat_zh"
+# # bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} "--master_port=10065 --num_gpus=8" 
 
-bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
+# bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
 
-lr=2e-5
-bs=4
-use_lora=0
-model_name_or_path=Tribbiani/vicuna-7b
-exp_name="test_zhishi_mix_nolora";
-data_path="/home/xiangliu/LMFlow/data/test_chat_mix"
-bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} "--master_port=10065 --num_gpus=8" 
+# lr=2e-5
+# bs=4
+# use_lora=0
+# ds_config=configs/ds_config_zero3.json
+# model_name_or_path=Tribbiani/vicuna-7b
+# exp_name="test_zhishi_mix_nolora";
+# data_path="/home/xiangliu/LMFlow/data/test_chat_mix"
+# # bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} "--master_port=10065 --num_gpus=8" 
 
-bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
+# bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
 
 # uselora
-lr=1e-4
-bs=4
-use_lora=1
-model_name_or_path=Tribbiani/vicuna-7b
-exp_name="test_zhishi_en_lora";
-data_path="/home/xiangliu/LMFlow/data/test_chat_en"
-bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} "--master_port=10065 --num_gpus=8" 
+# lr=1e-4
+# bs=4
+# use_lora=1
+# ds_config=configs/ds_config_zero2.json
+# model_name_or_path=Tribbiani/vicuna-7b
+# exp_name="test_zhishi_en_lora";
+# data_path="/home/xiangliu/LMFlow/data/test_chat_en"
+# # bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} "--master_port=10065 --num_gpus=8" 
 
-bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
+# bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
 
-lr=1e-4
-bs=4
-use_lora=1
-model_name_or_path=Tribbiani/vicuna-7b
-exp_name="test_zhishi_zh_lora";
-data_path="/home/xiangliu/LMFlow/data/test_chat_zh"
-bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} "--master_port=10065 --num_gpus=8" 
+# lr=1e-4
+# bs=4
+# use_lora=1
+# ds_config=configs/ds_config_zero2.json
+# model_name_or_path=Tribbiani/vicuna-7b
+# exp_name="test_zhishi_zh_lora";
+# data_path="/home/xiangliu/LMFlow/data/test_chat_zh"
+# bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} "--master_port=10065 --num_gpus=8" 
 
-bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
+# bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
 
-lr=1e-4
-bs=4
-use_lora=1
-model_name_or_path=Tribbiani/vicuna-7b
-exp_name="test_zhishi_mix_lora";
-data_path="/home/xiangliu/LMFlow/data/test_chat_mix"
-bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} "--master_port=10065 --num_gpus=8" 
+# lr=1e-4
+# bs=4
+# use_lora=1
+# ds_config=configs/ds_config_zero2.json
+# model_name_or_path=Tribbiani/vicuna-7b
+# exp_name="test_zhishi_mix_lora";
+# data_path="/home/xiangliu/LMFlow/data/test_chat_mix"
+# # bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} "--master_port=10065 --num_gpus=8" 
 
-bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
+# bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
 
 # lr=1e-4
 # bs=2

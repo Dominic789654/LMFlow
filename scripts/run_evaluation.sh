@@ -6,8 +6,8 @@ fi
 if [ $# -ge 2 ]; then
   dataset_path="$2"
 fi
-if [ $# -ge 2 ]; then
-  metric="$2"
+if [ $# -ge 3 ]; then
+  metric="$3"
 fi
 CUDA_VISIBLE_DEVICES=0 \
     deepspeed examples/evaluate.py \

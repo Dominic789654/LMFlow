@@ -2,8 +2,8 @@
 # Please run this script under ${project_id} in project directory of
 
 deepspeed_args="--master_port=11000"      # Default argument
-if [ $# -ge 7 ]; then
-  deepspeed_args="$7"
+if [ $# -ge 8 ]; then
+  deepspeed_args="$8"
 fi
 
 # exp_id=xl_001_sharegpt_v3_0.1_vicuna7b_lora_3epcoh_lr1e-4
@@ -16,6 +16,7 @@ lr="$3"
 bs="$4"
 model_name_or_path="$5"
 use_lora="$6"
+ds_config="$7"
 mkdir -p ${output_dir} ${log_dir}
 
 # no save 
@@ -24,16 +25,16 @@ deepspeed ${deepspeed_args} \
     --model_name_or_path ${model_name_or_path} \
     --dataset_path ${dataset_path} \
     --output_dir ${output_dir} --overwrite_output_dir \
-    --num_train_epochs 3 \
+    --num_train_epochs 40 \
     --learning_rate ${lr} \
     --block_size 512 \
     --per_device_train_batch_size ${bs} \
     --use_lora ${use_lora} \
-    --lora_r 8 \
+    --lora_r 32 \
     --save_aggregated_lora 1\
-    --deepspeed configs/ds_config_zero3.json \
+    --deepspeed ${ds_config} \
     --bf16 \
-    --run_name ${exp_id} \
+    --run_name ${exp_id}\
     --validation_split_percentage 0 \
     --logging_steps 20 \
     --do_train \
@@ -44,10 +45,10 @@ deepspeed ${deepspeed_args} \
     --lr_scheduler_type "cosine" \
     --warmup_ratio 0.03 \
     --gradient_accumulation_steps 4 \
-    --gradient_checkpointing True \
     | tee ${log_dir}/train.log \
     2> ${log_dir}/train.err
 
+# --gradient_checkpointing True \
 # deepspeed ${deepspeed_args} \
 #   examples/finetune.py \
 #     --model_name_or_path facebook/galactica-1.3b \

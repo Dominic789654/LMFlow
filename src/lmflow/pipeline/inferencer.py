@@ -136,11 +136,10 @@ class Inferencer(BasePipeline):
                 )
 
             generation_kwars = {
-                "min_length": 40,
                 "top_k": 0.0,
                 "top_p": 0.9,
                 "do_sample": True,
-                "temperature": 0.7,
+                "temperature": temperature,
                 "max_new_tokens": max_new_tokens
             }
             outputs = model.inference(
