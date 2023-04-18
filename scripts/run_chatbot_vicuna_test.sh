@@ -26,7 +26,7 @@ CUDA_VISIBLE_DEVICES=0 \
       --model_name_or_path ${model} \
       ${lora_args} \
       --use_ram_optimized_load False \
-      --prompt_structure "A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the human's questions. ###Question:{input_text}###Answer:" \
+      --prompt_structure "A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the human's questions.###Question:{input_text}###Answer:" \
       --end_string "###"
 
 CUDA_VISIBLE_DEVICES=0 \

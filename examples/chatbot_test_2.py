@@ -124,8 +124,13 @@ def main():
     #     '复述一下那个故事。'
     # ]
     example_input = [
-        "Introduce the LMFlow.",
-        "What is the official website for LMFlow?"
+        "你好！",   
+        "你是谁？",
+        "请介绍一下LMFlow。",
+        "介绍一下中国。",
+        "请介绍一下LMFlow的官网。",
+        "中国的首都在哪里？",
+        "聊聊你自己。"
     ]
     example_idx = 0
     while True:
