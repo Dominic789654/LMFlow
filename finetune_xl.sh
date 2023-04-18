@@ -104,22 +104,25 @@
 
 # bash ./scripts/run_evaluation_nll_HA.sh baseline_llama_7b_nll_HA nll aleksickx/llama-7b-hf
 
-bash ./scripts/run_evaluation_nll_QA.sh baseline_llama_7b_nll_QA nll aleksickx/llama-7b-hf
+# bash ./scripts/run_evaluation_nll_QA.sh baseline_llama_7b_nll_QA nll aleksickx/llama-7b-hf
 
-# bash ./scripts/run_evaluation_nll_HA.sh baseline_vicuna_7b_nll_HA nll Tribbiani/vicuna-7b
+# # bash ./scripts/run_evaluation_nll_HA.sh baseline_vicuna_7b_nll_HA nll Tribbiani/vicuna-7b
 
-bash ./scripts/run_evaluation_nll_QA.sh baseline_vicuna_7b_nll_QA nll Tribbiani/vicuna-7b
-# lr=2e-5
-# bs=4
-# use_lora=0
-# epochs=3
-# ds_config=configs/ds_config_zero2.json
-# model_name_or_path=aleksickx/llama-7b-hf
-# exp_name="xl_027";
-# data_path="xl_sharegpt_20230401_clean_lang_split_v1_QA"
-# bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} "--master_port=10065 --num_gpus=8" 
+# bash ./scripts/run_evaluation_nll_QA.sh baseline_vicuna_7b_nll_QA nll Tribbiani/vicuna-7b
 
-# bash ./scripts/run_chatbot_vicuna_test.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
+lr=2e-5
+bs=4
+use_lora=0
+epochs=3
+ds_config=configs/ds_config_zero2.json
+model_name_or_path=aleksickx/llama-7b-hf
+exp_name="xl_027";
+data_path="xl_sharegpt_20230401_clean_lang_split_v1_QA"
+bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} "--master_port=10065 --num_gpus=8" 
+
+bash ./scripts/run_chatbot_vicuna_test_QA.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
+
+bash ./scripts/run_evaluation_nll_QA.sh ${exp_name} nll ./output_models/${exp_name}
 
 # test 知识注入
 # nolora_en
