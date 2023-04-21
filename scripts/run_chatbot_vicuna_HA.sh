@@ -26,7 +26,7 @@ CUDA_VISIBLE_DEVICES=0 \
       --model_name_or_path ${model} \
       ${lora_args} \
       --use_ram_optimized_load False \
-      --prompt_structure "###Human: {input_text} ###Assistant:" \
+      --prompt_structure "###Human:{input_text}###Assistant:" \
       --max_new_tokens 400 \
       --end_string "###"
 
@@ -36,7 +36,7 @@ CUDA_VISIBLE_DEVICES=0 \
       --model_name_or_path ${model} \
       ${lora_args} \
       --use_ram_optimized_load False \
-      --prompt_structure "###Human: How to cook a dumpling?###Assistant: 1.Boil a large pot of water. 2.Add dumplings to the pot and stir gently so they don’t stick together. 3.Bring the water back to a boil and add a cup of cold water. 4.Repeat step 3 two more times. ###Human: {input_text} ###Assistant:" \
+      --prompt_structure "###Human: How to cook a dumpling?###Assistant: 1.Boil a large pot of water. 2.Add dumplings to the pot and stir gently so they don’t stick together. 3.Bring the water back to a boil and add a cup of cold water. 4.Repeat step 3 two more times.###Human:{input_text} ###Assistant:" \
       --max_new_tokens 400\
       --end_string "###"
 

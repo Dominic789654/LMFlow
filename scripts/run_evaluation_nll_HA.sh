@@ -28,6 +28,6 @@ CUDA_VISIBLE_DEVICES=0 \
     --deepspeed examples/ds_config.json \
     --use_ram_optimized_load False \
     --metric ${metric} \
-    --prompt_structure "###Human: {input}###Assistant:" \
+    --prompt_structure "###Human:{input}###Assistant:" \
     | tee ${log_dir}/train.log \
     2> ${log_dir}/train.err

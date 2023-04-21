@@ -20,23 +20,23 @@ fi
 
 
 
-CUDA_VISIBLE_DEVICES=0 \
-  deepspeed examples/chatbot_test.py \
-      --deepspeed configs/ds_config_chatbot.json \
-      --model_name_or_path ${model} \
-      ${lora_args} \
-      --use_ram_optimized_load False \
-      --prompt_structure "A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the human's questions.###Human:{input_text}###Assistant:" \
-      --end_string "###"
+# CUDA_VISIBLE_DEVICES=0 \
+#   deepspeed examples/chatbot_test.py \
+#       --deepspeed configs/ds_config_chatbot.json \
+#       --model_name_or_path ${model} \
+#       ${lora_args} \
+#       --use_ram_optimized_load False \
+#       --prompt_structure "A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the human's questions.###Human:{input_text}###Assistant:" \
+#       --end_string "###"
 
-CUDA_VISIBLE_DEVICES=0 \
-  deepspeed examples/chatbot_test.py \
-      --deepspeed configs/ds_config_chatbot.json \
-      --model_name_or_path ${model} \
-      ${lora_args} \
-      --use_ram_optimized_load False \
-      --prompt_structure "###Human:{input_text}###Assistant:" \
-      --end_string "###"
+# CUDA_VISIBLE_DEVICES=0 \
+#   deepspeed examples/chatbot_test.py \
+#       --deepspeed configs/ds_config_chatbot.json \
+#       --model_name_or_path ${model} \
+#       ${lora_args} \
+#       --use_ram_optimized_load False \
+#       --prompt_structure "###Human:{input_text}###Assistant:" \
+#       --end_string "###"
 
 CUDA_VISIBLE_DEVICES=0 \
   deepspeed examples/chatbot_test_2.py \

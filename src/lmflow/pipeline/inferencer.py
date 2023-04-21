@@ -144,7 +144,10 @@ class Inferencer(BasePipeline):
             }
             outputs = model.inference(
                 inputs,
-                **generation_kwars
+                # max_new_tokens=max_new_tokens,
+                # temperature=temperature,
+                # repetition_penalty=1.0,
+                # **generation_kwars
             )
 
             text_out = model.decode(outputs[0], skip_special_tokens=True)

@@ -2,8 +2,8 @@
 # Please run this script under ${project_id} in project directory of
 
 deepspeed_args="--master_port=11000"      # Default argument
-if [ $# -ge 9 ]; then
-  deepspeed_args="$9"
+if [ $# -ge 10 ]; then
+  deepspeed_args="${11}"
 fi
 
 # exp_id=xl_001_sharegpt_v3_0.1_vicuna7b_lora_3epcoh_lr1e-4
@@ -18,6 +18,9 @@ model_name_or_path="$5"
 use_lora="$6"
 ds_config="$7"
 num_train_epochs="$8"
+gradient_checkpointing="$9"
+gradient_accumulation_steps="${10}"
+
 mkdir -p ${output_dir} ${log_dir}
 
 # no save 
@@ -45,8 +48,8 @@ deepspeed ${deepspeed_args} \
     --dataloader_num_workers 0 \
     --lr_scheduler_type "cosine" \
     --warmup_ratio 0.03 \
-    --gradient_accumulation_steps 4 \
-    --gradient_checkpointing True \
+    --gradient_accumulation_steps ${gradient_accumulation_steps}\
+    --gradient_checkpointing ${gradient_checkpointing} \
     | tee ${log_dir}/train.log \
     2> ${log_dir}/train.err
 
