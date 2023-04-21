@@ -41,24 +41,21 @@ from transformers import (
     CONFIG_MAPPING,
     AutoConfig,
     AutoTokenizer,
-    AutoModelForCausalLM,
+    AutoModelForSeq2SeqLM,
+    AutoModel,
 )
 
 from lmflow.datasets.dataset import Dataset
-from lmflow.models.decoder_model import DecoderModel
+from lmflow.models.encoder_decoder_model import EncoderDecoderModel
 from lmflow.models.interfaces.tunable import Tunable
-from lmflow.utils.constants import (
-    TEXT_ONLY_DATASET_DESCRIPTION,
-    TEXT2TEXT_DATASET_DESCRIPTION,
-)
 
 
 logger = logging.getLogger(__name__)
 
 
-class HFDecoderModel(DecoderModel, Tunable):
+class HFEncoderDecoderModel(EncoderDecoderModel, Tunable):
     r"""
-    Initializes a HFDecoderModel instance.
+    Initializes a HFEncoderDecoderModel instance.
 
     Parameters
     ------------
@@ -107,86 +104,9 @@ class HFDecoderModel(DecoderModel, Tunable):
         self.device = device
 
         if tune_strategy == 'normal':
-            config_kwargs = {
-                "cache_dir": model_args.cache_dir,
-                "revision": model_args.model_revision,
-                "use_auth_token": True if model_args.use_auth_token else None,
-            }
-            if model_args.config_name:
-                config = AutoConfig.from_pretrained(model_args.config_name, **config_kwargs)
-            elif model_args.model_name_or_path:
-                config = AutoConfig.from_pretrained(model_args.model_name_or_path, **config_kwargs)
-            else:
-                config = CONFIG_MAPPING[model_args.model_type]()
-                logger.warning("You are instantiating a new config instance from scratch.")
-                if model_args.config_overrides is not None:
-                    logger.info(f"Overriding config: {model_args.config_overrides}")
-                    config.update_from_string(model_args.config_overrides)
-                    logger.info(f"New config: {config}")
-
-            tokenizer_kwargs = {
-                "cache_dir": model_args.cache_dir,
-                "use_fast": model_args.use_fast_tokenizer,
-                "revision": model_args.model_revision,
-                "use_auth_token": True if model_args.use_auth_token else None,
-            }
-            if model_args.tokenizer_name:
-                tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name, **tokenizer_kwargs)
-            elif model_args.model_name_or_path:
-                tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path, **tokenizer_kwargs)
-            else:
-                raise ValueError(
-                    "You are instantiating a new tokenizer from scratch. This is"
-                    " not supported by this script. You can do it from another"
-                    " script, save it, and load it from here, using"
-                    " --tokenizer_name."
-                )
-
-            if model_args.model_name_or_path:
-                torch_dtype = (
-                    model_args.torch_dtype
-                    if model_args.torch_dtype in ["auto", None]
-                    else getattr(torch, model_args.torch_dtype)
-                )
-                model = AutoModelForCausalLM.from_pretrained(
-                    model_args.model_name_or_path,
-                    from_tf=bool(".ckpt" in model_args.model_name_or_path),
-                    config=config,
-                    cache_dir=model_args.cache_dir,
-                    revision=model_args.model_revision,
-                    use_auth_token=True if model_args.use_auth_token else None,
-                    torch_dtype=torch_dtype,
-                )
-            else:
-                model = AutoModelForCausalLM.from_config(config)
-                n_params = sum(dict((p.data_ptr(), p.numel()) for p in model.parameters()).values())
-                logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
-            self.backend_model_full = model
-            if model_args.use_lora:
-                
-                peft_config = LoraConfig(
-                    task_type=TaskType.CAUSAL_LM,
-                    inference_mode=False,
-                    r=model_args.lora_r,
-                    lora_alpha=model_args.lora_alpha,
-                    lora_dropout=model_args.lora_dropout
-                )
-                model = get_peft_model(model, peft_config)
-                model.print_trainable_parameters()
-
-            # We resize the embeddings only when necessary to avoid index errors.
-            # If you are creating a model from scratch on a small vocab and want a
-            # smaller embedding size, remove this test.
-            embedding_size = model.get_input_embeddings().weight.shape[0]
-            if len(tokenizer) > embedding_size:
-                model.resize_token_embeddings(len(tokenizer))
-
-            self.model_args = model_args
-            self.config = config
-            self.backend_model = model
-            self.tokenizer = tokenizer
-            self.tune_strategy = tune_strategy
-
+            raise NotImplementedError(
+                f"tune_strategy \"{tune_strategy}\" is not supported"
+            )    
         elif tune_strategy == 'none':
             dschf = HfDeepSpeedConfig(ds_config)
             peft_model_id = model_args.lora_model_path
@@ -198,10 +118,14 @@ class HFDecoderModel(DecoderModel, Tunable):
                 )
                 model_args.use_ram_optimized_load = False
 
-            if model_args.use_ram_optimized_load and peft_model_id is None:
+
+            if model_args.model_name_or_path == 'THUDM/chatglm-6b':
+                self.backend_model = AutoModel.from_pretrained(model_args.model_name_or_path, trust_remote_code=True)
+
+            elif model_args.use_ram_optimized_load and peft_model_id is None:
                 try:
                     # RAM-optimized load
-                    self.backend_model = AutoModelForCausalLM.from_pretrained(
+                    self.backend_model = AutoModelForSeq2SeqLM.from_pretrained(
                         model_args.model_name_or_path,
                         device_map="auto",
                         offload_folder="offload",
@@ -213,7 +137,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                         " use original load instead."
                     )
                     # Normal load
-                    self.backend_model = AutoModelForCausalLM.from_pretrained(
+                    self.backend_model = AutoModelForSeq2SeqLM.from_pretrained(
                         model_args.model_name_or_path,
                     )
             else:
@@ -222,11 +146,11 @@ class HFDecoderModel(DecoderModel, Tunable):
                         "LoRA does not support RAM optimized load currently."
                         " Automatically use original load instead."
                     )
-                self.backend_model = AutoModelForCausalLM.from_pretrained(
+                self.backend_model = AutoModelForSeq2SeqLM.from_pretrained(
                     model_args.model_name_or_path,
                 )
 
-            self.tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path)
+            self.tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path, trust_remote_code=True)
             self.backend_model_full = self.backend_model
             if peft_model_id is not None:
                 self.backend_model = PeftModel.from_pretrained(
@@ -248,8 +172,9 @@ class HFDecoderModel(DecoderModel, Tunable):
     
         Parameters
         ------------
-        dataset : lmflow.datasets.Dataset.
-
+        dataset : 
+            Text dataset.
+            
         args : Optional.
             Positional arguments.
         
@@ -261,108 +186,7 @@ class HFDecoderModel(DecoderModel, Tunable):
         tokenized_datasets :
             The tokenized dataset.
         """
-        # Preprocessing the datasets.
-        # First we tokenize all the texts.
-        if dataset.get_backend() != "huggingface":
-            raise NotImplementedError(
-                "tokenization of datasets with non-huggingface backend are"
-                "not supported yet"
-            )
-
-        dataset_type = dataset.get_type()
-
-        # Requires three types of information for tokenizing different datasets
-        #   1) Which fields require tokenization, e.g.
-        #        "text2float": "text", but not "float"
-        #        "text2text": both "input" and "output"
-        #   2) How will there tokenized sequence concatenated together, e.g.
-        #        "text_only": "text" -> "text"
-        #        "text2text": "input", "output" -> "input" + "output"
-        #   3) Which fields require loss in final computation, e.g.
-        #        "text_only": "text"
-        #        "text2text": "output" only
-        tokenized_column_order = None       # Handles 1) and 2)
-        label_columns = None                # Handles 3)
-        if dataset_type == "text_only":
-            tokenized_column_order = ["text"]
-            label_columns = ["text"]
-        elif dataset_type == "text2text":
-            tokenized_column_order = ["input", "output"]
-            label_columns = ["output"]
-        else:
-            raise NotImplementedError(
-                f"dataset type \"{dataset_type}\" is not supported, currently"
-                " only support following data types:\n"
-                f"    1) {TEXT_ONLY_DATASET_DESCRIPTION}\n"
-                f"    2) {TEXT2TEXT_DATASET_DESCRIPTION}\n"
-            )
-
-        model_args = self.model_args
-        raw_datasets = dataset
-        hf_raw_datasets = dataset.get_backend_dataset()
-        column_names = list(hf_raw_datasets.features)
-
-        # since this will be pickled to avoid _LazyModule error in Hasher force
-        # logger loading before tokenize_function
-        tok_logger = transformers.utils.logging.get_logger("transformers.tokenization_utils_base")
-
-        def tokenize_function(examples):
-            num_example = len(examples[column_names[0]])
-            token_dict = {
-                "input_ids": [[] for _ in range(num_example)],
-                "attention_mask": [[] for _ in range(num_example)],
-                "labels": [[] for _ in range(num_example)],
-            }
-            with CaptureLogger(tok_logger) as cl:
-                for column_name in tokenized_column_order:
-                    encoding = self.tokenizer(
-                        examples[column_name],
-                        truncation=True if model_args.use_lora else None,
-                    )
-
-                    if column_name in label_columns:
-                        labels = encoding["input_ids"].copy()
-                    else:
-                        labels = [
-                            [-100] * len(encoding["input_ids"][i])
-                             for i in range(num_example)
-                        ]
-
-                    for i in range(num_example):
-                        token_dict["input_ids"][i].extend(
-                            encoding["input_ids"][i]
-                        )
-                        token_dict["attention_mask"][i].extend(
-                            encoding["attention_mask"][i]
-                        )
-                        token_dict["labels"][i].extend(labels[i])
-
-            # clm input could be much much longer than block_size
-            if "Token indices sequence length is longer than the" in cl.out:
-                tok_logger.warning(
-                    "^^^^^^^^^^^^^^^^ Please ignore the warning above - this long input will be chunked into smaller bits"
-                    " before being passed to the model."
-                )
-            return token_dict
-
-        data_args = raw_datasets.get_data_args()
-        if not data_args.streaming:
-            tokenized_datasets = raw_datasets.map(
-                tokenize_function,
-                batched=True,
-                num_proc=data_args.preprocessing_num_workers,
-                remove_columns=column_names,
-                load_from_cache_file=not data_args.overwrite_cache,
-                desc="Running tokenizer on dataset",
-            )
-        else:
-            tokenized_datasets = raw_datasets.map(
-                tokenize_function,
-                batched=True,
-                remove_columns=column_names,
-            )
-        return tokenized_datasets
-
+        raise NotImplementedError('tokenize not implemented')
 
     def encode(self, input: Union[str, List[str]], *args, **kwargs ) -> Union[List[int], List[List[int]]]:
         """

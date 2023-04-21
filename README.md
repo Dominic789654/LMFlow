@@ -18,9 +18,9 @@
 [![Code License](https://img.shields.io/badge/Code%20License-Apache_2.0-green.svg)](https://github.com/OptimalScale/LMFlow/blob/main/LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/release/python-390/)
 [![Doc](https://img.shields.io/badge/Website-Doc-ff69b4.svg)](https://optimalscale.github.io/LMFlow/)
-[![Embark](https://img.shields.io/badge/discord-LMFlow-%237289da.svg?logo=discord)](https://discord.gg/srGxyazbNs)
+[![Embark](https://img.shields.io/badge/discord-LMFlow-%237289da.svg?logo=discord)](https://discord.gg/u9VJNpzhvA)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/lmflow/shared_invite/zt-1s6egx12s-THlwHuCjF6~JGKmx7JoJPA)
-[![WeChat badge](https://img.shields.io/badge/WeChat-Join-brightgreen?logo=wechat&amp)](https://i.328888.xyz/2023/04/14/ixapZa.jpeg)
+[![WeChat badge](https://img.shields.io/badge/WeChat-Join-brightgreen?logo=wechat&amp)](https://i.328888.xyz/2023/04/21/idFkmt.jpeg)
 
 An extensible, convenient, and efficient toolbox for finetuning large machine learning models, designed to be user-friendly, speedy and reliable, and accessible to the entire community.
 
@@ -43,7 +43,6 @@ Large Model for All. See our [vision](https://github.com/OptimalScale/LMFlow#vis
 
 ## Demos
 
-### Currently our checkpoint download service is at capacity. We have allocated one more server to support that. If you encounter error "_too many HTTP requests_", please wait for several minutes and try again. Thanks for your understanding.:pray:
 
 We provide four kinds of demos which include
 - Online Service: If you don't want to run any code and just want to try our models, we deploy our instruction-tuned LLaMA you to have a try. 
@@ -55,10 +54,11 @@ We provide four kinds of demos which include
 [![Code License](https://img.shields.io/badge/Online%20Service-Web-green.svg)](https://lmflow.com)
 [![colab badge](https://img.shields.io/badge/Colab-(shell)%20%20chatbot:%20gpt--neo-orange?logo=google-colab&amp)](https://colab.research.google.com/drive/1P9Hf6_mLE7WHH92pw73j9D5kz6GTdkow?usp=sharing)
 [![colab badge](https://img.shields.io/badge/Colab-(web)%20%20chatbot:%20gpt--neo-blue?logo=google-colab&amp)](https://colab.research.google.com/drive/1LLtiiQO-ZIIFsTKxYzGWYX9BDRc-v8dq?usp=sharing)
+[![colab badge](https://img.shields.io/badge/Colab-(demo)%20%20RAFT:%20diffusion-blueviolet?logo=google-colab&amp)](https://colab.research.google.com/drive/1bQmlSiKnqFjrkijFUJ5ylbYW-zUwObqL#scrollTo=9U2P_PUN-5xX)
 
 
 ### Online Service
-> Welcome to visit our [web service](https://lmflow.com/). We deploy LLaMA-7B-tuned model online for preview. Due to the high website traffic, sometimes the website may fail to respond. You can also deploy the chatbot referto `Local Deploy`.
+Welcome to visit our [web service](https://lmflow.com/). We deploy LLaMA-7B-tuned model online for preview. Due to the high website traffic, sometimes the website may fail to respond. You can also deploy the chatbot following `Local Deploy`.
 
 ### Colab chatbot (shell)
 <p align="center" width="100%">
@@ -89,6 +89,12 @@ cd ./service
 python app.py
 ```
 
+### Colab RAFT-diffusion
+
+We also provide a simple demo to display the effectiveness of RAFT algorithm on diffusion models.
+You can refer to either [Colab link](https://colab.research.google.com/drive/1bQmlSiKnqFjrkijFUJ5ylbYW-zUwObqL#scrollTo=9U2P_PUN-5xX) or `experimental/RAFT-diffusion/SD256-RAFT.ipynb`.
+The support of multi-modal training of LMFlow is under development.
+
 ## Medical Performance
 
 |                |  PubMedQA (ID) | MedQA-USMLE (OOD) | MedMCQA (ID) |  Average |
@@ -107,19 +113,54 @@ python app.py
 The LLaMA 33B (LoRA) performance is achieved with only **~16h** finetuning on the training split of PubMedQA and MedMCQA with a single 8 \* A100 server. 
 For more performance, including instruction tuning results, please refer to our [Documentation](https://optimalscale.github.io/LMFlow/).
 
+
 ## Model Zoo
 We open-sourced the trained checkpoints to everyone for further training and inference.
 
-| Instruct-tuned Models   |  Status | Base Model | Download | 
-|----------|:-------------:|----------|:-------------:|
-| LLaMA-7B-tuned | ![completed](https://geps.dev/progress/100) | LLaMA-7B | [Google Drive](https://drive.google.com/file/d/1x5JLae3akVkfFeDhSe3TEyUbPn_GNFyb/view?usp=share_link) |
-| LLaMA-13B-tuned | ![completed](https://geps.dev/progress/100) | LLaMA-13B |  [Google Drive](https://drive.google.com/file/d/1m_rpe6rNpN59kWvjJ3GfKeEmS-68TRYr/view?usp=share_link) |
-| LLaMA-33B-tuned | ![completed](https://geps.dev/progress/100) |LLaMA-33B |  [Google Drive](https://drive.google.com/file/d/1IqgqLHwNkWQ7BffheZnqD6a-8Zul1bk6/view?usp=share_link) |
-| LLaMA-65B-tuned | ![training](https://geps.dev/progress/65) | LLaMA-65B | Google Drive |
-| LLaMA7B-medical | ![completed](https://geps.dev/progress/100) | LLaMA-7B | [Google Drive](https://drive.google.com/file/d/1Z44tsrRvfDFvucbNGFjHC_vbPcBvg3x-/view?usp=share_link) |
-| LLaMA13B-medical | ![completed](https://geps.dev/progress/100) | LLaMA-13B |  [Google Drive](https://drive.google.com/file/d/1uoTAXTMyYQkP6N4ummx7tj-c4v1p91ap/view?usp=share_link) |
-| LLaMA33B-medical | ![completed](https://geps.dev/progress/100) |LLaMA-33B |  [Google Drive](https://drive.google.com/file/d/14N9o_1pwHmVuSikQ3orMVzZDrLYJC0iM/view?usp=share_link) |
-| LLaMA65B-medical | ![training](https://geps.dev/progress/90) | LLaMA-65B | Google Drive |
+<table>
+<tr>
+  <td align="center"></td>
+  <td align="center"><a href="http://lmflow.org:5000/robin-7b.tar.gz" target="_blank"><img src="./assets/robin7b.jpg" width="300" /></a></td>
+  <td align="center"><a href="http://lmflow.org:5000/llama13b-lora-380k.tar.gz" target="_blank"><img src="./assets/robin13b.png" width="300" /></a></td>
+  <td align="center"><a href="http://lmflow.org:5000/llama30b-lora-170k.tar.gz" target="_blank"><img src="./assets/robin33b.png" width="300" /></a></td>
+  <td align="center"><a href="" target="_blank"><img src="./assets/robin65b.png" width="300" /></a></td>
+</tr>
+<tr>
+  <td width="160" align="center">Model<br />Base Model</td>
+  <td width="160" align="center"><a href="http://lmflow.org:5000/robin-7b.tar.gz">Robin-7B :star: </a><br />LLaMA-7B</td>
+  <td width="160" align="center"><a href="http://lmflow.org:5000/llama13b-lora-380k.tar.gz">Robin-13B</a><br />LLaMA-13B</td>
+  <td width="160" align="center"><a href="http://lmflow.org:5000/llama30b-lora-170k.tar.gz">Robin-33B</a><br />LLaMA-33B</td>
+  <td width="160" align="center"><a href="">Robin-65B</a><br />LLaMA-65B</td>
+</tr>
+<tr>
+  <td align="center"></td>
+  <td align="center"><a href="http://lmflow.org:5000/llama7b-lora-medical.tar.gz" target="_blank"><img src="./assets/robin7b_.png" width="300" /></a></td>
+  <td align="center"><a href="http://lmflow.org:5000/llama13b-lora-medical.tar.gz" target="_blank"><img src="./assets/robin13b_.jpg" width="300" /></a></td>
+  <td align="center"><a href="http://lmflow.org:5000/llama30b-lora-medical.tar.gz" target="_blank"><img src="./assets/robin33b_.png" width="300" /></a></td>
+  <td align="center"><a href="" target="_blank"><img src="./assets/robin65b_.png" width="300" /></a></td>
+</tr>
+<tr>
+  <td width="160" align="center">Model<br />Base Model</td>
+  <td width="160" align="center"><a href="http://lmflow.org:5000/llama7b-lora-medical.tar.gz">Robin-7B-medical</a><br />LLaMA-7B</td>
+  <td width="160" align="center"><a href="http://lmflow.org:5000/llama13b-lora-medical.tar.gz">Robin-13B-medical</a><br />LLaMA-13B</td>
+  <td width="160" align="center"><a href="http://lmflow.org:5000/llama30b-lora-medical.tar.gz">Robin-33B-medical</a><br />LLaMA-33B</td>
+  <td width="160" align="center"><a href="">Robin-65B-medical</a><br />LLaMA-65B</td>
+</tr>
+<tr>
+  <td align="center"></td>
+  <td align="center"><a href="http://lmflow.org:5000/parakeets-2.7b.tar.gz" target="_blank"><img src="./assets/Parakeets.png" width="300" /></a></td>
+  <td align="center"><a href="" target="_blank"><img src="./assets/Cockatoo3b.png" width="300" /></a></td>
+  <td align="center"><a href="http://lmflow.org:5000/cockatoo-7b.tar.gz" target="_blank"><img src="./assets/Cockatoo7b.png" width="300" /></a></td>
+  <td align="center"></a></td>
+</tr>
+<tr>
+  <td width="160" align="center">Model<br />Base Model</td>
+  <td width="160" align="center"><a href="http://lmflow.org:5000/parakeets-2.7b.tar.gz">Parakeets-2.7B :star: </a><br />GPT-NEO-2.7B</td>
+  <td width="160" align="center"><a href="">Cockatoo-3B</a><br />StableLM-3B</td>
+  <td width="160" align="center"><a href="http://lmflow.org:5000/cockatoo-7b.tar.gz">Cockatoo-7B :star: </a><br />StableLM-7B</td>
+  <td width="160" align="center"><br /></td>
+</tr>
+</table>
 
 
 ## Supported Pipelines
@@ -132,10 +173,7 @@ We open-sourced the trained checkpoints to everyone for further training and inf
 | Large Model Inference |  :white_check_mark: Supported |
 | Alignment Tuning |  :white_check_mark: Supported |
 
-
-
 ## Supported Models
-
 
 Seamlessly supported all the [decoder models](https://huggingface.co/models?pipeline_tag=text-generation&sort=downloads) in 🤗 huggingface. 
 LLaMA, GPT2, GPT-Neo, Galactica, have been fully tested. We will support encoder models soon.
@@ -156,37 +194,11 @@ pip install -e .
 ```
 
 ## 2.Prepare Dataset
-You can easily download the example training dataset and test dataset by running 
-```bash
-cd data
-bash download.sh all
-cd -
-``` 
 
-You can also use your own dataset by simply convert to the following format:
-```json
-{
-  "type": "text2text",
-  "instances": [
-    {
-      "input": "Question: The Transformer architecture [START_REF]",
-      "output": "N/A"
-    },
-    ...
-  ]
-}
-```
-```json
-{
-  "type": "text_only",
-  "instances": [
-    {
-      "text": "Defintion: In this task, we ask you to write an answer to a question that involves events that may be stationary (not changing over time) or transient (changing over time). For example, the sentence \"he was born in the U.S.\" contains a stationary event since it will last forever; however, \"he is hungry\" contains a transient event since it will remain true for a short period of time. Note that a lot of the questions could have more than one correct answer. We only need a single most-likely answer. Please try to keep your \"answer\" as simple as possible. Concise and simple \"answer\" is preferred over those complex and verbose ones. \n Input: Question: Sentence: It's hail crackled across the comm, and Tara spun to retake her seat at the helm. \nQuestion: Will the hail storm ever end? \n Output: NA \n\n"
-    },
-    ...
-  ]
-}
-```
+Please refer to our [doc](https://optimalscale.github.io/LMFlow/examples/DATASETS.html).
+
+
+
 ## 3. Run Scripts
 ### 3.1 Run Finetuning
 
@@ -276,30 +288,7 @@ more API-related examples, one may refer to the methods in the unittest
 ## 4. Additional Notes
 ### 4.1 LLaMA Checkpoint
 
-1. First, you need to get the access of LLaMA model from [facebookresearch/llama](https://github.com/facebookresearch/llama). Download the official checkpoints and save them into `${llama-path}`.
-
-2. Second, convert the official checkpoints `${llama-path}` to HuggingFace supported checkpoints `${llama-hf-path}` by running
-
-    `python ./scripts/convert_llama_weights_to_hf.py --input_dir ${llama-path} --model_size 7B --output_dir ${llama-hf-path}/llama-7b-hf`
-
-3. Then you are good to go by setting the checkpoint path to `${llama-hf-path}/llama-7b-hf`. Enjoy it!
-
-4. (optional) Now you have the original llama-7b-hf pretrained model. With
-```sh
-cd output_models && ./download.sh all && cd -
-```
-You can obtain the model difference finetuned by ours. By a way similar to `./scripts/run_evaluation_with_lora.sh`,
-```sh
-CUDA_VISIBLE_DEVICES=0 \
-    deepspeed examples/evaluate.py \
-    --answer_type text \
-    --model_name_or_path ${llama-hf-path}/llama-7b-hf \
-    --lora_model_path output_models/${llama-model-diff-path} \
-    --dataset_path data/alpaca/test \
-    --prompt_structure "Input: {input}" \
-    --deepspeed examples/ds_config.json
-```
-You can now evaluate with the finetuned llama model.
+Please refer to our [doc](https://optimalscale.github.io/LMFlow/examples/checkpoints.html).
 
 ### 4.2 DeepSpeed Config
 You can config the deepspeed under configs. Details can be referred at [DeepSpeed Configuration](https://www.deepspeed.ai/docs/config-json/)
@@ -332,9 +321,9 @@ cd -
 
 You can also directly download our model via google drive link : [instruction_ckpt.tar.gz](https://drive.google.com/file/d/1d_ioQ-ViVweeifbsFSO4pczc3UORFHZO/view?usp=share_link)
 
-### 5.3 Begin Reproduce
+### 5.3 Reproduce the result
 
-After downloading the model checkpoints. You can replace the `--lora_model_path` with `output_models/instruction_ckpt/llama7b-lora` (example for llama-7b for instruction) and replace `--model_name_or_path` with your converted llama model inside `LMFlow/scripts/run_evaluation_with_lora.sh` and run this shell script to reproduce the result.
+After downloading the model checkpoints, you can replace the `--lora_model_path` with `output_models/instruction_ckpt/llama7b-lora` (example for llama-7b for instruction) and replace `--model_name_or_path` with your converted llama model inside `LMFlow/scripts/run_evaluation_with_lora.sh` and run this shell script to reproduce the result.
 
 Then you can check the model performance at our [Doc](https://optimalscale.github.io/LMFlow/).
 
@@ -350,17 +339,11 @@ Moreover, we aim to create an open and democratic LLM sharing platform where peo
 
 Whether you are a beginner or an expert, we believe that you can benefit from this platform. Let's work together to build a vibrant and innovative LLM community!
 
-[![Embark](https://img.shields.io/badge/discord-LMFlow-%237289da.svg?logo=discord)](https://discord.gg/srGxyazbNs)
+[![Embark](https://img.shields.io/badge/discord-LMFlow-%237289da.svg?logo=discord)](https://discord.gg/u9VJNpzhvA)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/lmflow/shared_invite/zt-1s6egx12s-THlwHuCjF6~JGKmx7JoJPA)
-[![WeChat badge](https://img.shields.io/badge/WeChat-Join-brightgreen?logo=wechat&amp)](https://i.328888.xyz/2023/04/14/ixapZa.jpeg)
+[![WeChat badge](https://img.shields.io/badge/WeChat-Join-brightgreen?logo=wechat&amp)](https://i.328888.xyz/2023/04/21/idFkmt.jpeg)
 
-## Disclaimer
 
-This package aims to provide a streamlined and user-friendly pipeline for large model tuning. Its functionalities serve as a reference and are intended for use by the user. However, it is important to note that the responsibility for the preparation of the data and pretrained models lies solely with the user. This package does not guarantee the accuracy, completeness, applicability, or legality of the components from the user's preparation. Users must be aware of and assume all risks and liabilities associated with the preparation of the models and data, and obtain legal, commercial, and technical advice before utilizing this package. The pipeline shall not be held responsible for any direct, indirect, special, incidental, or consequential damages resulting from the user's improper preparation of the data and pretrained models.   
-
-Our checkpoints, which include both English and Chinese versions, are provided solely for research purposes. The training data contained within these checkpoints includes generated results from the ChatGPT language model. We do not endorse or encourage the distribution or usage of these checkpoints for commercial purposes. Users of these checkpoints are solely responsible for ensuring that they are used correctly and appropriately.
-
-It is also crucial to highlight that the results generated by the model are based on probabilistic models and not directly related to this pipeline. The accuracy, reliability, applicability, and legality of the results are not guaranteed by this pipeline. Therefore, users must also be aware of the risks and liabilities associated with the results and seek legal, commercial, and technical advice before relying on the model-generated outcomes. This pipeline shall not be accountable for any direct, indirect, special, incidental, or consequential damages resulting from the user's reliance on the model-generated results.
 
 ## Acknowledgement
 LMFlow draws inspiration from various studies, including but not limited to:
