@@ -150,7 +150,7 @@ class Inferencer(BasePipeline):
                 # max_new_tokens=max_new_tokens,
                 # temperature=temperature,
                 # repetition_penalty=1.0,
-                # **generation_kwars
+                **generation_kwars
             )
 
             text_out = model.decode(outputs[0], skip_special_tokens=True)

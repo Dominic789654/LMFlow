@@ -1,13 +1,13 @@
-lr=1e-3
+lr=8e-4
 bs=4
 use_lora=1
 epochs=10
 gradient_checkpointing=False
 gradient_accumulation_steps=4
 ds_config=configs/ds_config_zero2.json
-model_name_or_path=aleksickx/llama-7b-hf
-exp_name="xl_035";
-data_path="/home/xiangliu/LMFlow/data/xl_sharegpt_20230401_clean_lang_split_v1_HA"
+model_name_or_path=pinkmanlove/llama-7b-hf
+exp_name="xl_042";
+data_path="/home/xiangliu/LMFlow/data/cn_v1_HA"
 bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} "--master_port=10065 --num_gpus=8" 
 
 bash ./scripts/run_chatbot_vicuna_test_HA.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
@@ -15,22 +15,21 @@ bash ./scripts/run_chatbot_vicuna_test_HA.sh ./output_models/${exp_name} > ./cha
 bash ./scripts/run_evaluation_nll_HA.sh ${exp_name} nll ./output_models/${exp_name}
 
 
-lr=8e-4
+lr=5e-4
 bs=4
 use_lora=1
-epochs=20
+epochs=10
 gradient_checkpointing=False
 gradient_accumulation_steps=4
 ds_config=configs/ds_config_zero2.json
-model_name_or_path=aleksickx/llama-7b-hf
-exp_name="xl_036";
-data_path="/home/xiangliu/LMFlow/data/xl_sharegpt_20230401_clean_lang_split_v1_HA"
+model_name_or_path=pinkmanlove/llama-7b-hf
+exp_name="xl_043";
+data_path="/home/xiangliu/LMFlow/data/cn_v1_HA"
 bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} "--master_port=10065 --num_gpus=8" 
 
 bash ./scripts/run_chatbot_vicuna_test_HA.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
 
 bash ./scripts/run_evaluation_nll_HA.sh ${exp_name} nll ./output_models/${exp_name}
-
 
 # lr=5e-5
 # bs=16
