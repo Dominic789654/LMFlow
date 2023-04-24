@@ -8,35 +8,7 @@ fi
 if [ $# -ge 2 ]; then
   lora_args="--lora_model_path $2"
 fi
-# CUDA_VISIBLE_DEVICES=0 \
-#   deepspeed examples/chatbot_test.py \
-#       --deepspeed configs/ds_config_chatbot.json \
-#       --model_name_or_path ${model} \
-#       ${lora_args} \
-#       --use_ram_optimized_load False \
-#       --prompt_structure "###Human: could you give me the gist of how it could though? ###Assistant:Sure. The basic idea would be to use algebraic topology to analyze the structure of the Minesweeper game board and determine the locations of mines based on certain topological invariants. This could involve representing the game board as a topological space and using topological invariants such as homotopy groups and Betti numbers to infer information about the location of mines on the board. However, as I mentioned before, implementing this would require a deep understanding of both algebraic topology and the game of Minesweeper, so it's not something that can be explained in a simple answer. ###Human: {input_text} ###Assistant:" \
-#       --max_new_tokens 400\
-#       --end_string "###" 
 
-
-
-# CUDA_VISIBLE_DEVICES=0 \
-#   deepspeed examples/chatbot_test.py \
-#       --deepspeed configs/ds_config_chatbot.json \
-#       --model_name_or_path ${model} \
-#       ${lora_args} \
-#       --use_ram_optimized_load False \
-#       --prompt_structure "A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the human's questions.###Human:{input_text}###Assistant:" \
-#       --end_string "###"
-
-# CUDA_VISIBLE_DEVICES=0 \
-#   deepspeed examples/chatbot_test.py \
-#       --deepspeed configs/ds_config_chatbot.json \
-#       --model_name_or_path ${model} \
-#       ${lora_args} \
-#       --use_ram_optimized_load False \
-#       --prompt_structure "###Human:{input_text}###Assistant:" \
-#       --end_string "###"
 
 CUDA_VISIBLE_DEVICES=0 \
   deepspeed examples/chatbot_test_2.py \
@@ -44,7 +16,7 @@ CUDA_VISIBLE_DEVICES=0 \
       --model_name_or_path ${model} \
       ${lora_args} \
       --use_ram_optimized_load False \
-      --prompt_structure "A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the human's questions.###Human:{input_text}###Assistant:" \
+      --prompt_structure "A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the human's questions. ###Human: {input_text}###Assistant:" \
       --end_string "###"
   
 CUDA_VISIBLE_DEVICES=0 \
@@ -53,7 +25,7 @@ CUDA_VISIBLE_DEVICES=0 \
       --model_name_or_path ${model} \
       ${lora_args} \
       --use_ram_optimized_load False \
-      --prompt_structure "###Human:{input_text}###Assistant:" \
+      --prompt_structure "###Human: {input_text}###Assistant:" \
       --end_string "###"
 # CUDA_VISIBLE_DEVICES=0 \
 #   deepspeed examples/chatbot_test.py \

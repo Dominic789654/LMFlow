@@ -2,8 +2,8 @@
 # Please run this script under ${project_id} in project directory of
 
 deepspeed_args="--master_port=11000"      # Default argument
-if [ $# -ge 10 ]; then
-  deepspeed_args="${11}"
+if [ $# -ge 11 ]; then
+  deepspeed_args="${12}"
 fi
 
 # exp_id=xl_001_sharegpt_v3_0.1_vicuna7b_lora_3epcoh_lr1e-4
@@ -20,6 +20,7 @@ ds_config="$7"
 num_train_epochs="$8"
 gradient_checkpointing="$9"
 gradient_accumulation_steps="${10}"
+lora_r="${11}"
 
 mkdir -p ${output_dir} ${log_dir}
 
@@ -34,7 +35,7 @@ deepspeed ${deepspeed_args} \
     --block_size 512 \
     --per_device_train_batch_size ${bs} \
     --use_lora ${use_lora} \
-    --lora_r 32 \
+    --lora_r ${lora_r} \
     --save_aggregated_lora 1\
     --deepspeed ${ds_config} \
     --bf16 \
@@ -52,28 +53,3 @@ deepspeed ${deepspeed_args} \
     --gradient_checkpointing ${gradient_checkpointing} \
     | tee ${log_dir}/train.log \
     2> ${log_dir}/train.err
-
-# --gradient_checkpointing True \
-# deepspeed ${deepspeed_args} \
-#   examples/finetune.py \
-#     --model_name_or_path facebook/galactica-1.3b \
-#     --dataset_path ${dataset_path} \
-#     --output_dir ${output_dir} --overwrite_output_dir \
-#     --num_train_epochs 0.01 \
-#     --learning_rate 1e-4 \
-#     --block_size 512 \
-#     --per_device_train_batch_size 1 \
-#     --use_lora 1 \
-#     --lora_r 8 \
-#     --save_aggregated_lora 1\
-#     --deepspeed configs/ds_config_zero2.json \
-#     --bf16 \
-#     --run_name finetune_with_lora \
-#     --validation_split_percentage 0 \
-#     --logging_steps 20 \
-#     --do_train \
-#     --ddp_timeout 72000 \
-#     --save_steps 5000 \
-#     --dataloader_num_workers 1 \
-#     | tee ${log_dir}/train.log \
-#     2> ${log_dir}/train.err
