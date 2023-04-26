@@ -1,7 +1,9 @@
 exp_id=${1}
 metric=${2}
-model_name=${3}
-lora_model_name=${4}
+evaluation_path=${3}
+model_name=${4}
+lora_model_name=${5}
+
 
 log_dir=output_dir/${exp_id}_${metric}
 
@@ -11,11 +13,7 @@ else
  mkdir -p ${log_dir}
 fi
 
-lora_args=""
-if [ $# -ge 3 ]; then
-  model=$2
-fi
-if [ $# -ge 4 ]; then
+if [ $# -ge 5 ]; then
   lora_args="--lora_model_path ${lora_model_name}"
 fi
 
@@ -24,10 +22,10 @@ CUDA_VISIBLE_DEVICES=0 \
     --answer_type text2text \
     --model_name_or_path ${model_name} \
     ${lora_args} \
-    --dataset_path /home/xiangliu/LMFlow/data/gpt4_eval/ \
+    --dataset_path ${evaluation_path} \
     --deepspeed examples/ds_config.json \
     --use_ram_optimized_load False \
     --metric ${metric} \
-    --prompt_structure "###Human:{input}###Assistant:" \
+    --prompt_structure "###Human: {input}###Assistant:" \
     | tee ${log_dir}/train.log \
     2> ${log_dir}/train.err

@@ -248,7 +248,7 @@ class HFDecoderModel(DecoderModel, Tunable):
             raise NotImplementedError('adapter tune strategy not implemented')
 
 
-    def tokenize(self, dataset, add_special_tokens=True, *args, **kwargs):
+    def tokenize(self, dataset, add_special_tokens=False, *args, **kwargs):
         """
         Tokenize the full dataset.
     
