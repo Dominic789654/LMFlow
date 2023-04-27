@@ -11,16 +11,9 @@ exp_id="$1"
 project_dir=$(cd "$(dirname $0)"/..; pwd)
 output_dir=${project_dir}/output_models/${exp_id}
 log_dir=${project_dir}/log/${exp_id}
-dataset_path="$2"
-lr="$3"
-bs="$4"
-model_name_or_path="$5"
-use_lora="$6"
-ds_config="$7"
-num_train_epochs="$8"
-gradient_checkpointing="$9"
-gradient_accumulation_steps="${10}"
-lora_r="${11}"
+
+dataset_path=${project_dir}/data/alpaca/train
+eval_dataset_path=${project_dir}/data/eval/
 
 mkdir -p ${output_dir} ${log_dir}
 
@@ -43,6 +36,10 @@ deepspeed ${deepspeed_args} \
     --validation_split_percentage 0 \
     --logging_steps 20 \
     --do_train \
+    --do_eval \
+    --eval_strategy "steps" \
+    --eval_steps 1000 \
+    --eval_dataset_path ${eval_dataset_path} \
     --ddp_timeout 72000 \
     --save_steps 5000 \
     --save_total_limit 1 \
