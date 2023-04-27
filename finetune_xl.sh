@@ -1,20 +1,25 @@
+export WANDB_MODE=disabled
+
+
 lr=5e-4
 bs=4
-use_lora=1
+use_lora=0
 epochs=8
 gradient_checkpointing=False
 gradient_accumulation_steps=4
 lora_r=32
 ds_config=configs/ds_config_zero2.json
-model_name_or_path=pinkmanlove/llama-7b-hf
-exp_name="xl_054";
+# model_name_or_path=pinkmanlove/llama-7b-hf
+model_name_or_path=gpt2
+exp_name="test";
 data_path="/home/xiangliu/LMFlow/data/cn_v1_text2text_single_round_HA"
-bash ./scripts/run_finetune_with_lora_save_aggregated_weights.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} "--master_port=10065 --num_gpus=8" 
+eval_dataset_path="/home/xiangliu/LMFlow/data/gpt4_eval"
+bash ./scripts/run_finetune_xl.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} "--master_port=10065 --num_gpus=1" 
 
-bash ./scripts/run_chatbot_vicuna_test_HA.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
+# bash ./scripts/run_chatbot_vicuna_test_HA.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
 
-evaluation_path=/home/xiangliu/LMFlow/data/gpt4_eval
-bash ./scripts/run_evaluation_nll_HA.sh ${exp_name} nll ${evaluation_path} ${model_name_or_path}
+# evaluation_path=/home/xiangliu/LMFlow/data/gpt4_eval
+# bash ./scripts/run_evaluation_nll_HA.sh ${exp_name} nll ${evaluation_path} ${model_name_or_path}
 
 # lr=5e-4
 # bs=4

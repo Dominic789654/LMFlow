@@ -2,8 +2,8 @@
 # Please run this script under ${project_id} in project directory of
 
 deepspeed_args="--master_port=11000"      # Default argument
-if [ $# -ge 11 ]; then
-  deepspeed_args="${12}"
+if [ $# -ge 12 ]; then
+  deepspeed_args="${13}"
 fi
 
 # exp_id=xl_001_sharegpt_v3_0.1_vicuna7b_lora_3epcoh_lr1e-4
@@ -11,9 +11,17 @@ exp_id="$1"
 project_dir=$(cd "$(dirname $0)"/..; pwd)
 output_dir=${project_dir}/output_models/${exp_id}
 log_dir=${project_dir}/log/${exp_id}
-
-dataset_path=${project_dir}/data/alpaca/train
-eval_dataset_path=${project_dir}/data/eval/
+dataset_path="$2"
+lr="$3"
+bs="$4"
+model_name_or_path="$5"
+use_lora="$6"
+ds_config="$7"
+num_train_epochs="$8"
+gradient_checkpointing="$9"
+gradient_accumulation_steps="${10}"
+lora_r="${11}"
+eval_dataset_path="${12}"
 
 mkdir -p ${output_dir} ${log_dir}
 
@@ -36,9 +44,8 @@ deepspeed ${deepspeed_args} \
     --validation_split_percentage 0 \
     --logging_steps 20 \
     --do_train \
-    --do_eval \
-    --eval_strategy "steps" \
-    --eval_steps 1000 \
+    --evaluation_strategy "steps" \
+    --eval_steps 5 \
     --eval_dataset_path ${eval_dataset_path} \
     --ddp_timeout 72000 \
     --save_steps 5000 \
