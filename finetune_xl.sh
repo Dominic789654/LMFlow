@@ -30,8 +30,7 @@ model_name_or_path=pinkmanlove/llama-7b-hf
 exp_name="xl_062";
 data_path="/home/xiangliu/LMFlow/data/cn_v1_text2text_end_single_round_HA"
 eval_dataset_path="/home/xiangliu/LMFlow/data/gpt4_eval"
-lora_target_modules="q_proj k_proj v_proj o_proj"
-bash ./scripts/run_finetune_xl_lora_modules.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${lora_target_modules} "--master_port=10065 --num_gpus=8" 
+bash ./scripts/run_finetune_xl_lora_modules.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path}  "--master_port=10065 --num_gpus=8" 
 
 bash ./scripts/run_chatbot_vicuna_test_HA.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
 
@@ -69,8 +68,7 @@ bash ./scripts/run_evaluation_nll_HA.sh ${exp_name} nll ${evaluation_path} ${mod
 # exp_name="xl_064";
 # data_path="/home/xiangliu/LMFlow/data/cn_v1_text2text_end_single_round_HA"
 # eval_dataset_path="/home/xiangliu/LMFlow/data/gpt4_eval"
-# lora_target_modules=
-# bash ./scripts/run_finetune_xl.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${lora_target_modules} "--master_port=10065 --num_gpus=8" 
+# bash ./scripts/run_finetune_xl.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path}  "--master_port=10065 --num_gpus=8" 
 
 # bash ./scripts/run_chatbot_vicuna_test_HA.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
 
@@ -89,8 +87,7 @@ bash ./scripts/run_evaluation_nll_HA.sh ${exp_name} nll ${evaluation_path} ${mod
 # exp_name="xl_065";
 # data_path="/home/xiangliu/LMFlow/data/cn_v1_text2text_end_single_round_HA"
 # eval_dataset_path="/home/xiangliu/LMFlow/data/gpt4_eval"
-# lora_target_modules="q_proj k_proj v_proj o_proj"
-# bash ./scripts/run_finetune_xl_lora_modules.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${lora_target_modules} "--master_port=10065 --num_gpus=8" 
+# bash ./scripts/run_finetune_xl_lora_modules.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path}  "--master_port=10065 --num_gpus=8" 
 
 # bash ./scripts/run_chatbot_vicuna_test_HA.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
 
@@ -109,8 +106,7 @@ bash ./scripts/run_evaluation_nll_HA.sh ${exp_name} nll ${evaluation_path} ${mod
 # exp_name="xl_066";
 # data_path="/home/xiangliu/LMFlow/data/cn_v1_text2text_end_single_round_HA"
 # eval_dataset_path="/home/xiangliu/LMFlow/data/gpt4_eval"
-# lora_target_modules="q_proj k_proj v_proj o_proj"
-# bash ./scripts/run_finetune_xl_lora_modules.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${lora_target_modules} "--master_port=10065 --num_gpus=8" 
+# bash ./scripts/run_finetune_xl_lora_modules.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path}  "--master_port=10065 --num_gpus=8" 
 
 # bash ./scripts/run_chatbot_vicuna_test_HA.sh ./output_models/${exp_name} > ./chatbot_logs/${exp_name}.log 2>&1 
 

@@ -2,8 +2,8 @@
 # Please run this script under ${project_id} in project directory of
 
 deepspeed_args="--master_port=11000"      # Default argument
-if [ $# -ge 13 ]; then
-  deepspeed_args="${14}"
+if [ $# -ge 12 ]; then
+  deepspeed_args="${13}"
 fi
 
 # exp_id=xl_001_sharegpt_v3_0.1_vicuna7b_lora_3epcoh_lr1e-4
@@ -22,7 +22,6 @@ gradient_checkpointing="$9"
 gradient_accumulation_steps="${10}"
 lora_r="${11}"
 eval_dataset_path="${12}"
-lora_target_modules=${13}
 
 mkdir -p ${output_dir} ${log_dir}
 
@@ -39,7 +38,7 @@ deepspeed ${deepspeed_args} \
     --use_lora ${use_lora} \
     --lora_r ${lora_r} \
     --save_aggregated_lora 1\
-    --lora_target_modules ${lora_target_modules} \
+    --lora_target_modules q_proj k_proj v_proj o_proj \
     --deepspeed ${ds_config} \
     --bf16 \
     --run_name ${exp_id}\
