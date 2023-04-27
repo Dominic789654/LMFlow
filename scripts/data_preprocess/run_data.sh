@@ -1,0 +1,1 @@
+python3 add_end_mark.py --dataset_path /home/xiangliu/LMFlow/data/cn_v1_text2text_single_round_HA/train.json  --output_path /home/xiangliu/LMFlow/data/cn_v1_text2text_end_single_round_HA/train.json
