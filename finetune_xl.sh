@@ -17,6 +17,9 @@ bash ./scripts/run_chatbot_vicuna_test_HA.sh ./output_models/${exp_name} > ./cha
 evaluation_path=/home/xiangliu/LMFlow/data/gpt4_eval
 bash ./scripts/run_evaluation_nll_HA.sh ${exp_name} nll ${evaluation_path} ./output_models/${exp_name}
 
+evaluation_path=/home/xiangliu/LMFlow/data/gpt4_eval_en
+bash ./scripts/run_evaluation_nll_HA.sh ${exp_name}_en nll ${evaluation_path} ./output_models/${exp_name}
+
 
 # lr=8e-4
 # bs=4
