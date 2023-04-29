@@ -37,7 +37,7 @@ deepspeed ${deepspeed_args} \
     --per_device_train_batch_size ${bs} \
     --use_lora ${use_lora} \
     --lora_r ${lora_r} \
-    --save_aggregated_lora 1\
+    --save_aggregated_lora \
     --lora_target_modules q_proj k_proj v_proj o_proj \
     --deepspeed ${ds_config} \
     --bf16 \
@@ -52,6 +52,7 @@ deepspeed ${deepspeed_args} \
     --save_steps 5000 \
     --save_total_limit 1 \
     --dataloader_num_workers 0 \
+    --preprocessing_num_workers 100 \
     --lr_scheduler_type "cosine" \
     --warmup_ratio 0.03 \
     --gradient_accumulation_steps ${gradient_accumulation_steps}\
