@@ -17,6 +17,10 @@ if [ $# -ge 5 ]; then
   lora_args="--lora_model_path ${lora_model_name}"
 fi
 
+    # --prompt_structure "###Human: {input}###Assistant:" \
+    # --prompt_structure "</s>Human: {input}</s>Assistant: " \
+
+
 CUDA_VISIBLE_DEVICES=0 \
     deepspeed examples/evaluate.py \
     --answer_type text2text \

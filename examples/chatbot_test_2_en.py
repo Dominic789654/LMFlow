@@ -114,17 +114,17 @@ def main():
     prompt_structure = chatbot_args.prompt_structure
 
     example_input = [
-        '你好！',
-        '你是谁？',
-        '介绍一下中国。',
-        '中国的首都在哪里？',
-        '那里有什么好吃的？',
-        '用python执行print(123)的输出是什么？',
-        '写一个关于鸟的故事。',
-        '写一个关于鸟的诗歌。',
-        '写一个关于鸟的笑话。',
-        '复述一下那个鸟的故事。',
-        '规划一下从北京到香港的路线。'
+        'Hello!',
+        'Who are you?',
+        'Introducing China.',
+        'What is the capital of China?',
+        'What delicious food is there?',
+        'What is the output of executing print(123) using Python?',
+        'Write a story about birds.',
+        'Write a poem about the birds.',
+        'Write a joke about the birds.',
+        'Repeat the story about that bird.',
+        'Plan the route from Beijing to Hong Kong.'
     ]
     example_idx = 0
     while True:
@@ -135,7 +135,6 @@ def main():
             example_idx += 1
         else:
             break
-            # input_text = input("User >>> ")
 
         context += prompt_structure.format(input_text=input_text)
         context = context[-model.get_max_length():]     # Memory of the bot
@@ -148,7 +147,7 @@ def main():
         print("Bot: ", end="")
         print_index = 0
         response = ""
-        # print("context",context)
+
         token_per_step = 4
         for _ in range(0, chatbot_args.max_new_tokens // token_per_step):
             output_dataset = inferencer.inference(

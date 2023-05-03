@@ -8,18 +8,10 @@ fi
 if [ $# -ge 2 ]; then
   lora_args="--lora_model_path $2"
 fi
+      # --prompt_structure "###Human: {input_text}###Assistant:" \
 
 
-# CUDA_VISIBLE_DEVICES=0 \
-#   deepspeed examples/chatbot_test_2.py \
-#       --deepspeed configs/ds_config_chatbot.json \
-#       --model_name_or_path ${model} \
-#       ${lora_args} \
-#       --use_ram_optimized_load False \
-#       --prompt_structure "A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the human's questions. ###Human: {input_text}###Assistant:" \
-#       --end_string "###"
-  
-CUDA_VISIBLE_DEVICES=0 \
+CUDA_VISIBLE_DEVICES=1 \
   deepspeed examples/chatbot_test_2.py \
       --deepspeed configs/ds_config_chatbot.json \
       --model_name_or_path ${model} \
@@ -27,6 +19,16 @@ CUDA_VISIBLE_DEVICES=0 \
       --use_ram_optimized_load False \
       --prompt_structure "###Human: {input_text}###Assistant:" \
       --end_string "###"
+
+CUDA_VISIBLE_DEVICES=0 \
+  deepspeed examples/chatbot_test_2_en.py \
+      --deepspeed configs/ds_config_chatbot.json \
+      --model_name_or_path ${model} \
+      ${lora_args} \
+      --use_ram_optimized_load False \
+      --prompt_structure "###Human: {input_text}###Assistant:" \
+      --end_string "###"
+
 # CUDA_VISIBLE_DEVICES=0 \
 #   deepspeed examples/chatbot_test.py \
 #       --deepspeed configs/ds_config_chatbot.json \

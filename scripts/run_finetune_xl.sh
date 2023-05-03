@@ -45,11 +45,11 @@ deepspeed ${deepspeed_args} \
     --logging_steps 20 \
     --do_train \
     --evaluation_strategy "steps" \
-    --eval_steps 1000 \
+    --eval_steps 100 \
     --eval_dataset_path ${eval_dataset_path} \
     --ddp_timeout 72000 \
-    --save_steps 5000 \
-    --save_total_limit 1 \
+    --save_steps 200 \
+    --save_total_limit 3 \
     --dataloader_num_workers 0 \
     --lr_scheduler_type "cosine" \
     --warmup_ratio 0.03 \
