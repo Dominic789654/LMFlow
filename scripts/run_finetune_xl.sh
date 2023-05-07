@@ -40,6 +40,7 @@ deepspeed ${deepspeed_args} \
     --use_lora ${use_lora} \
     --lora_r ${lora_r} \
     --save_aggregated_lora 1\
+    --use_flash_attention 1\
     --deepspeed ${ds_config} \
     --bf16 \
     --run_name ${exp_id}\
@@ -48,7 +49,6 @@ deepspeed ${deepspeed_args} \
     --do_train \
     --evaluation_strategy "steps" \
     --eval_steps 100 \
-    --fp16_full_eval \
     --eval_dataset_path ${eval_dataset_path} \
     --ddp_timeout 72000 \
     --save_strategy "epoch" \
