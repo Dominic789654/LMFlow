@@ -2,8 +2,8 @@
 # Please run this script under ${project_id} in project directory of
 
 deepspeed_args="--master_port=11000"      # Default argument
-if [ $# -ge 12 ]; then
-  deepspeed_args="${13}"
+if [ $# -ge 13 ]; then
+  deepspeed_args="${14}"
 fi
 
 # exp_id=xl_001_sharegpt_v3_0.1_vicuna7b_lora_3epcoh_lr1e-4
@@ -22,6 +22,7 @@ gradient_checkpointing="$9"
 gradient_accumulation_steps="${10}"
 lora_r="${11}"
 eval_dataset_path="${12}"
+block_size="${13}"
 
 mkdir -p ${output_dir} ${log_dir}
 
@@ -33,8 +34,9 @@ deepspeed ${deepspeed_args} \
     --output_dir ${output_dir} --overwrite_output_dir \
     --num_train_epochs ${num_train_epochs} \
     --learning_rate ${lr} \
-    --block_size 512 \
+    --block_size ${block_size} \
     --per_device_train_batch_size ${bs} \
+    --per_device_eval_batch_size 1 \
     --use_lora ${use_lora} \
     --lora_r ${lora_r} \
     --save_aggregated_lora 1\
@@ -46,9 +48,10 @@ deepspeed ${deepspeed_args} \
     --do_train \
     --evaluation_strategy "steps" \
     --eval_steps 100 \
+    --fp16_full_eval \
     --eval_dataset_path ${eval_dataset_path} \
     --ddp_timeout 72000 \
-    --save_steps 200 \
+    --save_strategy "epoch" \
     --save_total_limit 3 \
     --dataloader_num_workers 0 \
     --lr_scheduler_type "cosine" \

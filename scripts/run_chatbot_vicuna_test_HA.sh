@@ -18,7 +18,7 @@ CUDA_VISIBLE_DEVICES=1 \
       ${lora_args} \
       --use_ram_optimized_load False \
       --prompt_structure "###Human: {input_text}###Assistant:" \
-      --end_string "###"
+      --end_string "#"
 
 CUDA_VISIBLE_DEVICES=0 \
   deepspeed examples/chatbot_test_2_en.py \
@@ -27,7 +27,7 @@ CUDA_VISIBLE_DEVICES=0 \
       ${lora_args} \
       --use_ram_optimized_load False \
       --prompt_structure "###Human: {input_text}###Assistant:" \
-      --end_string "###"
+      --end_string "#"
 
 # CUDA_VISIBLE_DEVICES=0 \
 #   deepspeed examples/chatbot_test.py \

@@ -14,6 +14,7 @@ import logging
 import random
 import sys
 import os
+import gc
 sys.path.remove(os.path.abspath(os.path.dirname(sys.argv[0])))
 
 from dataclasses import dataclass, field
@@ -46,6 +47,11 @@ class MultistageFinetuneArgs:
             "help": "base seed for generating dataset shuffle seeds each epoch"
         }
     )
+    start_epoch: int = field(
+        default=0,
+        metadata={"help": "start from a specific epoch"}
+    )
+
 
 def setup_logger():
     root = logging.getLogger()
@@ -130,6 +136,9 @@ def main():
             num_split=multistage_args.num_stages_per_epoch,
             seed=shuffle_seed,
         )
+        if epoch < multistage_args.start_epoch:
+            logging.info(f"skip epoch {epoch}")
+            continue
 
         for stage, dataset in enumerate(dataset_list):
             is_main_process = (finetuner_args.local_process_index == 0)
@@ -158,6 +167,12 @@ def main():
                 transform_dataset_in_place=False,
             )
             model_args.model_name_or_path = finetuner_args.output_dir
+            del model
+            del tuned_model
+            tuned_model = None
+            model = None
+            gc.collect()
+
 
     tuned_model.save(output_dir)
 
