@@ -51,10 +51,16 @@ from lmflow.utils.constants import (
     TEXT_ONLY_DATASET_DESCRIPTION,
     TEXT2TEXT_DATASET_DESCRIPTION,
 )
+from lmflow.utils.flash_attention import (
+    replace_llama_attn_with_flash_attn,
+)
 
 
 logger = logging.getLogger(__name__)
 
+MODELS_SUPPORT_FLASH_ATTENTION = [
+    "LlamaForCausalLM",
+]
 
 class HFDecoderModel(DecoderModel, Tunable):
     r"""
@@ -132,24 +138,43 @@ class HFDecoderModel(DecoderModel, Tunable):
             if model_args.torch_dtype in ["auto", None]
             else getattr(torch, model_args.torch_dtype)
         )
-        if tune_strategy == 'normal':
-            config_kwargs = {
-                "cache_dir": model_args.cache_dir,
-                "revision": model_args.model_revision,
-                "use_auth_token": True if model_args.use_auth_token else None,
-            }
-            if model_args.config_name:
-                config = AutoConfig.from_pretrained(model_args.config_name, **config_kwargs)
-            elif model_args.model_name_or_path:
-                config = AutoConfig.from_pretrained(model_args.model_name_or_path, **config_kwargs)
-            else:
-                config = CONFIG_MAPPING[model_args.model_type]()
-                logger.warning("You are instantiating a new config instance from scratch.")
-                if model_args.config_overrides is not None:
-                    logger.info(f"Overriding config: {model_args.config_overrides}")
-                    config.update_from_string(model_args.config_overrides)
-                    logger.info(f"New config: {config}")
 
+        config_kwargs = {
+            "cache_dir": model_args.cache_dir,
+            "revision": model_args.model_revision,
+            "use_auth_token": True if model_args.use_auth_token else None,
+        }
+        if model_args.config_name:
+            config = AutoConfig.from_pretrained(model_args.config_name, **config_kwargs)
+        elif model_args.model_name_or_path:
+            config = AutoConfig.from_pretrained(model_args.model_name_or_path, **config_kwargs)
+        else:
+            config = CONFIG_MAPPING[model_args.model_type]()
+            logger.warning("You are instantiating a new config instance from scratch.")
+            if model_args.config_overrides is not None:
+                logger.info(f"Overriding config: {model_args.config_overrides}")
+                config.update_from_string(model_args.config_overrides)
+                logger.info(f"New config: {config}")
+
+        # Whether use flash attention
+        if model_args.use_flash_attention:
+            if not any(model_supported in config.architectures
+                       for model_supported in MODELS_SUPPORT_FLASH_ATTENTION):
+                logger.warning(
+                    f"Model \"{config.architectures}\" does not support"
+                    " flash attention, use normal attention layer instead"
+                )
+            elif "A100" not in torch.cuda.get_device_name():
+                logger.warning(
+                    f"Your decice \"{torch.cuda.get_device_name()}\""
+                    " does not support flash attention, it will"
+                    " automatically use normal attention layer"
+                )
+            else:
+                replace_llama_attn_with_flash_attn()
+                config.use_cache = False
+
+        if tune_strategy == 'normal':
             if model_args.model_name_or_path:
                 model = AutoModelForCausalLM.from_pretrained(
                     model_args.model_name_or_path,
@@ -197,6 +222,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                 peft_model_id = model_args.lora_model_path
                 self.backend_model = AutoModelForCausalLM.from_pretrained(
                         model_args.model_name_or_path,
+                        config=config,
                         device_map="auto",
                         offload_folder="offload",
                         offload_state_dict=True,
@@ -224,6 +250,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                         # RAM-optimized load
                         self.backend_model = AutoModelForCausalLM.from_pretrained(
                             model_args.model_name_or_path,
+                            config=config,
                             device_map="auto",
                             offload_folder="offload",
                             offload_state_dict=True,
@@ -237,6 +264,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                         # Normal load
                         self.backend_model = AutoModelForCausalLM.from_pretrained(
                             model_args.model_name_or_path,
+                            config=config,
                             torch_dtype=torch_dtype,
                         )
                 else:
@@ -247,6 +275,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                         )
                     self.backend_model = AutoModelForCausalLM.from_pretrained(
                         model_args.model_name_or_path,
+                        config=config,
                         torch_dtype=torch_dtype,
                     )
 
@@ -255,7 +284,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                     self.backend_model = PeftModel.from_pretrained(
                         self.backend_model, peft_model_id
                     )
-                
+  
                 self.tokenizer.padding_side = "left" #necessary for llama, gpt2 and other decoder models
                 
                 if device == "gpu":
@@ -271,7 +300,8 @@ class HFDecoderModel(DecoderModel, Tunable):
         if self.tokenizer.pad_token_id is None:
             self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
 
-    def tokenize(self, dataset, add_special_tokens=False, *args, **kwargs):
+
+    def tokenize(self, dataset, add_special_tokens=True, *args, **kwargs):
         """
         Tokenize the full dataset.
     

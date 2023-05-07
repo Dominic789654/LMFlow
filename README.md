@@ -21,7 +21,7 @@
 [![Doc](https://img.shields.io/badge/Website-Doc-ff69b4.svg)](https://optimalscale.github.io/LMFlow/)
 [![Embark](https://img.shields.io/badge/Discord-LMFlow-%237289da.svg?logo=discord)](https://discord.gg/u9VJNpzhvA)
 [![slack badge](https://img.shields.io/badge/Slack-Join-blueviolet?logo=slack&amp)](https://join.slack.com/t/lmflow/shared_invite/zt-1s6egx12s-THlwHuCjF6~JGKmx7JoJPA)
-[![WeChat badge](https://img.shields.io/badge/WeChat-Join-brightgreen?logo=wechat&amp)](https://i.328888.xyz/2023/04/21/idFkmt.jpeg)
+[![WeChat badge](https://img.shields.io/badge/WeChat-Join-brightgreen?logo=wechat&amp)](https://i.328888.xyz/2023/05/07/iaPPiV.jpeg)
 
 An extensible, convenient, and efficient toolbox for finetuning large machine learning models, designed to be user-friendly, speedy and reliable, and accessible to the entire community.
 
@@ -74,7 +74,7 @@ Notice that the provided gpt-neo-2.7b model is **a rather weak model**, which on
 unsatisfactory responses. To improve the performance, users can use their own
 dataset to finetune and obtain a better model with LMFlow. One can also try
 other available decoder-only models provided in
-🤗 [huggingface](https://huggingface.co/models?pipeline_tag=text-generation&sort=downloads), by
+🤗 [Hugging Face](https://huggingface.co/models?pipeline_tag=text-generation&sort=downloads), by
 
 ```sh
 ./scripts/run_chatbot.sh {another-model-name}
@@ -99,7 +99,7 @@ pip install gradio
 python ./examples/chatbot_gradio.py --deepspeed configs/ds_config_chatbot.json --model_name_or_path YOUR-LLAMA  --lora_model_path ./robin-7b --prompt_structure "A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the human's questions.###Human: {input_text}###Assistant:"       --end_string "#" --max_new_tokens 200
 ```
 
-We also hosted it on HuggingFace [Space](https://huggingface.co/spaces/OptimalScale/Robin-7b).
+We also hosted it on Hugging Face [Space](https://huggingface.co/spaces/OptimalScale/Robin-7b).
 
 
 
@@ -189,7 +189,7 @@ We open-sourced the trained checkpoints to everyone for further training and inf
 
 ## Supported Models
 
-Seamlessly supported all the [decoder models](https://huggingface.co/models?pipeline_tag=text-generation&sort=downloads) in 🤗 huggingface. 
+Seamlessly supported all the [decoder models](https://huggingface.co/models?pipeline_tag=text-generation&sort=downloads) in 🤗 Hugging Face. 
 LLaMA, GPT2, GPT-Neo, Galactica, have been fully tested. We will support encoder models soon.
 
 
@@ -273,7 +273,7 @@ We follow [Alpaca](https://github.com/tatsu-lab/stanford_alpaca) and [Vicuna](ht
 
 ### 3.2 Run Evaluation
 
-One can directly run evaluation with an existing huggingface model, e.g. to run
+One can directly run evaluation with an existing Hugging Face model, e.g. to run
 GPT2 large, one may execute
 ```sh
 ./scripts/run_evaluation.sh
@@ -355,7 +355,7 @@ Whether you are a beginner or an expert, we believe that you can benefit from th
 
 [![Embark](https://img.shields.io/badge/discord-LMFlow-%237289da.svg?logo=discord)](https://discord.gg/u9VJNpzhvA)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/lmflow/shared_invite/zt-1s6egx12s-THlwHuCjF6~JGKmx7JoJPA)
-[![WeChat badge](https://img.shields.io/badge/WeChat-Join-brightgreen?logo=wechat&amp)](https://i.328888.xyz/2023/04/21/idFkmt.jpeg)
+[![WeChat badge](https://img.shields.io/badge/WeChat-Join-brightgreen?logo=wechat&amp)](https://i.328888.xyz/2023/05/07/iaPPiV.jpeg)
 
 
 
