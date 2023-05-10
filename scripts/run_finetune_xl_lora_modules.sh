@@ -38,7 +38,7 @@ deepspeed ${deepspeed_args} \
     --learning_rate ${lr} \
     --block_size ${block_size} \
     --per_device_train_batch_size ${bs} \
-    --per_device_eval_batch_size 1 \
+    --per_device_eval_batch_size 8 \
     --use_lora ${use_lora} \
     --lora_r ${lora_r} \
     --save_aggregated_lora 0 \
