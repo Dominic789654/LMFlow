@@ -2,8 +2,8 @@
 # Please run this script under ${project_id} in project directory of
 
 deepspeed_args="--master_port=11000"      # Default argument
-if [ $# -ge 13 ]; then
-  deepspeed_args="${14}"
+if [ $# -ge 14 ]; then
+  deepspeed_args="${15}"
 fi
 
 # exp_id=xl_001_sharegpt_v3_0.1_vicuna7b_lora_3epcoh_lr1e-4
@@ -23,7 +23,7 @@ gradient_accumulation_steps="${10}"
 lora_r="${11}"
 eval_dataset_path="${12}"
 block_size="${13}"
-
+per_device_eval_batch_size="${14}"
 mkdir -p ${output_dir} ${log_dir}
 
 # no save 
@@ -38,11 +38,11 @@ deepspeed ${deepspeed_args} \
     --learning_rate ${lr} \
     --block_size ${block_size} \
     --per_device_train_batch_size ${bs} \
-    --per_device_eval_batch_size 8 \
+    --per_device_eval_batch_size ${per_device_eval_batch_size} \
     --use_lora ${use_lora} \
     --lora_r ${lora_r} \
     --save_aggregated_lora 0 \
-    --use_flash_attention 1\
+    --use_flash_attention 0\
     --deepspeed ${ds_config} \
     --bf16 \
     --run_name ${exp_id}\
@@ -50,7 +50,7 @@ deepspeed ${deepspeed_args} \
     --logging_steps 20 \
     --do_train \
     --evaluation_strategy "steps" \
-    --eval_steps 10 \
+    --eval_steps 100 \
     --eval_dataset_path ${eval_dataset_path} \
     --ddp_timeout 72000 \
     --save_strategy "epoch" \
