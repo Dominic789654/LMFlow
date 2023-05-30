@@ -21,7 +21,7 @@
 [![Doc](https://img.shields.io/badge/Website-Doc-ff69b4.svg)](https://optimalscale.github.io/LMFlow/)
 [![Embark](https://img.shields.io/badge/Discord-LMFlow-%237289da.svg?logo=discord)](https://discord.gg/u9VJNpzhvA)
 [![slack badge](https://img.shields.io/badge/Slack-Join-blueviolet?logo=slack&amp)](https://join.slack.com/t/lmflow/shared_invite/zt-1s6egx12s-THlwHuCjF6~JGKmx7JoJPA)
-[![WeChat badge](https://img.shields.io/badge/WeChat-Join-brightgreen?logo=wechat&amp)](https://i.328888.xyz/2023/05/07/iaPPiV.jpeg)
+[![WeChat badge](https://img.shields.io/badge/WeChat-Join-brightgreen?logo=wechat&amp)](https://i.imgloc.com/2023/05/23/V4aEoL.jpeg)
 
 An extensible, convenient, and efficient toolbox for finetuning large machine learning models, designed to be user-friendly, speedy and reliable, and accessible to the entire community.
 
@@ -33,8 +33,9 @@ Large Model for All. See our [vision](https://github.com/OptimalScale/LMFlow#vis
 
 
 ## Latest News
+* [2023-05-15] :rocket: Release [LMFlow-data](http://lmflow.org:5000/lmflow_data.tar.gz), the training dataset of Robin-7B-v2. A new [test data](http://lmflow.org:5000/lmflow_chat_en_dialog_multiturn_single_nll_text2text.tar.gz) is also released. :rocket:
 * [2023-05-09] :rocket: Release [Robin-7B-v2](http://lmflow.org:5000/robin-7b-v2-delta.tar.gz), achieving competitive performance on chitchat, commonsense reasoning and instruction-following tasks. Refer to our [comprehensive study](https://medium.com/@hkust.ml/lmflow-benchmark-an-automatic-evaluation-framework-for-open-source-llms-ef5c6f142418). :rocket:
-* [2023-05-08] :rocket: Release [LMFlow Benchmark](https://medium.com/@hkust.ml/lmflow-benchmark-an-automatic-evaluation-framework-for-open-source-llms-ef5c6f142418), an automatic evaluation framework for open-source chat-style LLMs. [Benchmark results](https://docs.google.com/spreadsheets/d/1JYh4_pxNzmNA9I0YM2epgRA7VXBIeIGS64gPJBg5NHA/edit#gid=0) on 31 popular models are reported.  :rocket:
+* [2023-05-08] :rocket: Release [LMFlow Benchmark](https://medium.com/@hkust.ml/lmflow-benchmark-an-automatic-evaluation-framework-for-open-source-llms-ef5c6f142418), an automatic evaluation framework for open-source chat-style LLMs. [Benchmark results](https://docs.google.com/spreadsheets/d/1JYh4_pxNzmNA9I0YM2epgRA7VXBIeIGS64gPJBg5NHA/edit#gid=0) on 31 popular models are reported. [Participate in LMFlow Benchmark](https://github.com/OptimalScale/LMFlow#33-lmflow-benchmark). :rocket:
 * [2023-04-21] Release [Robin-7B](http://lmflow.org:5000/robin-7b.tar.gz) (based on LLaMA-7B), and two models for commercial use: Parakeets-2.7B (based on GPT-NEO-2.7B) and Cokatoo-7B (based on StableLM-7B) [Download here](https://github.com/OptimalScale/LMFlow/tree/main#model-zoo)
 * [2023-04-15] Inference: Support streaming output and ChatGLM.
 * [2023-04-10] [We propose a new alignment algorithm: Reward rAnked FineTuning (RAFT), which is more efficient than conventional (PPO-based) RLHF. The movie review demo are available now.](https://optimalscale.github.io/LMFlow/examples/raft.html) [[Paper](https://arxiv.org/abs/2304.06767)]
@@ -79,7 +80,7 @@ other available decoder-only models provided in
 ```sh
 ./scripts/run_chatbot.sh {another-model-name}
 ```
-### Colab chatbot(web)
+### Colab chatbot (web)
 We provide a simple web demo of chatbot with Google Colab's T4/P100/V100 GPU.
 Notice that the provided gpt-neo-2.7b model is **a rather weak model**, which only supports English and may sometimes generate
 unsatisfactory responses. 
@@ -88,8 +89,7 @@ unsatisfactory responses.
 ### Local Deploy
 If you have resources and want to deploy your own model locally. We provide you an easy way to run a flask server to launch a backend (to further provide services to other frontend) and an interactive web frontend (to let you communicate directly) by 
 ```sh
-cd ./service
-python app.py
+./scripts/run_app.sh
 ```
 
 We also provide a gradio-based UI for building chatbots. Running the following command will launch the demo for robin-7b:
@@ -184,8 +184,8 @@ We open-sourced the trained checkpoints to everyone for further training and inf
 | Task Tuning |  :white_check_mark: Supported |
 | Instruction Tuning |  :white_check_mark: Supported |
 | Parameter-Efficient Tuning |  :white_check_mark: Supported |
-| Large Model Inference |  :white_check_mark: Supported |
 | Alignment Tuning |  :white_check_mark: Supported |
+| Large Model Inference |  :white_check_mark: Supported |
 
 ## Supported Models
 
@@ -195,7 +195,7 @@ LLaMA, GPT2, GPT-Neo, Galactica, have been fully tested. We will support encoder
 
 ## 1.Setup
 
-Our package has been full tested on Linux OS (Ubuntu 20.04). Other OS platforms (MacOS, Windows) are not fully tested.
+Our package has been fully tested on Linux OS (Ubuntu 20.04). Other OS platforms (MacOS, Windows) are not fully tested.
 You may encounter some unexpected errors. You may try it first on a Linux machine or use Google Colab to experience it.
 
 ```bash
@@ -211,10 +211,8 @@ pip install -e .
 
 Please refer to our [doc](https://optimalscale.github.io/LMFlow/examples/DATASETS.html).
 
-
-
-## 3. Run Scripts
-### 3.1 Run Finetuning
+## 3. Running Scripts
+### 3.1 Finetuning
 
 You can run `scripts/run_finetune.sh` to finetune a GPT-2 base model
 ```sh
@@ -271,7 +269,7 @@ be saved in the argument specified by `--output_dir`, which is
 `output_models/finetune` in the above example. 
 We follow [Alpaca](https://github.com/tatsu-lab/stanford_alpaca) and [Vicuna](https://github.com/lm-sys/FastChat) in the model tuning process and serve the model in our web service. 
 
-### 3.2 Run Evaluation
+### 3.2 Evaluation
 
 One can directly run evaluation with an existing Hugging Face model, e.g. to run
 GPT2 large, one may execute
@@ -298,6 +296,21 @@ For LoRA finetuned models, one may refer to
 Those scripts invoke the examples `examples/*.py` built based on our APIs. For
 more API-related examples, one may refer to the methods in the unittest
 `tests`.
+
+### 3.3 LMFlow Benchmark
+LMFlow Benchmark is an automatic evaluation framework for open-source large language models.
+We use negative log likelihood (NLL) as the metric to evaluate different aspects of a language model: chitchat, commonsense reasoning, and instruction following abilities.
+
+You can directly run the LMFlow benchmark evaluation to obtain the results to participate in the
+[LLM comparision](https://docs.google.com/spreadsheets/d/1JYh4_pxNzmNA9I0YM2epgRA7VXBIeIGS64gPJBg5NHA/edit?usp=sharing).
+For example, to run GPT2 XL, one may execute
+```sh
+./scripts/run_benchmark.sh --model_name_or_path gpt2-xl
+```
+`--model_name_or_path` is required, you may fill in huggingface model name or local model path here.
+
+To check the evaluation results, you may check `benchmark.log` in `./output_dir/gpt2-xl_lmflow_chat_nll_eval`,
+`./output_dir/gpt2-xl_all_nll_eval` and `./output_dir/gpt2-xl_commonsense_qa_eval`.
 
 ## 4. Additional Notes
 ### 4.1 LLaMA Checkpoint
@@ -371,7 +384,7 @@ Whether you are a beginner or an expert, we believe that you can benefit from th
 
 [![Embark](https://img.shields.io/badge/discord-LMFlow-%237289da.svg?logo=discord)](https://discord.gg/u9VJNpzhvA)
 [![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/lmflow/shared_invite/zt-1s6egx12s-THlwHuCjF6~JGKmx7JoJPA)
-[![WeChat badge](https://img.shields.io/badge/WeChat-Join-brightgreen?logo=wechat&amp)](https://i.328888.xyz/2023/05/07/iaPPiV.jpeg)
+[![WeChat badge](https://img.shields.io/badge/WeChat-Join-brightgreen?logo=wechat&amp)](https://i.imgloc.com/2023/05/23/V4aEoL.jpeg)
 
 
 
