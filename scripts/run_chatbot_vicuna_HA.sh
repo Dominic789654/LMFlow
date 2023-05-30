@@ -27,8 +27,8 @@ CUDA_VISIBLE_DEVICES=0 \
       ${lora_args} \
       --use_ram_optimized_load False \
       --prompt_structure "###Human: {input_text}###Assistant:" \
-      --max_new_tokens 400 \
-      --end_string "###"
+      --max_new_tokens 1024 \
+      --end_string "#"
 
 # CUDA_VISIBLE_DEVICES=0 \
 #   deepspeed examples/chatbot_test.py \

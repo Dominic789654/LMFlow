@@ -41,7 +41,7 @@ deepspeed ${deepspeed_args} \
     --per_device_eval_batch_size ${per_device_eval_batch_size} \
     --use_lora ${use_lora} \
     --lora_r ${lora_r} \
-    --save_aggregated_lora 0 \
+    --save_aggregated_lora 1 \
     --use_flash_attention 0\
     --deepspeed ${ds_config} \
     --bf16 \
@@ -49,12 +49,13 @@ deepspeed ${deepspeed_args} \
     --validation_split_percentage 0 \
     --logging_steps 20 \
     --do_train \
-    --evaluation_strategy "steps" \
+    --do_eval \
+    --evaluation_strategy "no" \
     --eval_steps 100 \
     --eval_dataset_path ${eval_dataset_path} \
     --ddp_timeout 72000 \
     --save_strategy "epoch" \
-    --save_total_limit 3 \
+    --save_total_limit 1 \
     --dataloader_num_workers 0 \
     --lr_scheduler_type "cosine" \
     --warmup_ratio 0.03 \

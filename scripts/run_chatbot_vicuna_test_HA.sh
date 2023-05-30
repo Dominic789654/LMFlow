@@ -29,6 +29,14 @@ CUDA_VISIBLE_DEVICES=0 \
       --prompt_structure "###Human: {input_text}###Assistant:" \
       --end_string "#"
 
+CUDA_VISIBLE_DEVICES=0 \
+  deepspeed examples/chatbot_test_zh_wiki.py \
+      --deepspeed configs/ds_config_chatbot.json \
+      --model_name_or_path ${model} \
+      ${lora_args} \
+      --use_ram_optimized_load False \
+      --prompt_structure "###Human: {input_text}###Assistant:" \
+      --end_string "#"
 # CUDA_VISIBLE_DEVICES=0 \
 #   deepspeed examples/chatbot_test.py \
 #       --deepspeed configs/ds_config_chatbot.json \
