@@ -23,6 +23,7 @@ import logging
 from typing import List, Union
 
 import deepspeed
+from transformers import BitsAndBytesConfig
 
 from peft import (
     LoraConfig,
@@ -41,6 +42,7 @@ from transformers.testing_utils import CaptureLogger
 from transformers import (
     CONFIG_MAPPING,
     AutoConfig,
+    LlamaTokenizer,
     AutoTokenizer,
     AutoModelForCausalLM,
 )
@@ -125,19 +127,7 @@ class HFDecoderModel(DecoderModel, Tunable):
             "revision": model_args.model_revision,
             "use_auth_token": True if model_args.use_auth_token else None,
         }
-        if model_args.tokenizer_name:
-            tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name, **tokenizer_kwargs)
-        elif model_args.model_name_or_path:
-            tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path, **tokenizer_kwargs)
-        else:
-            raise ValueError(
-                "You are instantiating a new tokenizer from scratch. This is"
-                " not supported by this script. You can do it from another"
-                " script, save it, and load it from here, using"
-                " --tokenizer_name."
-            )
 
-        self.tokenizer = tokenizer  
 
         torch_dtype = (
             model_args.torch_dtype
@@ -161,6 +151,34 @@ class HFDecoderModel(DecoderModel, Tunable):
                 logger.info(f"Overriding config: {model_args.config_overrides}")
                 config.update_from_string(model_args.config_overrides)
                 logger.info(f"New config: {config}")
+
+
+
+        tokenizer_kwargs = {
+            "cache_dir": model_args.cache_dir,
+            "use_fast": model_args.use_fast_tokenizer,
+            "revision": model_args.model_revision,
+            "use_auth_token": True if model_args.use_auth_token else None,
+        }
+
+        if model_args.tokenizer_name:
+            if "LlamaForCausalLM" in config.architectures:
+                tokenizer = LlamaTokenizer.from_pretrained(model_args.tokenizer_name, **tokenizer_kwargs)
+            else:
+                tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name, **tokenizer_kwargs)
+        elif model_args.model_name_or_path:
+            if "LlamaForCausalLM" in config.architectures:
+                tokenizer = LlamaTokenizer.from_pretrained(model_args.model_name_or_path, **tokenizer_kwargs)
+            else:
+                tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path, **tokenizer_kwargs)
+        else:
+            raise ValueError(
+                "You are instantiating a new tokenizer from scratch. This is"
+                " not supported by this script. You can do it from another"
+                " script, save it, and load it from here, using"
+                " --tokenizer_name."
+            )
+        self.tokenizer = tokenizer  
 
         # Whether use flash attention
         
@@ -215,6 +233,15 @@ class HFDecoderModel(DecoderModel, Tunable):
                     
         if tune_strategy == 'normal':
             if model_args.model_name_or_path:
+                if model_args.use_qlora:
+                    nf4_config = BitsAndBytesConfig(
+                        load_in_4bit=True,
+                        bnb_4bit_quant_type="nf4",
+                        bnb_4bit_use_double_quant=True,
+                        bnb_4bit_compute_dtype=torch.bfloat16
+                        )
+                    print(nf4_config)
+                    print("qlora",model_args.use_qlora)
                 model = AutoModelForCausalLM.from_pretrained(
                     model_args.model_name_or_path,
                     from_tf=bool(".ckpt" in model_args.model_name_or_path),
@@ -223,11 +250,17 @@ class HFDecoderModel(DecoderModel, Tunable):
                     revision=model_args.model_revision,
                     use_auth_token=True if model_args.use_auth_token else None,
                     torch_dtype=torch_dtype,
+                    quantization_config=nf4_config if model_args.use_qlora else None,
                 )
             else:
                 model = AutoModelForCausalLM.from_config(config)
                 n_params = sum(dict((p.data_ptr(), p.numel()) for p in model.parameters()).values())
                 logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
+            
+            if model_args.activation_checkpointing:
+                model.gradient_checkpointing_enable()
+                print("activate checkpointing")
+
             self.backend_model_full = model
             if model_args.use_lora:
                 if model_args.lora_target_modules:
@@ -244,6 +277,22 @@ class HFDecoderModel(DecoderModel, Tunable):
                 )
                 model = get_peft_model(model, peft_config)
                 model.print_trainable_parameters()
+
+                # follow ReLoRA
+                for name, param in model.named_parameters():
+                    # LLaMa: model.norm, model.layers.input_layernorm, model.layers.post_attention_layernorm
+                    if  "norm" in name:
+                        param.requires_grad = True        
+                    elif "lm_head" in name:
+                        param.requires_grad = True
+                    elif "embed_tokens" in name:
+                        param.requires_grad = True
+                    elif "bias" in name:
+                        param.requires_grad = True
+                    elif "lora_" in name:
+                        param.requires_grad = True
+                    else:
+                        param.requires_grad = False
 
             # We resize the embeddings only when necessary to avoid index errors.
             # If you are creating a model from scratch on a small vocab and want a

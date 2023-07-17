@@ -77,6 +77,10 @@ class ModelArguments:
         enough.
     use_int8 : bool
         a boolean indicating whether to load int8 quantization for inference.
+    use_qlora : bool
+        a boolean indicating whether to qlora method.
+    activation_checkpointing: bool
+        a boolean indicating whether to activate gradient checkpointing 
     """
 
     model_name_or_path: Optional[str] = field(
@@ -201,6 +205,14 @@ class ModelArguments:
     use_int8: bool = field(
         default=False,
         metadata={"help": "whether to load int8 quantization for inference"}
+    )
+    use_qlora: bool = field(
+        default=False,
+        metadata={"help": "whether to use qlora"}
+    )
+    activation_checkpointing: bool = field(
+        default=False,
+        metadata={"help": "whether to activate checkpointing"}
     )
     custom_model: bool = field(
         default=False,

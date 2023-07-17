@@ -7,7 +7,7 @@ import copy
 import logging
 import os
 import sys
-
+import time
 import datasets
 import transformers
 import evaluate
@@ -20,7 +20,12 @@ from transformers import (
 from copy import deepcopy
 from transformers.utils import send_example_telemetry
 from transformers.trainer_utils import get_last_checkpoint
-
+import wandb
+from transformers.trainer_callback import (
+    TrainerCallback,
+    TrainerControl,
+    TrainerState,
+)
 from lmflow.datasets.dataset import Dataset
 from lmflow.pipeline.base_tuner import BaseTuner
 from lmflow.pipeline.utils.peft_trainer import PeftTrainer, PeftSavingCallback
@@ -246,6 +251,8 @@ class Finetuner(BaseTuner):
                 preds = preds[:, :-1].reshape(-1)
                 return metric.compute(predictions=preds, references=labels)
 
+        
+
         if finetuner_args.do_train:
             if data_args.max_train_samples is not None:
                 max_train_samples = min(len(train_dataset), data_args.max_train_samples)
@@ -253,6 +260,7 @@ class Finetuner(BaseTuner):
 
         # Initialize our Trainer
         training_args = finetuner_args
+        training_args.block_size = data_args.block_size
 
         if model_args.use_lora:
             FinetuningTrainer = PeftTrainer
@@ -260,6 +268,34 @@ class Finetuner(BaseTuner):
         else:
             FinetuningTrainer = Trainer
             trainer_callbacks = []
+
+        if os.environ.get('LOCAL_RANK', '0') == '0':
+            wandb.init(project="concinue_lora",name=training_args.run_name)
+
+        # wandb report loss/time, loss/tokens, tokens/time
+        class LossTimeCallback(TrainerCallback):
+            def __init__(self):
+                super().__init__()
+                self.timestamps = []
+                self.losses = []
+            
+            def on_train_begin(self, args, state, control, **kwargs):
+                self.start_time = time.time()
+            
+            def on_step_end(self, args, state, control, **kwargs):
+                world_size = os.environ.get('WORLD_SIZE', 1)
+                total_batch_size = int(args.per_device_train_batch_size) * int(world_size) * int(args.gradient_accumulation_steps)
+                if state.is_local_process_zero:
+                    if len(state.log_history)>0:
+                        elapsed_time = time.time() - self.start_time
+                        elapsed_tokens = total_batch_size * int(args.block_size) * int(state.global_step)
+                        current_loss = state.log_history[-1].get("loss")
+                        wandb.log({"loss": current_loss, "time": elapsed_time})
+                        wandb.log({"loss": current_loss, "tokens": elapsed_tokens})
+                        wandb.log({"time": elapsed_time, "tokens": elapsed_tokens})
+        
+        loss_time_callback = LossTimeCallback()
+        trainer_callbacks.append(loss_time_callback)
 
         trainer = FinetuningTrainer(
             model=model.get_backend_model(),
