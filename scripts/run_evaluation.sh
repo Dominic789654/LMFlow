@@ -3,6 +3,8 @@ model_name_or_path="$1"
 eval_dataset_path="$2"
 deepspeed_args="$3"
 
+    # --lora_model_path output_models/continue_lora_A40*8_rank128_split_0 \
+
 # CUDA_VISIBLE_DEVICES=0 \
     deepspeed ${deepspeed_args} examples/evaluation.py \
     --answer_type text_only \
