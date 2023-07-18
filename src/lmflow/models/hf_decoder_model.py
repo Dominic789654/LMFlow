@@ -250,8 +250,8 @@ class HFDecoderModel(DecoderModel, Tunable):
                     revision=model_args.model_revision,
                     use_auth_token=True if model_args.use_auth_token else None,
                     torch_dtype=torch_dtype,
-                    quantization_config=nf4_config if model_args.use_qlora else None,
-                )
+                    quantization_config=nf4_config if model_args.use_qlora else None
+                    )
             else:
                 model = AutoModelForCausalLM.from_config(config)
                 n_params = sum(dict((p.data_ptr(), p.numel()) for p in model.parameters()).values())

@@ -38,6 +38,8 @@ def main():
     else:
         model_args, merge_lora_args = parser.parse_args_into_dataclasses()
 
+    if not os.path.exists(merge_lora_args.output_model_path):
+        os.makedirs(merge_lora_args.output_model_path)
     model_args.use_lora = True
     model = AutoModel.get_model(model_args)
     model.merge_lora_weights()

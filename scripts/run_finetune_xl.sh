@@ -36,7 +36,7 @@ deepspeed ${deepspeed_args} \
     --output_dir ${output_dir} --overwrite_output_dir \
     --num_train_epochs ${num_train_epochs} \
     --learning_rate ${lr} \
-    --use_flash_attention 1 \
+    --use_flash_attention 0 \
     --block_size ${block_size} \
     --per_device_train_batch_size ${bs} \
     --per_device_eval_batch_size ${per_device_eval_batch_size} \
@@ -44,15 +44,14 @@ deepspeed ${deepspeed_args} \
     --lora_r ${lora_r} \
     --use_qlora 0 \
     --lora_target_modules q_proj k_proj v_proj o_proj gate_proj  down_proj up_proj\
-    --save_aggregated_lora 1 \
+    --save_aggregated_lora 0 \
     --deepspeed ${ds_config} \
     --bf16 \
     --run_name ${exp_id}\
     --validation_split_percentage 0 \
     --logging_steps 1 \
     --do_train \
-    --do_eval \
-    --evaluation_strategy "steps" \
+    --evaluation_strategy "no" \
     --eval_steps 50 \
     --eval_dataset_path ${eval_dataset_path} \
     --ddp_timeout 72000 \
