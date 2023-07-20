@@ -29,8 +29,6 @@ mkdir -p ${output_dir} ${log_dir}
 # no save 
     # --lora_target_modules q_proj k_proj v_proj o_proj \
     # --gradient_checkpointing ${gradient_checkpointing} \
-        # --max_steps 150 \
-
 deepspeed ${deepspeed_args} \
   examples/finetune.py  \
     --model_name_or_path ${model_name_or_path} \
@@ -38,6 +36,7 @@ deepspeed ${deepspeed_args} \
     --output_dir ${output_dir} --overwrite_output_dir \
     --num_train_epochs ${num_train_epochs} \
     --learning_rate ${lr} \
+    --max_step 100 \
     --use_flash_attention 0 \
     --block_size ${block_size} \
     --per_device_train_batch_size ${bs} \
@@ -46,7 +45,7 @@ deepspeed ${deepspeed_args} \
     --lora_r ${lora_r} \
     --use_qlora 0 \
     --lora_target_modules q_proj k_proj v_proj o_proj gate_proj  down_proj up_proj\
-    --save_aggregated_lora 1 \
+    --save_aggregated_lora 0 \
     --deepspeed ${ds_config} \
     --bf16 \
     --run_name ${exp_id}\
