@@ -30,11 +30,14 @@ mkdir -p ${output_dir} ${log_dir}
     # --lora_target_modules q_proj k_proj v_proj o_proj \
     # --gradient_checkpointing ${gradient_checkpointing} \
         # --max_steps 150 \
+            # --optimizer_name "Lion" \
 
 deepspeed ${deepspeed_args} \
   examples/finetune.py  \
     --model_name_or_path ${model_name_or_path} \
     --dataset_path ${dataset_path} \
+    --min_x 1e-2 \
+    --max_x 1e2 \
     --output_dir ${output_dir} --overwrite_output_dir \
     --num_train_epochs ${num_train_epochs} \
     --learning_rate ${lr} \
@@ -44,7 +47,7 @@ deepspeed ${deepspeed_args} \
     --per_device_eval_batch_size ${per_device_eval_batch_size} \
     --use_lora ${use_lora} \
     --lora_r ${lora_r} \
-    --use_qlora 0 \
+    --use_qlora 1 \
     --lora_target_modules q_proj k_proj v_proj o_proj gate_proj  down_proj up_proj\
     --save_aggregated_lora 1 \
     --deepspeed ${ds_config} \

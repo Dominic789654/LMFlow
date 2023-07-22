@@ -28,6 +28,8 @@ from transformers.trainer_callback import (
 )
 from lmflow.datasets.dataset import Dataset
 from lmflow.pipeline.base_tuner import BaseTuner
+from lmflow.pipeline.utils.lion_lamb import Lion_lamb
+from lmflow.pipeline.utils.lion import Lion
 from lmflow.pipeline.utils.peft_trainer import PeftTrainer, PeftSavingCallback
 
 
@@ -297,6 +299,15 @@ class Finetuner(BaseTuner):
         loss_time_callback = LossTimeCallback()
         trainer_callbacks.append(loss_time_callback)
 
+        class optimizerTrainer(FinetuningTrainer):
+            def create_optimizer(self):
+                if training_args.optimizer_name == "LionLamb":
+                    optimizer = Lion_lamb(model.get_backend_model().parameters(), betas=[0.95,0.98],lr=training_args.learning_rate, weight_decay=training_args.weight_decay,min_x = training_args.min_x, max_x = training_args.max_x)
+                elif training_args.optimizer_name == "Lion":
+                    optimizer = Lion(model.get_backend_model().parameters(), betas=[0.95,0.98],lr=training_args.learning_rate, weight_decay=training_args.weight_decay)
+
+                return optimizer
+        
         trainer = FinetuningTrainer(
             model=model.get_backend_model(),
             args=training_args,

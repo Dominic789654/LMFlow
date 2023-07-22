@@ -396,6 +396,15 @@ class FinetunerArguments(TrainingArguments):
     eval_dataset_path: Optional[str] = field(
         default=None, metadata={"help": "The path of the eval dataset to use."}
     )
+    optimizer_name: Optional[str] = field(
+        default="None", metadata={"help": "The name of custom optimizer to use."}
+    )
+    min_x: float = field(
+        default=1.0, metadata={"help": "clip min for lion lamb optimizer."}
+    )
+    max_x: float = field(
+        default=1.0, metadata={"help": "clip max for lion lamb optimizer."}
+    )
 
 
 @dataclass
