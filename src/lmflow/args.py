@@ -405,6 +405,12 @@ class FinetunerArguments(TrainingArguments):
     max_x: float = field(
         default=1.0, metadata={"help": "clip max for lion lamb optimizer."}
     )
+    num_portions: int = field(
+        default=1, metadata={"help":"total portion number"}
+    )
+    selected_portion: int = field(
+        default=1, metadata={"help":"selected portion"}
+    )
 
 
 @dataclass

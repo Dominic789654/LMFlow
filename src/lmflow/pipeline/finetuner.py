@@ -9,6 +9,7 @@ import os
 import sys
 import time
 import datasets
+import math
 import transformers
 import evaluate
 from itertools import chain
@@ -31,6 +32,7 @@ from lmflow.pipeline.base_tuner import BaseTuner
 from lmflow.pipeline.utils.lion_lamb import Lion_lamb
 from lmflow.pipeline.utils.lion import Lion
 from lmflow.pipeline.utils.peft_trainer import PeftTrainer, PeftSavingCallback
+from torch.optim.lr_scheduler import LambdaLR, CosineAnnealingLR
 
 
 logger = logging.getLogger(__name__)
@@ -280,6 +282,8 @@ class Finetuner(BaseTuner):
                 super().__init__()
                 self.timestamps = []
                 self.losses = []
+                self.portion_step = 0  # Add this line to store portion_step
+
             
             def on_train_begin(self, args, state, control, **kwargs):
                 self.start_time = time.time()
@@ -291,11 +295,18 @@ class Finetuner(BaseTuner):
                     if len(state.log_history)>0:
                         elapsed_time = time.time() - self.start_time
                         elapsed_tokens = total_batch_size * int(args.block_size) * int(state.global_step)
+                        continue_global_tokens = total_batch_size * int(args.block_size) * int(self.portion_step)
+
                         current_loss = state.log_history[-1].get("loss")
+                        current_lr = state.log_history[-1].get("learning_rate")
+
                         wandb.log({"loss": current_loss, "time": elapsed_time})
                         wandb.log({"loss": current_loss, "tokens": elapsed_tokens})
                         wandb.log({"time": elapsed_time, "tokens": elapsed_tokens})
-        
+                        wandb.log({"loss": current_loss,"continue_global_step": self.portion_step}) 
+                        wandb.log({"lr": current_lr,"continue_global_step": self.portion_step})  
+                        wandb.log({"loss":current_loss, "continue_global_tokens":continue_global_tokens})
+
         loss_time_callback = LossTimeCallback()
         trainer_callbacks.append(loss_time_callback)
 
@@ -308,7 +319,41 @@ class Finetuner(BaseTuner):
 
                 return optimizer
         
-        trainer = FinetuningTrainer(
+        class schedulerTrainer(FinetuningTrainer):
+
+            def create_scheduler(self, num_training_steps: int, optimizer=None):
+                num_portions = training_args.num_portions  # 总的份数
+                selected_portion = training_args.selected_portion  # 选择的份数，从1开始
+                lr_min = 0.0  # 你的最小学习率
+                lr_max = training_args.learning_rate  # 你的最大学习率
+                warmup_proportion = training_args.warmup_ratio  # 预热阶段占每一份的比例
+
+                steps_per_portion = num_training_steps 
+                warmup_steps = math.ceil(steps_per_portion * warmup_proportion)
+                # warmup_steps = 3
+                def lr_lambda(current_step):
+                    portion_step = (current_step-1) % steps_per_portion  + steps_per_portion * (selected_portion - 1)
+                    loss_time_callback.portion_step = portion_step
+
+                    warnup_start_step = steps_per_portion * (selected_portion - 1) + warmup_steps
+                    lr_max_portion = lr_min + 0.5 * (lr_max - lr_min) * (1 + math.cos(math.pi * warnup_start_step / ((steps_per_portion - warmup_steps)*num_portions)))
+
+                    if (current_step-1)  < warmup_steps:
+                        # 预热阶段
+                        lr = lr_max_portion * (current_step - 1) / warmup_steps
+                    else:
+                        # 余弦退火阶段
+                        lr = lr_min + 0.5 * (lr_max - lr_min) * (1 + math.cos(math.pi * (portion_step - warmup_steps) / ((steps_per_portion - warmup_steps)*num_portions)))
+                        # breakpoint()
+                    print("current step", portion_step)
+                    print('steps_per_portion',steps_per_portion)
+                    # return lr
+                    return lr / training_args.learning_rate
+
+                return LambdaLR(self.optimizer, lr_lambda)
+
+        # FinetuningTrainer / schedulerTrainer
+        trainer = schedulerTrainer(
             model=model.get_backend_model(),
             args=training_args,
             train_dataset=train_dataset if training_args.do_train else None,
@@ -321,6 +366,7 @@ class Finetuner(BaseTuner):
             callbacks=trainer_callbacks
         )
 
+
         # Training
         if training_args.do_train:
             checkpoint = None
@@ -330,7 +376,7 @@ class Finetuner(BaseTuner):
             elif last_checkpoint is not None:
                 checkpoint = last_checkpoint
             train_result = trainer.train(resume_from_checkpoint=checkpoint)
-
+            print(trainer.optimizer.optimizer)
             if not model_args.use_lora:
                 trainer.save_model()  # Saves the tokenizer too for easy upload
             else:
@@ -348,7 +394,7 @@ class Finetuner(BaseTuner):
             trainer.log_metrics("train", metrics)
             trainer.save_metrics("train", metrics)
             trainer.save_state()
-
+    
         kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "text-generation"}
         if data_args.dataset_name is not None:
             kwargs["dataset_tags"] = data_args.dataset_name

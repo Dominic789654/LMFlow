@@ -76,8 +76,9 @@ def main():
         split_data.append({'type': data_dict['type'], 'instances': split})
     
     # Last split may have remaining instances
-    last_split = instances[(split_size-1)*split_size:]
+    last_split = instances[(args.k-1)*split_size:]
     split_data.append({'type': data_dict['type'], 'instances': last_split})
+
 
     # save to multiple directories, under the args.output_path directory
     # create the directory if it does not exist

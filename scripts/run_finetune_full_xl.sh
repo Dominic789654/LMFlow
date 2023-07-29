@@ -36,7 +36,7 @@ deepspeed ${deepspeed_args} \
     --output_dir ${output_dir} --overwrite_output_dir \
     --num_train_epochs ${num_train_epochs} \
     --learning_rate ${lr} \
-    --use_flash_attention 0 \
+    --use_flash_attention 1 \
     --block_size ${block_size} \
     --per_device_train_batch_size ${bs} \
     --per_device_eval_batch_size ${per_device_eval_batch_size} \
@@ -56,7 +56,7 @@ deepspeed ${deepspeed_args} \
     --eval_dataset_path ${eval_dataset_path} \
     --ddp_timeout 72000 \
     --save_strategy "steps" \
-    --save_steps 500 \
+    --save_steps 50 \
     --save_total_limit 5 \
     --dataloader_num_workers 0 \
     --lr_scheduler_type "cosine" \
