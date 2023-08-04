@@ -33,10 +33,10 @@ if [[ "${model_name}" = "" ]]; then
   exit 1
 fi
 
-log_dir=output_dir/${model_name}_lmflow_chat_nll_eval
-mkdir -p ${log_dir}
-echo "[Evaluating] Evaluate on LMFlow_chat"
-./scripts/run_benchmark.sh ${extra_args} --dataset_name lmflow_chat_nll_eval | tee ${log_dir}/benchmark.log 2> ${log_dir}/benchmark.err
+# log_dir=output_dir/${model_name}_lmflow_chat_nll_eval
+# mkdir -p ${log_dir}
+# echo "[Evaluating] Evaluate on LMFlow_chat"
+# ./scripts/run_benchmark.sh ${extra_args} --dataset_name lmflow_chat_nll_eval | tee ${log_dir}/benchmark.log 2> ${log_dir}/benchmark.err
 
 log_dir=output_dir/${model_name}_all_nll_eval
 mkdir -p ${log_dir}

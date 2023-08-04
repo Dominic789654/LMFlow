@@ -70,6 +70,21 @@ GPU_SUPPORT_FLASH_ATTENTION = {
     "A40": ["GPTNeoForCausalLM", "GPT2ForCausalLM", "BloomForCausalLM"]
 }
 
+try:
+    import flash_attn
+    if int(flash_attn.__version__.split(".")[0]) == 2:
+        GPU_SUPPORT_FLASH_ATTENTION = {
+            "A100": ["LlamaForCausalLM", "GPTNeoForCausalLM", "GPT2ForCausalLM", "BloomForCausalLM"],
+            "A40": ["LlamaForCausalLM","GPTNeoForCausalLM", "GPT2ForCausalLM", "BloomForCausalLM"]
+        }
+    if int(flash_attn.__version__.split(".")[0]) == 1:
+        GPU_SUPPORT_FLASH_ATTENTION = {
+            "A100": ["LlamaForCausalLM", "GPTNeoForCausalLM", "GPT2ForCausalLM", "BloomForCausalLM"],
+            "A40": ["GPTNeoForCausalLM", "GPT2ForCausalLM", "BloomForCausalLM"]
+        }
+except ImportError:
+    pass
+
 class HFDecoderModel(DecoderModel, Tunable):
     r"""
     Initializes a HFDecoderModel instance.
@@ -162,15 +177,9 @@ class HFDecoderModel(DecoderModel, Tunable):
         }
 
         if model_args.tokenizer_name:
-            if "LlamaForCausalLM" in config.architectures:
-                tokenizer = LlamaTokenizer.from_pretrained(model_args.tokenizer_name, **tokenizer_kwargs)
-            else:
-                tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name, **tokenizer_kwargs)
+            tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name, **tokenizer_kwargs)
         elif model_args.model_name_or_path:
-            if "LlamaForCausalLM" in config.architectures:
-                tokenizer = LlamaTokenizer.from_pretrained(model_args.model_name_or_path, **tokenizer_kwargs)
-            else:
-                tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path, **tokenizer_kwargs)
+            tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path,unk_token="<unk>", bos_token="<s>", eos_token="</s>", **tokenizer_kwargs)
         else:
             raise ValueError(
                 "You are instantiating a new tokenizer from scratch. This is"
