@@ -23,6 +23,8 @@ import logging
 from typing import List, Union
 
 import deepspeed
+from lmflow.models.utils.modeling_llama import LlamaForCausalLM
+
 from transformers import BitsAndBytesConfig
 
 from peft import (
@@ -177,7 +179,7 @@ class HFDecoderModel(DecoderModel, Tunable):
         }
 
         if model_args.tokenizer_name:
-            tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name, **tokenizer_kwargs)
+            tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name,unk_token="<unk>", bos_token="<s>", eos_token="</s>",**tokenizer_kwargs)
         elif model_args.model_name_or_path:
             tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path,unk_token="<unk>", bos_token="<s>", eos_token="</s>", **tokenizer_kwargs)
         else:
@@ -262,7 +264,9 @@ class HFDecoderModel(DecoderModel, Tunable):
                     quantization_config=nf4_config if model_args.use_qlora else None
                     )
             else:
-                model = AutoModelForCausalLM.from_config(config)
+                # reproduce relora, small llama
+                model = LlamaForCausalLM(config)
+                # model = AutoModelForCausalLM.from_config(config)
                 n_params = sum(dict((p.data_ptr(), p.numel()) for p in model.parameters()).values())
                 logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
             
