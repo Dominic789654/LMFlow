@@ -310,18 +310,14 @@ class Finetuner(BaseTuner):
         loss_time_callback = LossTimeCallback()
         trainer_callbacks.append(loss_time_callback)
 
-        class optimizerTrainer(FinetuningTrainer):
-            def create_optimizer(self):
-                if training_args.optimizer_name == "LionLamb":
-                    optimizer = Lion_lamb(model.get_backend_model().parameters(), betas=[0.95,0.98],lr=training_args.learning_rate, weight_decay=training_args.weight_decay,min_x = training_args.min_x, max_x = training_args.max_x)
-                elif training_args.optimizer_name == "Lion":
-                    optimizer = Lion(model.get_backend_model().parameters(), betas=[0.95,0.98],lr=training_args.learning_rate, weight_decay=training_args.weight_decay)
-
-                return optimizer
         
         class schedulerTrainer(FinetuningTrainer):
 
+            def get_global_step(self):
+                    return self.state.global_step
+            
             def create_scheduler(self, num_training_steps: int, optimizer=None):
+                
                 num_portions = training_args.num_portions  # 总的份数
                 selected_portion = training_args.selected_portion  # 选择的份数，从1开始
                 lr_min = 0.0  # 你的最小学习率
@@ -332,28 +328,39 @@ class Finetuner(BaseTuner):
                 warmup_steps = math.ceil(steps_per_portion * warmup_proportion)
                 # warmup_steps = 3
                 def lr_lambda(current_step):
-                    portion_step = (current_step-1) % steps_per_portion  + steps_per_portion * (selected_portion - 1)
+                    
+                    current_step = self.get_global_step()
+                    portion_step = current_step % steps_per_portion  + steps_per_portion * (selected_portion - 1)
                     loss_time_callback.portion_step = portion_step
 
                     warnup_start_step = steps_per_portion * (selected_portion - 1) + warmup_steps
                     lr_max_portion = lr_min + 0.5 * (lr_max - lr_min) * (1 + math.cos(math.pi * warnup_start_step / ((steps_per_portion - warmup_steps)*num_portions)))
 
-                    if (current_step-1)  < warmup_steps:
+                    if current_step  < warmup_steps:
                         # 预热阶段
-                        lr = lr_max_portion * (current_step - 1) / warmup_steps
+                        lr = lr_max_portion * current_step / warmup_steps
                     else:
                         # 余弦退火阶段
                         lr = lr_min + 0.5 * (lr_max - lr_min) * (1 + math.cos(math.pi * (portion_step - warmup_steps) / ((steps_per_portion - warmup_steps)*num_portions)))
                         # breakpoint()
-                    print("current step", portion_step)
-                    print('steps_per_portion',steps_per_portion)
+                    if os.environ.get('LOCAL_RANK', '0') == '0':
+                        print("\ncurrent step", portion_step)
+                        print('\nsteps_per_portion',steps_per_portion)
                     # return lr
                     return lr / training_args.learning_rate
 
                 return LambdaLR(self.optimizer, lr_lambda)
 
+        class optimizerTrainer(FinetuningTrainer):
+            def create_optimizer(self):
+                if training_args.optimizer_name == "LionLamb":
+                    optimizer = Lion_lamb(model.get_backend_model().parameters(), betas=[0.95,0.98],lr=training_args.learning_rate, weight_decay=training_args.weight_decay,min_x = training_args.min_x, max_x = training_args.max_x)
+                elif training_args.optimizer_name == "Lion":
+                    optimizer = Lion(model.get_backend_model().parameters(), betas=[0.95,0.98],lr=training_args.learning_rate, weight_decay=training_args.weight_decay)
+
+                return optimizer
         # FinetuningTrainer / schedulerTrainer
-        trainer = schedulerTrainer(
+        trainer = FinetuningTrainer(
             model=model.get_backend_model(),
             args=training_args,
             train_dataset=train_dataset if training_args.do_train else None,

@@ -35,17 +35,12 @@ mkdir -p ${output_dir} ${log_dir}
         # --max_steps 150 \
             # --optimizer_name "Lion" \
     # --lr_scheduler_type "cosine" \
-        # --config_name ${model_name_or_path} \
-    # --tokenizer_name pinkmanlove/llama-7b-hf \
-# --model_name_or_path ${model_name_or_path} \
 
 deepspeed ${deepspeed_args} \
   examples/finetune.py  \
     --config_name ${model_name_or_path} \
     --tokenizer_name pinkmanlove/llama-7b-hf \
-    --optimizer_name "Lion" \
     --dataset_path ${dataset_path} \
-    --lr_scheduler_type "cosine_with_restarts" \
     --min_x 1e-2 \
     --max_x 1e2 \
     --output_dir ${output_dir} --overwrite_output_dir \
@@ -71,7 +66,6 @@ deepspeed ${deepspeed_args} \
     --eval_dataset_path ${eval_dataset_path} \
     --ddp_timeout 72000 \
     --save_strategy "no" \
-    --weight_decay 0.01 \
     --warmup_ratio ${warmup_ratio} \
     --selected_portion ${selected_portion} \
     --num_portions ${num_portions} \

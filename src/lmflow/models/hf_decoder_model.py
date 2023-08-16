@@ -265,8 +265,8 @@ class HFDecoderModel(DecoderModel, Tunable):
                     )
             else:
                 # reproduce relora, small llama
-                model = LlamaForCausalLM(config)
-                # model = AutoModelForCausalLM.from_config(config)
+                # model = LlamaForCausalLM(config)
+                model = AutoModelForCausalLM.from_config(config)
                 n_params = sum(dict((p.data_ptr(), p.numel()) for p in model.parameters()).values())
                 logger.info(f"Training new model from scratch - Total size={n_params/2**20:.2f}M params")
             
