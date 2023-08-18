@@ -360,7 +360,7 @@ class Finetuner(BaseTuner):
 
                 return optimizer
         # FinetuningTrainer / schedulerTrainer
-        trainer = FinetuningTrainer(
+        trainer = optimizerTrainer(
             model=model.get_backend_model(),
             args=training_args,
             train_dataset=train_dataset if training_args.do_train else None,

@@ -42,8 +42,9 @@ mkdir -p ${output_dir} ${log_dir}
 deepspeed ${deepspeed_args} \
   examples/finetune.py  \
     --config_name ${model_name_or_path} \
-    --tokenizer_name pinkmanlove/llama-7b-hf \
-    --optimizer_name "Lion" \
+    --tokenizer_name ${model_name_or_path} \
+    --optimizer_name "LionLamb" \
+    --max_steps 4000 \
     --dataset_path ${dataset_path} \
     --lr_scheduler_type "cosine_with_restarts" \
     --min_x 1e-2 \
