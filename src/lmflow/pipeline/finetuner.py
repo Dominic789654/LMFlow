@@ -284,7 +284,6 @@ class Finetuner(BaseTuner):
                 self.losses = []
                 self.portion_step = 0  # Add this line to store portion_step
 
-            
             def on_train_begin(self, args, state, control, **kwargs):
                 self.start_time = time.time()
             
@@ -310,14 +309,19 @@ class Finetuner(BaseTuner):
         loss_time_callback = LossTimeCallback()
         trainer_callbacks.append(loss_time_callback)
 
-        
-        class schedulerTrainer(FinetuningTrainer):
-
+        class OptimizerConloraTrainer(FinetuningTrainer):
             def get_global_step(self):
-                    return self.state.global_step
+                return self.state.global_step
+
+            def create_optimizer(self):
+                if training_args.optimizer_name == "LionLamb":
+                    self.optimizer = Lion_lamb(model.get_backend_model().parameters(), betas=[0.95,0.98], lr=training_args.learning_rate, weight_decay=training_args.weight_decay, min_x=training_args.min_x, max_x=training_args.max_x)
+                elif training_args.optimizer_name == "Lion":
+                    self.optimizer = Lion(model.get_backend_model().parameters(), betas=[0.95,0.98], lr=training_args.learning_rate, weight_decay=training_args.weight_decay)
+                else:
+                    raise ValueError(f"Unknown optimizer name: {training_args.optimizer_name}")
             
-            def create_scheduler(self, num_training_steps: int, optimizer=None):
-                
+            def create_scheduler(self, num_training_steps:int, optimizer=None):
                 num_portions = training_args.num_portions  # 总的份数
                 selected_portion = training_args.selected_portion  # 选择的份数，从1开始
                 lr_min = 0.0  # 你的最小学习率
@@ -326,41 +330,33 @@ class Finetuner(BaseTuner):
 
                 steps_per_portion = num_training_steps 
                 warmup_steps = math.ceil(steps_per_portion * warmup_proportion)
-                # warmup_steps = 3
                 def lr_lambda(current_step):
-                    
                     current_step = self.get_global_step()
                     portion_step = current_step % steps_per_portion  + steps_per_portion * (selected_portion - 1)
                     loss_time_callback.portion_step = portion_step
 
-                    warnup_start_step = steps_per_portion * (selected_portion - 1) + warmup_steps
-                    lr_max_portion = lr_min + 0.5 * (lr_max - lr_min) * (1 + math.cos(math.pi * warnup_start_step / ((steps_per_portion - warmup_steps)*num_portions)))
-
+                    warmup_start_step = steps_per_portion * (selected_portion - 1) + warmup_steps
+                    lr_max_portion = lr_min + 0.5 * (lr_max - lr_min) * (1 + math.cos(math.pi * warmup_start_step / ((steps_per_portion - warmup_steps)*num_portions)))
                     if current_step  < warmup_steps:
                         # 预热阶段
                         lr = lr_max_portion * current_step / warmup_steps
                     else:
                         # 余弦退火阶段
                         lr = lr_min + 0.5 * (lr_max - lr_min) * (1 + math.cos(math.pi * (portion_step - warmup_steps) / ((steps_per_portion - warmup_steps)*num_portions)))
-                        # breakpoint()
                     if os.environ.get('LOCAL_RANK', '0') == '0':
                         print("\ncurrent step", portion_step)
                         print('\nsteps_per_portion',steps_per_portion)
-                    # return lr
+                        print('\nwarmup_start_step',warmup_steps)
                     return lr / training_args.learning_rate
 
-                return LambdaLR(self.optimizer, lr_lambda)
+                self.lr_scheduler = LambdaLR(self.optimizer, lr_lambda)
 
-        class optimizerTrainer(FinetuningTrainer):
-            def create_optimizer(self):
-                if training_args.optimizer_name == "LionLamb":
-                    optimizer = Lion_lamb(model.get_backend_model().parameters(), betas=[0.95,0.98],lr=training_args.learning_rate, weight_decay=training_args.weight_decay,min_x = training_args.min_x, max_x = training_args.max_x)
-                elif training_args.optimizer_name == "Lion":
-                    optimizer = Lion(model.get_backend_model().parameters(), betas=[0.95,0.98],lr=training_args.learning_rate, weight_decay=training_args.weight_decay)
+            def setup_training(self, num_training_steps:int):
+                self.create_optimizer()
+                self.create_scheduler(num_training_steps)
 
-                return optimizer
         # FinetuningTrainer / schedulerTrainer
-        trainer = optimizerTrainer(
+        trainer = OptimizerConloraTrainer(
             model=model.get_backend_model(),
             args=training_args,
             train_dataset=train_dataset if training_args.do_train else None,
@@ -372,7 +368,6 @@ class Finetuner(BaseTuner):
             preprocess_logits_for_metrics=preprocess_logits_for_metrics if training_args.do_eval else None,
             callbacks=trainer_callbacks
         )
-
 
         # Training
         if training_args.do_train:
