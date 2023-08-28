@@ -2,8 +2,8 @@
 # Please run this script under ${project_id} in project directory of
 
 deepspeed_args="--master_port=11000"      # Default argument
-if [ $# -ge 17 ]; then
-  deepspeed_args="${18}"
+if [ $# -ge 18 ]; then
+  deepspeed_args="${19}"
 fi
 
 # exp_id=xl_001_sharegpt_v3_0.1_vicuna7b_lora_3epcoh_lr1e-4
@@ -27,6 +27,7 @@ per_device_eval_batch_size="${14}"
 warmup_ratio="${15}"
 num_portions="${16}"
 selected_portion="${17}"
+optimizer_name="${18}"
 mkdir -p ${output_dir} ${log_dir}
 
 # no save 
@@ -42,9 +43,8 @@ mkdir -p ${output_dir} ${log_dir}
 
 deepspeed ${deepspeed_args} \
   examples/finetune.py  \
-    --config_name ${model_name_or_path} \
-    --tokenizer_name pinkmanlove/llama-7b-hf \
-    --optimizer_name "LionLamb" \
+    --model_name_or_path ${model_name_or_path} \
+    --optimizer_name ${optimizer_name} \
     --dataset_path ${dataset_path} \
     --lr_scheduler_type "cosine_with_restarts" \
     --min_x 1e-2 \
@@ -72,7 +72,7 @@ deepspeed ${deepspeed_args} \
     --eval_dataset_path ${eval_dataset_path} \
     --ddp_timeout 72000 \
     --save_strategy "no" \
-    --weight_decay 0.01 \
+    --weight_decay 0.015 \
     --warmup_ratio ${warmup_ratio} \
     --selected_portion ${selected_portion} \
     --num_portions ${num_portions} \
