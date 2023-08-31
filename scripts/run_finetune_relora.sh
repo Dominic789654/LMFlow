@@ -46,13 +46,13 @@ deepspeed ${deepspeed_args} \
     --model_name_or_path ${model_name_or_path} \
     --optimizer_name ${optimizer_name} \
     --dataset_path ${dataset_path} \
-    --lr_scheduler_type "cosine_with_restarts" \
+    --lr_scheduler_type "cosine" \
     --min_x 1e-2 \
     --max_x 1e2 \
     --output_dir ${output_dir} --overwrite_output_dir \
     --num_train_epochs ${num_train_epochs} \
     --learning_rate ${lr} \
-    --use_flash_attention 0 \
+    --use_flash_attention 1 \
     --block_size ${block_size} \
     --per_device_train_batch_size ${bs} \
     --per_device_eval_batch_size ${per_device_eval_batch_size} \
@@ -72,7 +72,7 @@ deepspeed ${deepspeed_args} \
     --eval_dataset_path ${eval_dataset_path} \
     --ddp_timeout 72000 \
     --save_strategy "no" \
-    --weight_decay 0.015 \
+    --weight_decay 0.01 \
     --warmup_ratio ${warmup_ratio} \
     --selected_portion ${selected_portion} \
     --num_portions ${num_portions} \

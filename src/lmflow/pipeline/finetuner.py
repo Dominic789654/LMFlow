@@ -274,7 +274,7 @@ class Finetuner(BaseTuner):
             trainer_callbacks = []
 
         if os.environ.get('LOCAL_RANK', '0') == '0':
-            wandb.init(project="concinue_lora",name=training_args.run_name)
+            wandb.init(project="optimal_pretain",name=training_args.run_name)
 
         # wandb report loss/time, loss/tokens, tokens/time
         class LossTimeCallback(TrainerCallback):
@@ -355,19 +355,33 @@ class Finetuner(BaseTuner):
                 self.create_optimizer()
                 self.create_scheduler(num_training_steps)
 
-        # FinetuningTrainer / schedulerTrainer
-        trainer = OptimizerConloraTrainer(
-            model=model.get_backend_model(),
-            args=training_args,
-            train_dataset=train_dataset if training_args.do_train else None,
-            eval_dataset=eval_dataset if training_args.do_eval else None,
-            tokenizer=model.get_tokenizer(),
-            # Data collator will default to DataCollatorWithPadding, so we change it.
-            data_collator=default_data_collator,
-            compute_metrics=compute_metrics if training_args.do_eval else None,
-            preprocess_logits_for_metrics=preprocess_logits_for_metrics if training_args.do_eval else None,
-            callbacks=trainer_callbacks
-        )
+        # FinetuningTrainer / OptimizerConloraTrainer
+        if training_args.optimizer_name == "Adamw":
+            trainer = FinetuningTrainer(
+                model=model.get_backend_model(),
+                args=training_args,
+                train_dataset=train_dataset if training_args.do_train else None,
+                eval_dataset=eval_dataset if training_args.do_eval else None,
+                tokenizer=model.get_tokenizer(),
+                # Data collator will default to DataCollatorWithPadding, so we change it.
+                data_collator=default_data_collator,
+                compute_metrics=compute_metrics if training_args.do_eval else None,
+                preprocess_logits_for_metrics=preprocess_logits_for_metrics if training_args.do_eval else None,
+                callbacks=trainer_callbacks
+            )
+        else:
+            trainer = OptimizerConloraTrainer(
+                model=model.get_backend_model(),
+                args=training_args,
+                train_dataset=train_dataset if training_args.do_train else None,
+                eval_dataset=eval_dataset if training_args.do_eval else None,
+                tokenizer=model.get_tokenizer(),
+                # Data collator will default to DataCollatorWithPadding, so we change it.
+                data_collator=default_data_collator,
+                compute_metrics=compute_metrics if training_args.do_eval else None,
+                preprocess_logits_for_metrics=preprocess_logits_for_metrics if training_args.do_eval else None,
+                callbacks=trainer_callbacks
+            )
 
         # Training
         if training_args.do_train:
