@@ -2,13 +2,13 @@ k=5
 
 
 python scripts/data_preprocess/split.py \
-  --dataset_path data/continue_half_news_wiki_formated_train/train_half_news_wiki_formated.json \
-  --output_path  data/continue_half_news_wiki_formated_train_split \
+  --dataset_path data/gpt4_v2/gpt4_v2_text_only.json \
+  --output_path  data/gpt4_v2_split \
   --k ${k}
 
-run_name="relora_A100-40*8_relora_llama_350m_1024"
+run_name="relora_A100-40*8_relora_gpt2_1024_lionlamb"
 lr=1e-3
-bs=260
+bs=100
 per_device_eval_batch_size=1
 use_lora=1
 epochs=1
@@ -26,12 +26,11 @@ eval_dataset_path="data/continue_half_news_wiki_formated_eval/"
 test_dataset_path="data/continue_half_news_wiki_formated_test"
 num_portions=${k}
 selected_portion=1
-bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7"
+optimizer_name=LionLamb
+bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7"
 
 
 bash ./scripts/run_evaluation.sh ./output_models/${exp_name}  ${test_dataset_path} "--master_port=10005 --include localhost:0"
-
-
 for i in $(seq 1 $((k-1))) 
 do
     echo "current ${i} split"
@@ -40,9 +39,7 @@ do
     echo ${selected_portion}
     exp_name="${run_name}_${i}"
     data_path="data/continue_half_news_wiki_formated_train_split/split_${i}/"
-    bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7"
-
-    bash ./scripts/run_evaluation.sh ./output_models/${exp_name} ${test_dataset_path} "--master_port=10005 --include localhost:0"
+    bash ./scripts/run_finetune_relora_rest.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7"
 done
 
 # bash ./scripts/run_all_benchmark.sh --model_name_or_path ./output_models/continue_lora_A100-40*8_rank128_split_0_aggregated_scheduler_flash_9e-4_4
