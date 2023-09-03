@@ -289,6 +289,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                 print("activate checkpointing")
 
             self.backend_model_full = model
+            # breakpoint()
             if model_args.use_lora:
                 if model_args.lora_target_modules:
                     lora_target_modules = model_args.lora_target_modules
@@ -308,11 +309,27 @@ class HFDecoderModel(DecoderModel, Tunable):
                 # follow ReLoRA
                 for name, param in model.named_parameters():
                     # LLaMa: model.norm, model.layers.input_layernorm, model.layers.post_attention_layernorm
-                    if  "norm" in name:
+                    # if  "norm" in name:
+                    #     param.requires_grad = True        
+                    # elif "lm_head" in name:
+                    #     param.requires_grad = True
+                    # elif "embed_tokens" in name:
+                    #     param.requires_grad = True
+                    # elif "bias" in name:
+                    #     param.requires_grad = True
+                    # elif "lora_" in name:
+                    #     param.requires_grad = True
+                    # else:
+                    #     param.requires_grad = False
+
+                    # gpt2 
+                    if  "ln_" in name:
                         param.requires_grad = True        
-                    elif "lm_head" in name:
+                    elif "wpe" in name:
                         param.requires_grad = True
-                    elif "embed_tokens" in name:
+                    elif "wte" in name:
+                        param.requires_grad = True
+                    elif "lm_head" in name:
                         param.requires_grad = True
                     elif "bias" in name:
                         param.requires_grad = True

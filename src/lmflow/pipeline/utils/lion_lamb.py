@@ -19,26 +19,14 @@ def update_fn(p, grad, exp_avg, lr, wd, beta1, beta2, min_x, max_x):
     p.data.mul_(1 - lr * wd)
 
     # 不仅保留方向，还保留大小信息
-    v1 = exp_avg.clone().mul_(beta1).add(grad, alpha = 1 - beta1)
+    c = exp_avg.clone().mul_(beta1).add(grad, alpha = 1 - beta1)
 
-
-    update = v1.sign()
-
-    # v1_abs = v1.abs()
-    # v1_abs_mul_sqrt_num = torch.sqrt(torch.tensor(v1_abs.shape[0]))*v1_abs
-
-    # v1_sign = v1.sign()
-
-    # update = v1_abs_mul_sqrt_num.clip(min=min_x, max=max_x).mul(v1_sign)
-
-    # update_mask = update > 0
-    # update[update_mask] = 1 / update[update_mask]
-
+    u = c.sign()
 
 
     # compute the L2 norm of the gradient and the weight
     weight_norm = torch.norm(p.data)
-    update_norm = torch.norm(update)
+    update_norm = torch.norm(u)
 
 
                 
@@ -49,7 +37,7 @@ def update_fn(p, grad, exp_avg, lr, wd, beta1, beta2, min_x, max_x):
         trust_ratio = 1.0
    
 
-    p.add_(update, alpha = -lr * trust_ratio)
+    p.add_(u, alpha = -lr * trust_ratio)
 
     # decay the momentum running average coefficient
 
@@ -110,16 +98,39 @@ class Lion_lamb(Optimizer):
 
                 exp_avg = state['exp_avg']
 
-                self.update_fn(
-                    p,
-                    grad,
-                    exp_avg,
-                    lr,
-                    wd,
-                    beta1,
-                    beta2,
-                    min_x = self.min_x,
-                    max_x = self.max_x
-                )
+
+                # stepweight decay
+                p.data.mul_(1 - lr * wd)
+                # Emphasize current step & keep the signed signal 
+                c = exp_avg.clone().mul_(beta1).add(grad, alpha = 1 - beta1)
+                u = c.sign()
+
+                # compute the L2 norm of the gradient and the weight
+                weight_norm = torch.norm(p.data)
+                update_norm = torch.norm(u)
+
+
+                if weight_norm > 0  and update_norm > 0 and not torch.isinf(update_norm):
+                    trust_ratio = weight_norm / update_norm
+                else:
+                    trust_ratio = 1.0
+            
+
+                p.add_(u, alpha = -lr * trust_ratio)
+
+                # decay the momentum running average coefficient
+
+                exp_avg.mul_(beta2).add_(grad, alpha = 1 - beta2)
+                # self.update_fn(
+                #     p,
+                #     grad,
+                #     exp_avg,
+                #     lr,
+                #     wd,
+                #     beta1,
+                #     beta2,
+                #     min_x = self.min_x,
+                #     max_x = self.max_x
+                # )
 
         return loss

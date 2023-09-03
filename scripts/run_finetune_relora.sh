@@ -32,7 +32,9 @@ mkdir -p ${output_dir} ${log_dir}
 
 # no save 
   # --lora_target_modules 
-    # --lora_target_modules q_proj k_proj v_proj o_proj \
+    # --lora_target_modules q_proj k_proj v_proj o_proj \ # llama
+    #     --lora_target_modules c_attn c_proj c_fc c_proj \ # gpt2
+
     # --gradient_checkpointing ${gradient_checkpointing} \
         # --max_steps 150 \
             # --optimizer_name "Lion" \
@@ -59,7 +61,7 @@ deepspeed ${deepspeed_args} \
     --use_lora ${use_lora} \
     --lora_r ${lora_r} \
     --use_qlora 0 \
-    --lora_target_modules q_proj k_proj v_proj o_proj gate_proj down_proj up_proj\
+    --lora_target_modules c_attn c_proj c_fc c_proj \
     --save_aggregated_lora 1 \
     --deepspeed ${ds_config} \
     --bf16 \
