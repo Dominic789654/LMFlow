@@ -11,7 +11,9 @@ import time
 import datasets
 import math
 import transformers
+import torch
 import evaluate
+from collections import defaultdict
 from itertools import chain
 from transformers import (
     Trainer,
@@ -276,6 +278,30 @@ class Finetuner(BaseTuner):
         if os.environ.get('LOCAL_RANK', '0') == '0':
             wandb.init(project="optimal_pretain",name=training_args.run_name)
 
+
+        def get_layer_from_name(name):
+            """Extract layer name from parameter name."""
+            components = name.split('.')
+            if len(components) >= 3:
+                # return ".".join(components[1:3])
+                return ".".join(components[:])
+
+            else:
+                return components[1]
+
+        def get_layerwise_params(model):
+            layerwise_params = defaultdict(int)
+            
+            for name, param in model.named_parameters():
+                layer_name = get_layer_from_name(name)
+                layerwise_params[layer_name] += torch.numel(param)
+            
+            return layerwise_params
+
+        layerwise_counts = get_layerwise_params(model.get_backend_model())
+
+
+
         # wandb report loss/time, loss/tokens, tokens/time
         class LossTimeCallback(TrainerCallback):
             def __init__(self):
@@ -291,6 +317,19 @@ class Finetuner(BaseTuner):
                 world_size = os.environ.get('WORLD_SIZE', 1)
                 total_batch_size = int(args.per_device_train_batch_size) * int(world_size) * int(args.gradient_accumulation_steps)
                 if state.is_local_process_zero:
+                    model = kwargs.get("model")  # Assuming model is passed in **kwargs
+                    if model :
+                        layerwise_params = defaultdict(list)
+
+                        for name, param in model.named_parameters():
+                            layer_name = get_layer_from_name(name)
+                            layerwise_params[layer_name].append(param)
+                            
+                        for layer, params in layerwise_params.items():
+                            # Concatenate all tensors for the current layer
+                            all_params = torch.cat([p.view(-1) for p in params])
+                            norm = torch.norm(all_params).item()
+                            print(f"Layer {layer}: Norm {norm}")
                     if len(state.log_history)>0:
                         elapsed_time = time.time() - self.start_time
                         elapsed_tokens = total_batch_size * int(args.block_size) * int(state.global_step)
@@ -315,7 +354,7 @@ class Finetuner(BaseTuner):
 
             def create_optimizer(self):
                 if training_args.optimizer_name == "LionLamb":
-                    self.optimizer = Lion_lamb(model.get_backend_model().parameters(), betas=[0.95,0.98], lr=training_args.learning_rate, weight_decay=training_args.weight_decay, min_x=training_args.min_x, max_x=training_args.max_x)
+                    self.optimizer = Lion_lamb(model.get_backend_model().parameters(), layer_shape=layerwise_counts, betas=[0.95,0.98], lr=training_args.learning_rate, weight_decay=training_args.weight_decay, min_x=training_args.min_x, max_x=training_args.max_x)
                 elif training_args.optimizer_name == "Lion":
                     self.optimizer = Lion(model.get_backend_model().parameters(), betas=[0.95,0.98], lr=training_args.learning_rate, weight_decay=training_args.weight_decay)
                 else:

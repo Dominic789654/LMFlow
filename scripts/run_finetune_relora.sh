@@ -42,13 +42,15 @@ mkdir -p ${output_dir} ${log_dir}
         # --config_name ${model_name_or_path} \
     # --tokenizer_name pinkmanlove/llama-7b-hf \
 # --model_name_or_path ${model_name_or_path} \
+# s    # --lr_scheduler_type "cosine" \
+    # --max_steps 300 \
+
 
 deepspeed ${deepspeed_args} \
   examples/finetune.py  \
     --model_name_or_path ${model_name_or_path} \
     --optimizer_name ${optimizer_name} \
     --dataset_path ${dataset_path} \
-    --lr_scheduler_type "cosine" \
     --min_x 1e-2 \
     --max_x 1e2 \
     --output_dir ${output_dir} --overwrite_output_dir \

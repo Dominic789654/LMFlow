@@ -2,54 +2,20 @@ from typing import Tuple, Optional, Callable
 import numpy as np
 import torch
 from torch.optim.optimizer import Optimizer
+import os
+from torch._utils import _flatten_dense_tensors, _unflatten_dense_tensors
 
 # functions
 
 def exists(val):
     return val is not None
 
-# update functions
-
-def update_fn(p, grad, exp_avg, lr, wd, beta1, beta2, min_x, max_x):
-
-
-
-    # stepweight decay
-
-    p.data.mul_(1 - lr * wd)
-
-    # 不仅保留方向，还保留大小信息
-    c = exp_avg.clone().mul_(beta1).add(grad, alpha = 1 - beta1)
-
-    u = c.sign()
-
-
-    # compute the L2 norm of the gradient and the weight
-    weight_norm = torch.norm(p.data)
-    update_norm = torch.norm(u)
-
-
-                
-    if weight_norm > 0  and update_norm > 0 and not torch.isinf(update_norm):
-        trust_ratio = weight_norm / update_norm
-
-    else:
-        trust_ratio = 1.0
-   
-
-    p.add_(u, alpha = -lr * trust_ratio)
-
-    # decay the momentum running average coefficient
-
-    exp_avg.mul_(beta2).add_(grad, alpha = 1 - beta2)
-
-# class
-
 class Lion_lamb(Optimizer):
     def __init__(
         self,
         params,
         lr: float = 1e-4,
+        layer_shape:[int] = 0,
         betas: Tuple[float, float] = (0.9, 0.99),
         weight_decay: float = 0.0,
         use_triton: bool = False,
@@ -60,6 +26,7 @@ class Lion_lamb(Optimizer):
         assert all([0. <= beta <= 1. for beta in betas])
         self.min_x = min_x
         self.max_x = max_x
+        self.layer_shape = layer_shape
         defaults = dict(
             lr = lr,
             betas = betas,
@@ -68,17 +35,23 @@ class Lion_lamb(Optimizer):
 
         super().__init__(params, defaults)
 
-        self.update_fn = update_fn
-
-        if use_triton:
-            from lion_pytorch.triton import update_fn as triton_update_fn
-            self.update_fn = triton_update_fn
 
     @torch.no_grad()
-    def step(
-        self,
-        closure: Optional[Callable] = None
-    ):
+    def step(self, closure: Optional[Callable] = None):
+
+        # 获取当前卡的编号
+        local_rank = int(os.environ.get('LOCAL_RANK', '0'))
+        
+        # 获取分布式训练的总卡数
+        world_size = torch.distributed.get_world_size()
+        
+        
+        # 确定每张卡的参数数量
+        params_per_card =  len(self.param_groups[0]['params'][0])
+        
+        # 确定当前卡的参数范围
+        start_param = local_rank * params_per_card
+        end_param = start_param + params_per_card
 
         loss = None
         if exists(closure):
@@ -86,51 +59,41 @@ class Lion_lamb(Optimizer):
                 loss = closure()
         for group in self.param_groups:
             for p in filter(lambda p: exists(p.grad), group['params']):
-                # print('count_layer')
-                print(p.shape)
-                # breakpoint()
+            
                 grad, lr, wd, beta1, beta2, state = p.grad, group['lr'], group['weight_decay'], *group['betas'], self.state[p]
-
-                # init state - exponential moving average of gradient values
-
+                
                 if len(state) == 0:
                     state['exp_avg'] = torch.zeros_like(p)
 
                 exp_avg = state['exp_avg']
 
-
-                # stepweight decay
                 p.data.mul_(1 - lr * wd)
-                # Emphasize current step & keep the signed signal 
-                c = exp_avg.clone().mul_(beta1).add(grad, alpha = 1 - beta1)
-                u = c.sign()
+                update = exp_avg.clone().mul_(beta1).add(grad, alpha = 1 - beta1).sign_()
 
-                # compute the L2 norm of the gradient and the weight
-                weight_norm = torch.norm(p.data)
-                update_norm = torch.norm(u)
+                accumulated_param_count = 0
+                for layer, shape in self.layer_shape.items():
+                    num_params = np.prod(shape)
+                    layer_start_global = accumulated_param_count
+                    layer_end_global = accumulated_param_count + num_params
+                    
+                    if layer_start_global < end_param and layer_end_global > start_param:
+                        # 计算当前层参数在当前卡上的起始和结束索引
+                        start_idx = max(0, layer_start_global - start_param)
+                        end_idx = min(params_per_card, layer_end_global - start_param)
 
 
-                if weight_norm > 0  and update_norm > 0 and not torch.isinf(update_norm):
-                    trust_ratio = weight_norm / update_norm
-                else:
-                    trust_ratio = 1.0
-            
+                        weight_norm = torch.norm(p.data[start_idx:end_idx])
+                        update_norm = torch.norm(update[start_idx:end_idx])
 
-                p.add_(u, alpha = -lr * trust_ratio)
+                        if weight_norm > 0 and update_norm > 0 and not torch.isinf(update_norm):
+                            trust_ratio = weight_norm / update_norm
+                        else:
+                            trust_ratio = 1.0
 
-                # decay the momentum running average coefficient
+                        # print(f"\nlocal rank {os.environ.get('LOCAL_RANK', '0')}, layer {layer}, shape {shape}, start {start_idx}, end {end_idx}\n weight norm {weight_norm}, update norm {update_norm}, ratio {trust_ratio}")
+                        p.data[start_idx:end_idx].add_(update[start_idx:end_idx], alpha=-lr * trust_ratio)
 
+                    accumulated_param_count += num_params
                 exp_avg.mul_(beta2).add_(grad, alpha = 1 - beta2)
-                # self.update_fn(
-                #     p,
-                #     grad,
-                #     exp_avg,
-                #     lr,
-                #     wd,
-                #     beta1,
-                #     beta2,
-                #     min_x = self.min_x,
-                #     max_x = self.max_x
-                # )
 
         return loss
