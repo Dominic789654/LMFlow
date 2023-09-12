@@ -66,7 +66,9 @@ class Lion_lamb(Optimizer):
 
                 # compute the L2 norm of the gradient and the weight
                 weight_norm = torch.norm(p.data)
+                # weight_norm = torch.abs(p.data)
                 update_norm = torch.norm(u)
+                # u = +1 
 
                 if weight_norm > 0  and update_norm > 0 and not torch.isinf(update_norm):
                     trust_ratio = weight_norm / update_norm

@@ -348,6 +348,43 @@ class Finetuner(BaseTuner):
         loss_time_callback = LossTimeCallback()
         trainer_callbacks.append(loss_time_callback)
 
+        class ConloraTrainer(FinetuningTrainer):
+            def get_global_step(self):
+                return self.state.global_step
+
+            def create_scheduler(self, num_training_steps:int, optimizer=None):
+                num_portions = training_args.num_portions  # 总的份数
+                selected_portion = training_args.selected_portion  # 选择的份数，从1开始
+                lr_min = 0.0  # 你的最小学习率
+                lr_max = training_args.learning_rate  # 你的最大学习率
+                warmup_proportion = training_args.warmup_ratio  # 预热阶段占每一份的比例
+
+                steps_per_portion = num_training_steps 
+                warmup_steps = math.ceil(steps_per_portion * warmup_proportion)
+                def lr_lambda(current_step):
+                    current_step = self.get_global_step()
+                    portion_step = current_step % steps_per_portion  + steps_per_portion * (selected_portion - 1)
+                    loss_time_callback.portion_step = portion_step
+
+                    warmup_start_step = steps_per_portion * (selected_portion - 1) + warmup_steps
+                    lr_max_portion = lr_min + 0.5 * (lr_max - lr_min) * (1 + math.cos(math.pi * warmup_start_step / ((steps_per_portion - warmup_steps)*num_portions)))
+                    if current_step  < warmup_steps:
+                        # 预热阶段
+                        lr = lr_max_portion * current_step / warmup_steps
+                    else:
+                        # 余弦退火阶段
+                        lr = lr_min + 0.5 * (lr_max - lr_min) * (1 + math.cos(math.pi * (portion_step - warmup_steps) / ((steps_per_portion - warmup_steps)*num_portions)))
+                    if os.environ.get('LOCAL_RANK', '0') == '0':
+                        print("\ncurrent step", portion_step)
+                        print('\nsteps_per_portion',steps_per_portion)
+                        print('\nwarmup_start_step',warmup_steps)
+                    return lr / training_args.learning_rate
+
+                self.lr_scheduler = LambdaLR(self.optimizer, lr_lambda)
+
+            def setup_training(self, num_training_steps:int):
+                self.create_scheduler(num_training_steps)
+
         class OptimizerConloraTrainer(FinetuningTrainer):
             def get_global_step(self):
                 return self.state.global_step
@@ -396,7 +433,7 @@ class Finetuner(BaseTuner):
 
         # FinetuningTrainer / OptimizerConloraTrainer
         if training_args.optimizer_name == "Adamw":
-            trainer = FinetuningTrainer(
+            trainer = ConloraTrainer(
                 model=model.get_backend_model(),
                 args=training_args,
                 train_dataset=train_dataset if training_args.do_train else None,
