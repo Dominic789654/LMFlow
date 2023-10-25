@@ -1,6 +1,6 @@
 # k=1
-# run_name="phi1_5_lionlamb_gpt4_v2_8e-4_detail_ft_per_layer"
-# lr=4e-4
+# run_name="phi1_5_lion_gpt4_v2_6e-6_detail_ft_per_layer"
+# lr=6e-6
 # bs=15
 # per_device_eval_batch_size=1
 # use_lora=0
@@ -24,13 +24,15 @@
 # test_dataset_path="data/continue_half_news_wiki_formated_test"
 # num_portions=${k}
 # selected_portion=1
-# optimizer_name=LionLamb
-# bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${pweuse_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7" 
+# optimizer_name=Lion
+# bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7" 
+
+
 
 
 # k=1
-# run_name="llama2-7b_lionlamb_gpt4_v2_4e-5_ft_weight_norm_gradient_norm"
-# lr=4e-5
+# run_name="llama2-7b_lion_gpt4_v2_4e-6_detail_ft_per_datail_layer"
+# lr=4e-6
 # bs=30
 # per_device_eval_batch_size=1
 # use_lora=0
@@ -54,13 +56,12 @@
 # test_dataset_path="data/continue_half_news_wiki_formated_test"
 # num_portions=${k}
 # selected_portion=1
-# optimizer_name=LionLamb
+# optimizer_name=Lion
 # bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7" 
 
-
 # k=1
-# run_name="gpt2_lionlamb_gpt4_v2_1e-3_ft_per_layer_print_detail_layer"
-# lr=1e-3
+# run_name="gpt2_lion_gpt4_v2_1e-5_ft_print_detail_layer"
+# lr=1e-5
 # bs=30
 # per_device_eval_batch_size=1
 # use_lora=0
@@ -83,13 +84,13 @@
 # test_dataset_path="data/continue_half_news_wiki_formated_test"
 # num_portions=${k}
 # selected_portion=1
-# optimizer_name=LionLamb
+# optimizer_name=Lion
 # bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7" 
 
 
 k=1
-run_name="gpt2_xl_lionlamb_gpt4_v2_1e-3_ft_per_layer_print_detail_layer"
-lr=3e-3
+run_name="gpt2_xl_lion_gpt4_v2_1e-5_ft_per_layer_print_detail_layer"
+lr=1e-5
 bs=30
 per_device_eval_batch_size=1
 use_lora=0
@@ -112,5 +113,5 @@ eval_dataset_path="data/continue_half_news_wiki_formated_eval/"
 test_dataset_path="data/continue_half_news_wiki_formated_test"
 num_portions=${k}
 selected_portion=1
-optimizer_name=LionLamb
+optimizer_name=Lion
 bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7" 

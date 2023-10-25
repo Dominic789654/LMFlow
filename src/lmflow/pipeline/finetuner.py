@@ -33,6 +33,7 @@ from lmflow.datasets.dataset import Dataset
 from lmflow.pipeline.base_tuner import BaseTuner
 from lmflow.pipeline.utils.lion_lamb import Lion_lamb
 from lmflow.pipeline.utils.lion import Lion
+from lmflow.pipeline.utils.adamw import AdamW
 from lmflow.pipeline.utils.peft_trainer import PeftTrainer, PeftSavingCallback
 from torch.optim.lr_scheduler import LambdaLR, CosineAnnealingLR
 
@@ -282,22 +283,52 @@ class Finetuner(BaseTuner):
         def get_layer_from_name(name):
             """Extract layer name from parameter name."""
             components = name.split('.')
+            # breakpoint()
             if len(components) >= 3:
-                # return ".".join(components[1:3])
-                return ".".join(components[:])
+                # return ".".join(components[1:3]) # gpt2 per layer, eg layer0, layer1
+                # return ".".join(components[1:4]) # gpt2 per layer, eg layer0.ln_1,layer0.attn, , layer1.mlp
+                # return ".".join(components[1:5]) # gpt2 per layer, eg layer0.ln_1.weight,layer0.attn, , layer1.mlp
+
+                # return ".".join(components[2:5]) # gpt2-xl lora per layer, eg layer0, layer1
+                # return ".".join(components[2:6]) # gpt2-xl lora per middle layer, eg layer0.ln_1,layer0.attn, , layer1.mlp
+                # return ".".join(components[2:7]) # gpt2-xl lora per middle layer, eg layer0.ln_1.weight,layer0.attn.c_attn, , layer1.mlp.weight
+
+                # return ".".join(components[1:3]) # llama 2 per layer, eg layer0, layer1
+                # return ".".join(components[1:4]) # llama 2 ft, eg layer0.self_attn, layer1.mlp
+                return ".".join(components[3:6]) # llama 2 continue lora, eg layer0.self_attn, layer1.mlp 
+                
+                # return ".".join(components[1:4]) # llama 2, eg layer0.self_attn.k,layer0.self_attn.v, layer1.mlp.up_proj
+                # return ".".join(components[1:4]) # phi 1.5  per layer
+
+                # return ".".join(components[:])
 
             else:
                 return components[1]
 
+        def get_detail_layer_from_name(name):
+            """Extract layer name from parameter name."""
+            components = name.split('.')
+            # breakpoint()
+            if len(components) >= 3:
+                return ".".join(components[:])
+
+            else:
+                return components[1]
+            
         def get_layerwise_params(model):
             layerwise_params = defaultdict(int)
             
             for name, param in model.named_parameters():
-                layer_name = get_layer_from_name(name)
-                layerwise_params[layer_name] += torch.numel(param)
+                # Only count parameters that have gradients
+                # if '.h.0.attn.c_attn.weight' in name:
+                #     breakpoint()
+                if param.requires_grad:
+                    layer_name = get_layer_from_name(name)
+                    layerwise_params[layer_name] += torch.numel(param)
             
             return layerwise_params
 
+        # breakpoint()
         layerwise_counts = get_layerwise_params(model.get_backend_model())
 
 
@@ -322,14 +353,14 @@ class Finetuner(BaseTuner):
                         layerwise_params = defaultdict(list)
 
                         for name, param in model.named_parameters():
-                            layer_name = get_layer_from_name(name)
+                            layer_name = get_detail_layer_from_name(name)
                             layerwise_params[layer_name].append(param)
                             
                         for layer, params in layerwise_params.items():
                             # Concatenate all tensors for the current layer
                             all_params = torch.cat([p.view(-1) for p in params])
                             norm = torch.norm(all_params).item()
-                            print(f"Layer {layer}: Norm {norm}")
+                            # print(f"Layer {layer}: Weight Norm {norm}")
                     if len(state.log_history)>0:
                         elapsed_time = time.time() - self.start_time
                         elapsed_tokens = total_batch_size * int(args.block_size) * int(state.global_step)
@@ -394,6 +425,8 @@ class Finetuner(BaseTuner):
                     self.optimizer = Lion_lamb(model.get_backend_model().parameters(), layer_shape=layerwise_counts, betas=[0.95,0.98], lr=training_args.learning_rate, weight_decay=training_args.weight_decay, min_x=training_args.min_x, max_x=training_args.max_x)
                 elif training_args.optimizer_name == "Lion":
                     self.optimizer = Lion(model.get_backend_model().parameters(), betas=[0.95,0.98], lr=training_args.learning_rate, weight_decay=training_args.weight_decay)
+                elif training_args.optimizer_name == "Adamw":
+                    self.optimizer = AdamW(model.get_backend_model().parameters(), lr=training_args.learning_rate, weight_decay=training_args.weight_decay,layer_shape=layerwise_counts)
                 else:
                     raise ValueError(f"Unknown optimizer name: {training_args.optimizer_name}")
             
@@ -419,6 +452,7 @@ class Finetuner(BaseTuner):
                     else:
                         # 余弦退火阶段
                         lr = lr_min + 0.5 * (lr_max - lr_min) * (1 + math.cos(math.pi * (portion_step - warmup_steps) / ((steps_per_portion - warmup_steps)*num_portions)))
+                        # lr = lr_max
                     if os.environ.get('LOCAL_RANK', '0') == '0':
                         print("\ncurrent step", portion_step)
                         print('\nsteps_per_portion',steps_per_portion)
@@ -432,8 +466,7 @@ class Finetuner(BaseTuner):
                 self.create_scheduler(num_training_steps)
 
         # FinetuningTrainer / OptimizerConloraTrainer
-        if training_args.optimizer_name == "Adamw":
-            trainer = ConloraTrainer(
+        trainer = OptimizerConloraTrainer(
                 model=model.get_backend_model(),
                 args=training_args,
                 train_dataset=train_dataset if training_args.do_train else None,
@@ -445,19 +478,32 @@ class Finetuner(BaseTuner):
                 preprocess_logits_for_metrics=preprocess_logits_for_metrics if training_args.do_eval else None,
                 callbacks=trainer_callbacks
             )
-        else:
-            trainer = OptimizerConloraTrainer(
-                model=model.get_backend_model(),
-                args=training_args,
-                train_dataset=train_dataset if training_args.do_train else None,
-                eval_dataset=eval_dataset if training_args.do_eval else None,
-                tokenizer=model.get_tokenizer(),
-                # Data collator will default to DataCollatorWithPadding, so we change it.
-                data_collator=default_data_collator,
-                compute_metrics=compute_metrics if training_args.do_eval else None,
-                preprocess_logits_for_metrics=preprocess_logits_for_metrics if training_args.do_eval else None,
-                callbacks=trainer_callbacks
-            )
+        # if training_args.optimizer_name == "Adamw":
+        #     trainer = ConloraTrainer(
+        #         model=model.get_backend_model(),
+        #         args=training_args,
+        #         train_dataset=train_dataset if training_args.do_train else None,
+        #         eval_dataset=eval_dataset if training_args.do_eval else None,
+        #         tokenizer=model.get_tokenizer(),
+        #         # Data collator will default to DataCollatorWithPadding, so we change it.
+        #         data_collator=default_data_collator,
+        #         compute_metrics=compute_metrics if training_args.do_eval else None,
+        #         preprocess_logits_for_metrics=preprocess_logits_for_metrics if training_args.do_eval else None,
+        #         callbacks=trainer_callbacks
+        #     )
+        # else:
+        #     trainer = OptimizerConloraTrainer(
+        #         model=model.get_backend_model(),
+        #         args=training_args,
+        #         train_dataset=train_dataset if training_args.do_train else None,
+        #         eval_dataset=eval_dataset if training_args.do_eval else None,
+        #         tokenizer=model.get_tokenizer(),
+        #         # Data collator will default to DataCollatorWithPadding, so we change it.
+        #         data_collator=default_data_collator,
+        #         compute_metrics=compute_metrics if training_args.do_eval else None,
+        #         preprocess_logits_for_metrics=preprocess_logits_for_metrics if training_args.do_eval else None,
+        #         callbacks=trainer_callbacks
+        #     )
 
         # Training
         if training_args.do_train:

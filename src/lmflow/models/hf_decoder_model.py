@@ -158,9 +158,9 @@ class HFDecoderModel(DecoderModel, Tunable):
             "use_auth_token": True if model_args.use_auth_token else None,
         }
         if model_args.config_name:
-            config = AutoConfig.from_pretrained(model_args.config_name, **config_kwargs)
+            config = AutoConfig.from_pretrained(model_args.config_name, trust_remote_code=True,**config_kwargs)
         elif model_args.model_name_or_path:
-            config = AutoConfig.from_pretrained(model_args.model_name_or_path, **config_kwargs)
+            config = AutoConfig.from_pretrained(model_args.model_name_or_path,trust_remote_code=True, **config_kwargs)
         else:
             config = CONFIG_MAPPING[model_args.model_type]()
             logger.warning("You are instantiating a new config instance from scratch.")
@@ -173,9 +173,9 @@ class HFDecoderModel(DecoderModel, Tunable):
 
         try:
             if model_args.tokenizer_name:
-                tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name, **tokenizer_kwargs)
+                tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name, trust_remote_code=True,**tokenizer_kwargs)
             elif model_args.model_name_or_path:
-                tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path, **tokenizer_kwargs)
+                tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path, trust_remote_code=True,**tokenizer_kwargs)
             else:
                 raise ValueError(
                     "You are instantiating a new tokenizer from scratch. This is"
@@ -190,11 +190,13 @@ class HFDecoderModel(DecoderModel, Tunable):
                 tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name, unk_token="<unk>",
                                                     bos_token="<s>",
                                                     eos_token="</s>",
+                                                    trust_remote_code=True,
                                                     **tokenizer_kwargs)
             elif model_args.model_name_or_path:
                 tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path, unk_token="<unk>",
                                                     bos_token="<s>",
                                                     eos_token="</s>",
+                                                    trust_remote_code=True,
                                                     **tokenizer_kwargs)
             else:
                 raise ValueError(
@@ -275,6 +277,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                     revision=model_args.model_revision,
                     use_auth_token=True if model_args.use_auth_token else None,
                     torch_dtype=torch_dtype,
+                    trust_remote_code=True,
                     quantization_config=nf4_config if model_args.use_qlora else None
                     )
             else:
@@ -289,7 +292,6 @@ class HFDecoderModel(DecoderModel, Tunable):
                 print("activate checkpointing")
 
             self.backend_model_full = model
-            # breakpoint()
             if model_args.use_lora:
                 if model_args.lora_target_modules:
                     lora_target_modules = model_args.lora_target_modules
@@ -303,40 +305,55 @@ class HFDecoderModel(DecoderModel, Tunable):
                     lora_dropout=model_args.lora_dropout,
                     target_modules=lora_target_modules,
                 )
+                # breakpoint()
+
                 model = get_peft_model(model, peft_config)
                 model.print_trainable_parameters()
+                # breakpoint()
 
                 # follow ReLoRA
                 for name, param in model.named_parameters():
                     # LLaMa: model.norm, model.layers.input_layernorm, model.layers.post_attention_layernorm
-                    # if  "norm" in name:
-                    #     param.requires_grad = True        
+                    if  "norm" in name:
+                        param.requires_grad = True        
                     # elif "lm_head" in name:
                     #     param.requires_grad = True
                     # elif "embed_tokens" in name:
                     #     param.requires_grad = True
-                    # elif "bias" in name:
-                    #     param.requires_grad = True
-                    # elif "lora_" in name:
-                    #     param.requires_grad = True
-                    # else:
-                    #     param.requires_grad = False
-
-                    # gpt2 
-                    if  "ln_" in name:
-                        param.requires_grad = True        
-                    elif "wpe" in name:
-                        param.requires_grad = True
-                    elif "wte" in name:
+                    elif "bias" in name:
                         param.requires_grad = True
                     elif "lora_" in name:
                         param.requires_grad = True
                     else:
                         param.requires_grad = False
 
+                    # gpt2 
+                # for name, param in model.named_parameters():
+                    # if  "ln_" in name:
+                #         param.requires_grad = True        
+                #     elif "wpe" in name:
+                #         param.requires_grad = True
+                #     elif "lm_head" in name:
+                #         param.requires_grad = True
+                #     elif "wte" in name:
+                #         param.requires_grad = True
+                #     elif "lora_" in name:
+                #         param.requires_grad = True
+                #     else:
+                #         param.requires_grad = False
+
+                    # phi 1.5
+                    # if "ln" in name:
+                    #     param.requires_grad = True
+                    # elif "wte" in name: 
+                    #     param.requires_grad = True
+                    # elif "linear" in name:
+                    #     param.requires_grad = True
+
             # We resize the embeddings only when necessary to avoid index errors.
             # If you are creating a model from scratch on a small vocab and want a
             # smaller embedding size, remove this test.
+            # breakpoint()
             embedding_size = model.get_input_embeddings().weight.shape[0]
             if len(tokenizer) > embedding_size:
                 model.resize_token_embeddings(len(tokenizer))
@@ -355,6 +372,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                         offload_folder="offload",
                         offload_state_dict=True,
                         torch_dtype=torch_dtype,
+                        trust_remote_code=True,
                         load_in_8bit = model_args.use_int8
                     )
                 if peft_model_id is not None:
@@ -383,6 +401,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                             device_map="auto",
                             offload_folder="offload",
                             offload_state_dict=True,
+                            trust_remote_code=True,
                             torch_dtype=torch_dtype,
                         )
                     except:
@@ -404,6 +423,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                         )
                     self.backend_model = AutoModelForCausalLM.from_pretrained(
                         model_args.model_name_or_path,
+                        trust_remote_code=True,
                         config=config,
                         torch_dtype=torch_dtype,
                     )
@@ -411,7 +431,8 @@ class HFDecoderModel(DecoderModel, Tunable):
                 self.backend_model_full = self.backend_model
                 if peft_model_id is not None:
                     self.backend_model = PeftModel.from_pretrained(
-                        self.backend_model, peft_model_id
+                        self.backend_model, peft_model_id,
+                        trust_remote_code=True,
                     )
   
                 self.tokenizer.padding_side = "left" #necessary for llama, gpt2 and other decoder models

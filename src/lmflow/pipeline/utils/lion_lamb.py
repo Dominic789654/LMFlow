@@ -89,8 +89,10 @@ class Lion_lamb(Optimizer):
                             trust_ratio = weight_norm / update_norm
                         else:
                             trust_ratio = 1.0
-
-                        # print(f"\nlocal rank {os.environ.get('LOCAL_RANK', '0')}, layer {layer}, shape {shape}, start {start_idx}, end {end_idx}\n weight norm {weight_norm}, update norm {update_norm}, ratio {trust_ratio}")
+                            # 默认值可以尝试0.1 
+                        # breakpoint()
+                        grad_norm = torch.norm(p.grad.data[start_idx:end_idx])
+                        print(f"\nlocal rank {os.environ.get('LOCAL_RANK', '0')}, layer {layer}, shape {shape}, start {start_idx}, end {end_idx} weight norm {weight_norm}, update norm {update_norm}, ratio {trust_ratio}, grad norm {grad_norm}")
                         p.data[start_idx:end_idx].add_(update[start_idx:end_idx], alpha=-lr * trust_ratio)
 
                     accumulated_param_count += num_params
