@@ -352,6 +352,8 @@ class HFDecoderModel(DecoderModel, Tunable):
                         param.requires_grad = True
                     elif "emb" in name :
                         param.requires_grad = True
+                    elif "bias" in name:
+                        param.requires_grad = True
                     elif "lora_" in name:
                         param.requires_grad = True
                     else:

@@ -95,7 +95,7 @@ class Lion_lamb(Optimizer):
                         
                         p.data[start_idx:end_idx].add_(update[start_idx:end_idx], alpha=-lr * trust_ratio)
 
-                        print_update_norm = torch.norm(update[start_idx:end_idx]*-lr * trust_ratio)
+                        print_update_norm = torch.norm(update[start_idx:end_idx] * trust_ratio)
                         print(f"\nlocal rank {os.environ.get('LOCAL_RANK', '0')}, layer {layer}, shape {shape}, start {start_idx}, end {end_idx} weight norm {weight_norm}, update norm {print_update_norm}, ratio {trust_ratio}, grad norm {grad_norm}")
                     accumulated_param_count += num_params
                 exp_avg.mul_(beta2).add_(grad, alpha = 1 - beta2)

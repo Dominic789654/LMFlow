@@ -299,7 +299,10 @@ class Finetuner(BaseTuner):
                 
                 # return ".".join(components[1:4]) # llama 2, eg layer0.self_attn.k,layer0.self_attn.v, layer1.mlp.up_proj
                 
-                return ".".join(components[1:4]) # phi 1.5  per layer
+                # return ".".join(components[2:4]) # phi 1.5 lora  per layer layers.17
+                # return ".".join(components[2:5]) # phi 1.5 lora  per layer layers.17.mlp
+                return ".".join(components[0:2]) # phi 1.5 ft  per layer layers.17.mlp
+
 
                 # return ".".join(components[:])
 
