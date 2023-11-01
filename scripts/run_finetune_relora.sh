@@ -34,7 +34,8 @@ mkdir -p ${output_dir} ${log_dir}
   # --lora_target_modules 
     #     --lora_target_modules q_proj k_proj v_proj o_proj gate_proj up_proj down_proj\ # llama
     #     --lora_target_modules c_attn c_proj c_fc c_proj \ # gpt2
-        # --lora_target_modules Wqkv out_proj fc1 fc2 \ # phi 1.5
+    #     --lora_target_modules Wqkv out_proj fc1 fc2 \ # phi 1.5
+  #       --lora_target_modules k_proj v_proj q_proj out_proj fc_in fc_out \gptj 6b
 
     # --gradient_checkpointing ${gradient_checkpointing} \
         # --max_steps 150 \
@@ -64,7 +65,7 @@ deepspeed ${deepspeed_args} \
     --use_lora ${use_lora} \
     --lora_r ${lora_r} \
     --use_qlora 0 \
-    --lora_target_modules Wqkv out_proj fc1 fc2  \
+    --lora_target_modules k_proj v_proj q_proj out_proj fc_in fc_out \
     --save_aggregated_lora 1 \
     --deepspeed ${ds_config} \
     --bf16 \

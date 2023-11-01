@@ -309,7 +309,7 @@ class HFDecoderModel(DecoderModel, Tunable):
 
                 model = get_peft_model(model, peft_config)
                 model.print_trainable_parameters()
-                # breakpoint()
+                breakpoint()
 
                 # follow ReLoRA
                 # for name, param in model.named_parameters():
@@ -343,22 +343,36 @@ class HFDecoderModel(DecoderModel, Tunable):
                     #     param.requires_grad = False
 
                     # phi 1.5
+                # for name, param in model.named_parameters():
+                #     if "ln" in name:
+                #         param.requires_grad = True
+                #     elif "wte" in name: 
+                #         param.requires_grad = True
+                #     elif "linear" in name:
+                #         param.requires_grad = True
+                #     elif "emb" in name :
+                #         param.requires_grad = True
+                #     elif "bias" in name:
+                #         param.requires_grad = True
+                #     elif "lora_" in name:
+                #         param.requires_grad = True
+                #     else:
+                #         param.requires_grad = False
+
+                # gptj 6b
                 for name, param in model.named_parameters():
                     if "ln" in name:
                         param.requires_grad = True
                     elif "wte" in name: 
                         param.requires_grad = True
-                    elif "linear" in name:
-                        param.requires_grad = True
-                    elif "emb" in name :
-                        param.requires_grad = True
                     elif "bias" in name:
                         param.requires_grad = True
                     elif "lora_" in name:
                         param.requires_grad = True
+                    elif "lm_head" in name:
+                        param.requires_grad = True
                     else:
                         param.requires_grad = False
-
             # We resize the embeddings only when necessary to avoid index errors.
             # If you are creating a model from scratch on a small vocab and want a
             # smaller embedding size, remove this test.

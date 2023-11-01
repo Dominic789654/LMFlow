@@ -285,6 +285,8 @@ class Finetuner(BaseTuner):
             components = name.split('.')
             # breakpoint()
             if len(components) >= 3:
+                return ".".join(components[0:3]) # gptj 6b per layer, eg layer0, layer1
+
                 # return ".".join(components[1:3]) # gpt2 per layer, eg layer0, layer1
                 # return ".".join(components[1:4]) # gpt2 per layer, eg layer0.ln_1,layer0.attn, , layer1.mlp
                 # return ".".join(components[1:5]) # gpt2 per layer, eg layer0.ln_1.weight,layer0.attn, , layer1.mlp
@@ -301,7 +303,7 @@ class Finetuner(BaseTuner):
                 
                 # return ".".join(components[2:4]) # phi 1.5 lora  per layer layers.17
                 # return ".".join(components[2:5]) # phi 1.5 lora  per layer layers.17.mlp
-                return ".".join(components[0:2]) # phi 1.5 ft  per layer layers.17.mlp
+                # return ".".join(components[0:2]) # phi 1.5 ft  per layer layers.17.mlp
 
 
                 # return ".".join(components[:])
@@ -335,7 +337,7 @@ class Finetuner(BaseTuner):
         # breakpoint()
         layerwise_counts = get_layerwise_params(model.get_backend_model())
 
-
+        
 
         # wandb report loss/time, loss/tokens, tokens/time
         class LossTimeCallback(TrainerCallback):
