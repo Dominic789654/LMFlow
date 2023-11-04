@@ -65,7 +65,7 @@ deepspeed ${deepspeed_args} \
     --use_lora ${use_lora} \
     --lora_r ${lora_r} \
     --use_qlora 0 \
-    --lora_target_modules k_proj v_proj q_proj out_proj fc_in fc_out \
+    --lora_target_modules c_attn c_proj c_fc c_proj \
     --save_aggregated_lora 1 \
     --deepspeed ${ds_config} \
     --bf16 \

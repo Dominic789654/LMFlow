@@ -10,9 +10,9 @@
 # bash run_relora_full_adamw.sh  > log_new/phi1_5_adamw_gpt4_v2_6e-5_ft_per_layer_print_layer.log 2>&1
 # bash run_relora_adamw.sh  > log_new/con_lora_phi1_5_adamw_gpt4_v2_6e-5_print_layer.log 2>&1
 
-# bash run_relora.sh > log_new/con_lora_phi1_5_lionlamb_gpt4_v2_6e-3_ft_per_layer_update_norm_.log 2>&1
-bash run_relora_full_adamw.sh  > log_new/gptj_6b_adamw_gpt4_v2_6e-5_ft_per_layer_print_layer.log 2>&1
-# bash run_relora_adamw.sh  > log_new/con_lora_phi1_5_adamw_gpt4_v2_6e-5_print_layer.log 2>&1
+# bash run_relora.sh > log_new/con_lora_gptj_6b_lionlamb_gpt4_v2_6e-4_ft_per_layer_update_norm_.log 2>&1
+# bash run_relora_full_adamw.sh  > log_new/gptj_6b_adamw_gpt4_v2_6e-5_ft_per_layer_print_layer.log 2>&1
+# bash run_relora_adamw.sh  > log_new/con_lora_gptj_6b_adamw_gpt4_v2_6e-5_print_layer.log 2>&1
 
 
 
@@ -24,7 +24,8 @@ bash run_relora_full_adamw.sh  > log_new/gptj_6b_adamw_gpt4_v2_6e-5_ft_per_layer
 
 # bash run_relora.sh  > log_new/con_lora_gpt2_lionlamb_gpt4_v2_3e-2_ft_per_layer_print_detail_layer.log 2>&1
 # bash run_relora_lion.sh  > log_new/con_lora_gpt2_lion_gpt4_v2_1e-4_ft_print_detail_layer.log 2>&1
-# bash run_relora_adamw.sh  > log_new/con_lora_gpt2_adamw_gpt4_v2_2e-3_print_detail_layer.log 2>&1
+bash run_relora_adamw.sh  > log_new/con_lora_gpt2_adamw_gpt4_v2_2e-3_print_detail_layer.log 2>&1
+# bash run_relora_adamw.sh  > log_new/con_lora_gpt2_adamw_gpt4_v2_2e-3_print_detail_layer_no_continue.log 2>&1
 
 
 # bash run_relora.sh  > log_new/con_lora_gpt2_xl_lionlamb_gpt4_v2_6e-3_ft_per_layer_print_detail_layer.log 2>&1

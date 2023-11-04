@@ -285,9 +285,11 @@ class Finetuner(BaseTuner):
             components = name.split('.')
             # breakpoint()
             if len(components) >= 3:
-                return ".".join(components[0:3]) # gptj 6b per layer, eg layer0, layer1
+                # return ".".join(components[0:3]) # gptj 6b per layer, eg layer0, layer1
+                # return ".".join(components[2:5]) # lora gptj 6b per layer, eg layer0, layer1
 
-                # return ".".join(components[1:3]) # gpt2 per layer, eg layer0, layer1
+
+                return ".".join(components[1:3]) # gpt2 per layer, eg layer0, layer1
                 # return ".".join(components[1:4]) # gpt2 per layer, eg layer0.ln_1,layer0.attn, , layer1.mlp
                 # return ".".join(components[1:5]) # gpt2 per layer, eg layer0.ln_1.weight,layer0.attn, , layer1.mlp
 
