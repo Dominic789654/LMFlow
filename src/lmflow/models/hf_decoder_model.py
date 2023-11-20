@@ -342,6 +342,17 @@ class HFDecoderModel(DecoderModel, Tunable):
                     else:
                         param.requires_grad = False
 
+                    # if  "ln_f" in name:
+                    #     param.requires_grad = True  
+                    # elif  "ln_1" in name:
+                    #     param.requires_grad = True  
+                    # elif  "ln_2" in name:
+                    #     param.requires_grad = True  
+                    # elif "lora_" in name:
+                    #     param.requires_grad = True
+                    # else:
+                    #     param.requires_grad = False
+
                     # phi 1.5
                 # for name, param in model.named_parameters():
                 #     if "ln" in name:

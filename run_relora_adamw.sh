@@ -8,7 +8,7 @@ k=3
 #   --k ${k}
 
 
-# run_name="con_lora_llama2-7b_adamw_gpt4_v2_4e-4_ft_weight_norm_gradient_norm"
+# run_name="con_lora_llama2-7b_adamw_gpt4_v2_4e-4_ft_per_layer"
 # lr=4e-4
 # bs=30
 # per_device_eval_batch_size=1
@@ -125,8 +125,8 @@ k=3
 
 # gpt2 
 k=3
-run_name="con_lora_gpt2_adamw_gpt4_v2_2e-3_ft_print_detail_layer"
-lr=2e-3
+run_name="con_lora_gpt2_adamw_gpt4_v2_1e-3_ft_print_detail_layer_head_tail_30_lr"
+lr=1e-4
 bs=30
 per_device_eval_batch_size=1
 use_lora=1
@@ -150,7 +150,7 @@ test_dataset_path="data/continue_half_news_wiki_formated_test"
 num_portions=${k}
 selected_portion=1
 optimizer_name=Adamw
-# bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:1,2,3,4,5,6,7"  
+bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7"  
 
 for i in $(seq 1 $((k-1))) 
 do
@@ -160,11 +160,11 @@ do
     echo ${selected_portion}
     exp_name="${run_name}_${i}"
     data_path="data/gpt4_v2_split/split_${i}/"
-    bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:1,2,3,4,5,6,7"
+    bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7"
 done
 
 # GPT2 XL 
-# run_name="con_lora_gpt2_xl_adamw_gpt4_v2_1e-3_ft_per_layer_print_detail_layer"
+# run_name="con_lora_gpt2_xl_adamw_gpt4_v2_1e-3_ft_per_layer"
 # lr=1e-3
 # bs=30
 # per_device_eval_batch_size=1

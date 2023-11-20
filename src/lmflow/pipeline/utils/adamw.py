@@ -102,7 +102,8 @@ class AdamW(Optimizer):
                 step_size = group['lr'] * math.sqrt(bias_correction2) / bias_correction1
 
                 # p.data.addcdiv_(-step_size, exp_avg, denom)
-                p.data.add_(-step_size,  torch.mul(p.data, group['weight_decay']).addcdiv_(1, exp_avg, denom) )
+
+                # p.data.add_(-step_size,  torch.mul(p.data, group['weight_decay']).addcdiv_(1, exp_avg, denom) )
 
                 # 确定当前卡的参数范围
                 start_param = local_rank * params_per_card
@@ -118,9 +119,25 @@ class AdamW(Optimizer):
                         start_idx = max(0, layer_start_global - start_param)
                         end_idx = min(params_per_card, layer_end_global - start_param)
 
+
+                        # for gpt2
+                        if "wte" in layer:
+                            cur_step_size = 30*step_size
+                        elif "ln_f" in layer:
+                            cur_step_size = 30*step_size
+
+                        # for llama2
+                        # if "embed_tokens" in layer:
+                        #     lr = 2*lr
+                        # elif "weight" in layer:
+                        #     lr = 2*lr
+
+                        p.data[start_idx:end_idx].add_(-cur_step_size,  torch.mul(p.data[start_idx:end_idx], group['weight_decay']).addcdiv_(1, exp_avg[start_idx:end_idx], denom[start_idx:end_idx]) )
+
                         grad_norm = torch.norm(grad[start_idx:end_idx])
                         weight_norm = torch.norm(p.data[start_idx:end_idx])
                         print(f"\nlocal rank {os.environ.get('LOCAL_RANK', '0')}, layer {layer}, shape {shape}, start {start_idx}, end {end_idx}, grad norm {grad_norm}, weight norm {weight_norm}, update norm {torch.norm(exp_avg[start_idx:end_idx] /denom[start_idx:end_idx])}")
 
                     accumulated_param_count += num_params
         return loss
+

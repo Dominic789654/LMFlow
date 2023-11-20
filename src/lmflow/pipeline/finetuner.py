@@ -34,6 +34,9 @@ from lmflow.pipeline.base_tuner import BaseTuner
 from lmflow.pipeline.utils.lion_lamb import Lion_lamb
 from lmflow.pipeline.utils.lion import Lion
 from lmflow.pipeline.utils.adamw import AdamW
+from lmflow.pipeline.utils.adagrad import Adagrad
+from lmflow.pipeline.utils.sgd import SGD
+
 from lmflow.pipeline.utils.peft_trainer import PeftTrainer, PeftSavingCallback
 from torch.optim.lr_scheduler import LambdaLR, CosineAnnealingLR
 
@@ -289,10 +292,12 @@ class Finetuner(BaseTuner):
                 # return ".".join(components[2:5]) # lora gptj 6b per layer, eg layer0, layer1
 
 
-                return ".".join(components[1:3]) # gpt2 per layer, eg layer0, layer1
+                # return ".".join(components[1:3]) # gpt2 ft per layer, eg layer0, layer1
+                return ".".join(components[3:5]) # gpt2 lora per layer, eg layer0, layer1
                 # return ".".join(components[1:4]) # gpt2 per layer, eg layer0.ln_1,layer0.attn, , layer1.mlp
                 # return ".".join(components[1:5]) # gpt2 per layer, eg layer0.ln_1.weight,layer0.attn, , layer1.mlp
 
+                # return ".".join(components[0:3]) # gpt2-xl ft per layer, eg layer0, layer1
                 # return ".".join(components[2:5]) # gpt2-xl lora per layer, eg layer0, layer1
                 # return ".".join(components[2:6]) # gpt2-xl lora per middle layer, eg layer0.ln_1,layer0.attn, , layer1.mlp
                 # return ".".join(components[2:7]) # gpt2-xl lora per middle layer, eg layer0.ln_1.weight,layer0.attn.c_attn, , layer1.mlp.weight
@@ -300,6 +305,8 @@ class Finetuner(BaseTuner):
                 # return ".".join(components[1:3]) # llama 2 per layer, eg layer0, layer1
                 # return ".".join(components[1:4]) # llama 2 ft, eg layer0.self_attn, layer1.mlp
                 # return ".".join(components[3:6]) # llama 2 continue lora, eg layer0.self_attn, layer1.mlp 
+                # return ".".join(components[3:5]) # llama 2 continue lora, eg layer0, layer1
+
                 
                 # return ".".join(components[1:4]) # llama 2, eg layer0.self_attn.k,layer0.self_attn.v, layer1.mlp.up_proj
                 
@@ -432,7 +439,11 @@ class Finetuner(BaseTuner):
                 if training_args.optimizer_name == "LionLamb":
                     self.optimizer = Lion_lamb(model.get_backend_model().parameters(), layer_shape=layerwise_counts, betas=[0.95,0.98], lr=training_args.learning_rate, weight_decay=training_args.weight_decay, min_x=training_args.min_x, max_x=training_args.max_x)
                 elif training_args.optimizer_name == "Lion":
-                    self.optimizer = Lion(model.get_backend_model().parameters(), betas=[0.95,0.98], lr=training_args.learning_rate, weight_decay=training_args.weight_decay)
+                    self.optimizer = Lion(model.get_backend_model().parameters(), betas=[0.95,0.98], lr=training_args.learning_rate, weight_decay=training_args.weight_decay,layer_shape=layerwise_counts)
+                elif training_args.optimizer_name == "Adagrad":
+                    self.optimizer = Adagrad(model.get_backend_model().parameters(), lr=training_args.learning_rate, layer_shape=layerwise_counts)
+                elif training_args.optimizer_name == "SGD":
+                    self.optimizer = SGD(model.get_backend_model().parameters(), lr=training_args.learning_rate, weight_decay=training_args.weight_decay, layer_shape=layerwise_counts)
                 elif training_args.optimizer_name == "Adamw":
                     self.optimizer = AdamW(model.get_backend_model().parameters(), lr=training_args.learning_rate, weight_decay=training_args.weight_decay,layer_shape=layerwise_counts)
                 else:
