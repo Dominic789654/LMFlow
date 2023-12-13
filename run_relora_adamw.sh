@@ -1,4 +1,4 @@
-k=10
+k=3
 
 
 # python scripts/data_preprocess/split.py \
@@ -125,23 +125,22 @@ k=10
 
 # gpt2 
 k=3
-run_name="con_lora_gpt2_adamw_gpt4_v2_1e-3_ft_print_detail_layer_head_tail_30_lr"
-lr=1e-4
+run_name="con_lora_gpt2_adamw_gpt4_v2_1e-3_ft_print_detail_layer"
+lr=1e-3
 bs=30
 per_device_eval_batch_size=1
 use_lora=1
 epochs=1
 gradient_checkpointing=true
 gradient_accumulation_steps=1
-lora_r=8
+lora_r=128
 block_size=512
 ds_config=configs/ds_config_zero2_custom_optimizer.json
 model_name_or_path=gpt2
 # model_name_or_path=meta-llama/Llama-2-7b-hf
 # model_name_or_path=microsoft/phi-1_5
 exp_name="${run_name}_0";
-# data_path="data/c4_10G_split/split_0/"
-data_path="data/c4_10G_split/split_0/"
+data_path="data/gpt4_v2_split/split_0"
 # data_path="data/gpt4_v2"
 warmup_ratio=0.01
 echo ${data_path}
@@ -152,7 +151,7 @@ selected_portion=1
 optimizer_name=Adamw
 # bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:1,2,3,4,5,6,7"  
 
-for i in $(seq 5 $((k-1))) 
+for i in $(seq 1 $((k-1))) 
 do
     echo "current ${i} split"
     model_name_or_path=./output_models/${exp_name}
@@ -163,33 +162,33 @@ do
     bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:1,2,3,4,5,6,7"
 done
 
-k=1
-run_name="con_lora_gpt2_adamw_c4_10G_2e-3_ft_print_detail_layer_no_continue"
-lr=2e-3
-bs=30
-per_device_eval_batch_size=1
-use_lora=1
-epochs=1
-gradient_checkpointing=true
-gradient_accumulation_steps=1
-lora_r=8
-block_size=512
-ds_config=configs/ds_config_zero2_custom_optimizer.json
-model_name_or_path=gpt2
-# model_name_or_path=meta-llama/Llama-2-7b-hf
-# model_name_or_path=microsoft/phi-1_5
-exp_name="${run_name}_0";
-# data_path="data/c4_10G_split/split_0/"
-data_path="data/c4_10G"
-# data_path="data/gpt4_v2"
-warmup_ratio=0.01
-echo ${data_path}
-eval_dataset_path="data/continue_half_news_wiki_formated_eval/"
-test_dataset_path="data/continue_half_news_wiki_formated_test"
-num_portions=${k}
-selected_portion=1
-optimizer_name=Adamw
-bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7"  
+# k=1
+# run_name="con_lora_gpt2_adamw_c4_10G_2e-3_ft_print_detail_layer_no_continue"
+# lr=2e-3
+# bs=30
+# per_device_eval_batch_size=1
+# use_lora=1
+# epochs=1
+# gradient_checkpointing=true
+# gradient_accumulation_steps=1
+# lora_r=8
+# block_size=512
+# ds_config=configs/ds_config_zero2_custom_optimizer.json
+# model_name_or_path=gpt2
+# # model_name_or_path=meta-llama/Llama-2-7b-hf
+# # model_name_or_path=microsoft/phi-1_5
+# exp_name="${run_name}_0";
+# # data_path="data/c4_10G_split/split_0/"
+# data_path="data/c4_10G"
+# # data_path="data/gpt4_v2"
+# warmup_ratio=0.01
+# echo ${data_path}
+# eval_dataset_path="data/continue_half_news_wiki_formated_eval/"
+# test_dataset_path="data/continue_half_news_wiki_formated_test"
+# num_portions=${k}
+# selected_portion=1
+# optimizer_name=Adamw
+# bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7"  
 
 # GPT2 XL 
 # run_name="con_lora_gpt2_xl_adamw_gpt4_v2_1e-3_ft_per_layer"

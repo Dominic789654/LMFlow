@@ -1,11 +1,11 @@
-k=3
+k=50
 
 
-# python scripts/data_preprocess/split.py \
-#   --dataset_path data/gpt4_v2/gpt4_v2_text_only.json \
-#   --output_path  data/gpt4_v2_split \
-#   --seed 1 \
-#   --k ${k}
+python scripts/data_preprocess/split.py \
+  --dataset_path data/gpt4_v2/gpt4_v2_text_only.json \
+  --output_path  data/gpt4_v2_split \
+  --seed 1 \
+  --k ${k}
 
 
 # run_name="con_lora_llama2-7b_adamw_gpt4_v2_4e-4_ft_per_layer"
@@ -124,9 +124,9 @@ k=3
 # done
 
 # gpt2 
-k=3
-run_name="con_lora_gpt2_sgd_gpt4_v2_5e-2_ft.log"
-lr=5e-2
+# k=3
+run_name="con_lora_gpt2_sgd_gpt4_v2_1e-1_ft_k50.log"
+lr=1e-1
 bs=30
 per_device_eval_batch_size=1
 use_lora=1

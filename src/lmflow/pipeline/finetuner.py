@@ -372,9 +372,28 @@ class Finetuner(BaseTuner):
                             layerwise_params[layer_name].append(param)
                             
                         for layer, params in layerwise_params.items():
+                            
+                            weight_matrix = params[0]
+                            weight_matrix_float = weight_matrix.to(dtype=torch.float32)
+                            # breakpoint()
+                             # 计算奇异值
+                            # print(len(params))
+                            # breakpoint()
+                            if len(weight_matrix_float.shape) == 2:
+                                u, s, v = torch.svd(weight_matrix_float)
+                                print(f"Singular values of {layer}: {torch.norm(s)}")
+                                print(f"Singular values of {layer}: {torch.sum(s)}")
+
+
+                                # 计算迹（仅对方阵）
+                                if weight_matrix_float.shape[0] == weight_matrix_float.shape[1]:
+                                    trace = torch.trace(weight_matrix_float)
+                                    print(f"Trace of {layer}: {trace}")
+
+
                             # Concatenate all tensors for the current layer
-                            all_params = torch.cat([p.view(-1) for p in params])
-                            norm = torch.norm(all_params).item()
+                            # all_params = torch.cat([p.view(-1) for p in params])
+                            # norm = torch.norm(all_params).item()
                             # print(f"Layer {layer}: Weight Norm {norm}")
                     if len(state.log_history)>0:
                         elapsed_time = time.time() - self.start_time
@@ -460,17 +479,20 @@ class Finetuner(BaseTuner):
                 warmup_steps = math.ceil(steps_per_portion * warmup_proportion)
                 def lr_lambda(current_step):
                     current_step = self.get_global_step()
+
+
+                    warmup_start_step = steps_per_portion * (selected_portion - 1) + warmup_steps
                     portion_step = current_step % steps_per_portion  + steps_per_portion * (selected_portion - 1)
                     loss_time_callback.portion_step = portion_step
 
-                    warmup_start_step = steps_per_portion * (selected_portion - 1) + warmup_steps
                     lr_max_portion = lr_min + 0.5 * (lr_max - lr_min) * (1 + math.cos(math.pi * warmup_start_step / ((steps_per_portion - warmup_steps)*num_portions)))
                     if current_step  < warmup_steps:
                         # 预热阶段
                         lr = lr_max_portion * current_step / warmup_steps
                     else:
                         # 余弦退火阶段
-                        lr = lr_min + 0.5 * (lr_max - lr_min) * (1 + math.cos(math.pi * (portion_step - warmup_steps) / ((steps_per_portion - warmup_steps)*num_portions)))
+                        # lr = lr_min + 0.5 * (lr_max - lr_min) * (1 + math.cos(math.pi * (portion_step - warmup_steps) / ((steps_per_portion - warmup_steps)*num_portions)))
+                        lr = lr_min + 0.5 * (lr_max - lr_min) * (1 + math.cos(math.pi * (portion_step - warmup_steps) / ((steps_per_portion )*num_portions)))
                         # lr = lr_max
                     if os.environ.get('LOCAL_RANK', '0') == '0':
                         print("\ncurrent step", portion_step)

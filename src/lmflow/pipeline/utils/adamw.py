@@ -121,16 +121,27 @@ class AdamW(Optimizer):
 
 
                         # for gpt2
-                        if "wte" in layer:
-                            cur_step_size = 30*step_size
-                        elif "ln_f" in layer:
-                            cur_step_size = 30*step_size
+                        cur_step_size = step_size
+                        # if "wte" in layer:
+                        #     cur_step_size = 30*step_size
+                        # elif "ln_f" in layer:
+                        #     cur_step_size = 30*step_size
 
                         # for llama2
                         # if "embed_tokens" in layer:
                         #     lr = 2*lr
                         # elif "weight" in layer:
                         #     lr = 2*lr
+                        # weight_matrix = p.data[start_idx:end_idx]
+                        #  # 计算奇异值
+                        # u, s, v = torch.svd(weight_matrix)
+                        # print(f"Singular values of {layer}: {s}")
+
+                        # # 计算迹（仅对方阵）
+                        # if weight_matrix.shape[0] == weight_matrix.shape[1]:
+                        #     trace = torch.trace(weight_matrix)
+                        #     print(f"Trace of {layer}: {trace}")
+
 
                         p.data[start_idx:end_idx].add_(-cur_step_size,  torch.mul(p.data[start_idx:end_idx], group['weight_decay']).addcdiv_(1, exp_avg[start_idx:end_idx], denom[start_idx:end_idx]) )
 
