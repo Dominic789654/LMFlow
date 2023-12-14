@@ -379,16 +379,16 @@ class Finetuner(BaseTuner):
                              # 计算奇异值
                             # print(len(params))
                             # breakpoint()
-                            if len(weight_matrix_float.shape) == 2:
-                                u, s, v = torch.svd(weight_matrix_float)
-                                print(f"Singular values of {layer}: {torch.norm(s)}")
-                                print(f"Singular values of {layer}: {torch.sum(s)}")
+                            # if len(weight_matrix_float.shape) == 2:
+                            #     u, s, v = torch.svd(weight_matrix_float)
+                            #     # print(f"Singular values of {layer}: {torch.norm(s)}")
+                            #     print(f"Singular values of {layer}: {torch.sum(s)}")
 
 
-                                # 计算迹（仅对方阵）
-                                if weight_matrix_float.shape[0] == weight_matrix_float.shape[1]:
-                                    trace = torch.trace(weight_matrix_float)
-                                    print(f"Trace of {layer}: {trace}")
+                            #     # 计算迹（仅对方阵）
+                            #     if weight_matrix_float.shape[0] == weight_matrix_float.shape[1]:
+                            #         trace = torch.trace(weight_matrix_float)
+                            #         print(f"Trace of {layer}: {trace}")
 
 
                             # Concatenate all tensors for the current layer

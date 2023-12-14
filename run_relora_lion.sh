@@ -1,11 +1,11 @@
 k=3
 
 
-python scripts/data_preprocess/split.py \
-  --dataset_path data/gpt4_v2/gpt4_v2_text_only.json \
-  --output_path  data/gpt4_v2_split \
-  --seed 1 \
-  --k ${k}
+# python scripts/data_preprocess/split.py \
+#   --dataset_path data/gpt4_v2/gpt4_v2_text_only.json \
+#   --output_path  data/gpt4_v2_split \
+#   --seed 1 \
+#   --k ${k}
 
 # run_name="con_lora_llama2-7b_lion_gpt4_v2_4e-5_ft_per_layer_print_detail_layer"
 # lr=4e-5
@@ -108,7 +108,7 @@ test_dataset_path="data/continue_half_news_wiki_formated_test"
 num_portions=${k}
 selected_portion=1
 optimizer_name=Lion
-bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3"  
+bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7"  
 
 for i in $(seq 1 $((k-1))) 
 do
@@ -118,7 +118,7 @@ do
     echo ${selected_portion}
     exp_name="${run_name}_${i}"
     data_path="data/gpt4_v2_split/split_${i}/"
-    bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3"
+    bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7"
 done
 
 
