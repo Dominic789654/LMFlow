@@ -60,7 +60,7 @@
 # bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7" 
 
 k=1
-run_name="gpt2_lion_gpt4_v2_1e-5_ft_print_detail_layer"
+run_name="gpt2_lion_gpt4_v2_1e-5_ft_print"
 lr=1e-5
 bs=30
 per_device_eval_batch_size=1

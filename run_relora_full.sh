@@ -58,8 +58,8 @@
 
 
 k=1
-run_name="gpt2_lionlamb_gpt4_v2_8e-4_ft_per_layer_print_detail_layer"
-lr=8e-4
+run_name="gpt2_lionlamb_gpt4_v2_1e-3_ft_print"
+lr=1e-2
 bs=30
 per_device_eval_batch_size=1
 use_lora=0

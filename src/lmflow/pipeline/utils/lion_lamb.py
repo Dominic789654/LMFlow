@@ -94,14 +94,14 @@ class Lion_lamb(Optimizer):
                         grad_norm = torch.norm(p.grad.data[start_idx:end_idx])
                         
                         # for gpt2
-                        if "wte" in layer:
-                            lr = 1.3*lr
-                        elif "wpe" in layer:
-                            lr = 1.3*lr
-                        elif "lm_head" in layer:
-                            lr = 1.3*lr
-                        elif "ln_f" in layer:
-                            lr = 1.3*lr
+                        # if "wte" in layer:
+                        #     lr = 1.3*lr
+                        # elif "wpe" in layer:
+                        #     lr = 1.3*lr
+                        # elif "lm_head" in layer:
+                        #     lr = 1.3*lr
+                        # elif "ln_f" in layer:
+                        #     lr = 1.3*lr
 
                         # for llama2
                         # if "embed_tokens" in layer:
