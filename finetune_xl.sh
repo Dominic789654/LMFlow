@@ -23,15 +23,27 @@
 
 
 
+
+# bash run_relora_full.sh  > log_new/llama2-7b_lionlamb_gpt4_v2_4e-5_ft_print.log 2>&1
+# bash run_relora_full_lion.sh > log_new/llama2-7b_lion_gpt4_v2_4e-6_ft_print.log 2>&1
+# bash run_relora_full_adamw.sh > log_new/llama2-7b_adamw_gpt4_v2_8e-4_print_sum_singular.log 2>&1
+
+
+bash run_relora.sh  > log_new/con_and_one_lora_llama2-7b_lionlamb_gpt4_v2_4e-3_print.log 2>&1
+# bash run_relora_lion.sh  > log_new/con_and_one_lora_llama2-7b_lion_gpt4_v2_4e-5_print.log 2>&1
+# bash run_relora_adamw.sh  > log_new/con_and_one_lora_llama2-7b_adamw_gpt4_v2_4e-4_print.log 2>&1
+
+
+
 # bash run_relora_full.sh  > log_new/gpt2_lionlamb_gpt4_v2_1e-3_ft_print.log 2>&1
 # bash run_relora_full_lion.sh > log_new/gpt2_lion_gpt4_v2_1e-5_ft_print.log 2>&1
 # bash run_relora_full_adamw.sh > log_new/gpt2_adamw_gpt4_v2_1e-4_print_sum_singular.log 2>&1
 
 
 
-bash run_relora.sh  > log_new/con_and_only_lora_gpt2_lionlamb_gpt4_v2_1e-2_print.log 2>&1
-bash run_relora_lion.sh  > log_new/only_lora_gpt2_lion_gpt4_v2_1e-4_ft_print.log 2>&1
-# bash run_relora_adamw.sh  > log_new/con_lora_gpt2_adamw_gpt4_v2_1e-3_per_sum_singular.log 2>&1
+# bash run_relora.sh  > log_new/con_and_only_lora_gpt2_lionlamb_gpt4_v2_1e-2_print.log 2>&1
+# bash run_relora_lion.sh  > log_new/only_lora_gpt2_lion_gpt4_v2_1e-4_ft_print.log 2>&1
+# bash run_relora_adamw.sh  > log_new/con_lora_llama2_7b_adamw_gpt4_v2_1e-3_print.log 2>&1
 # bash run_relora_adamw.sh  > log_new/normal_lora_gpt2_adamw_gpt4_v2_1e-3_print.log 2>&1
 
 # bash run_relora_adamw.sh  > log_new/con_lora_gpt2_adamw_gpt4_v2_2e-3_print_detail_layer_no_continue.log 2>&1
