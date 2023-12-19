@@ -214,6 +214,10 @@ class ModelArguments:
         default=False,
         metadata={"help": "whether to activate checkpointing"}
     )
+    freeze_layers: List[int] = field(
+        default_factory=list,
+        metadata={"help": "List of layer indices to be frozen"}
+    )
     custom_model: bool = field(
         default=False,
         metadata={"help": "flag for the model from huggingface or not"}

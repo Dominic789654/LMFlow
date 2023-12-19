@@ -21,6 +21,7 @@ and question answering.
 import hashlib
 import logging
 from typing import List, Union
+import re
 
 import deepspeed
 from lmflow.models.utils.modeling_llama import LlamaForCausalLM
@@ -311,36 +312,36 @@ class HFDecoderModel(DecoderModel, Tunable):
                 model.print_trainable_parameters()
                 # breakpoint()
 
-                # follow ReLoRA
-                for name, param in model.named_parameters():
-                    # LLaMa: model.norm, model.layers.input_layernorm, model.layers.post_attention_layernorm
-                    if  "norm" in name:
-                        param.requires_grad = True        
-                    elif "lm_head" in name:
-                        param.requires_grad = True
-                    elif "embed_tokens" in name:
-                        param.requires_grad = True
-                    elif "bias" in name:
-                        param.requires_grad = True
-                    elif "lora_" in name:
-                        param.requires_grad = True
-                    else:
-                        param.requires_grad = False
-
+                if "llama" in model_args.model_name_or_path:
+                    for name, param in model.named_parameters():
+                        # LLaMa: model.norm, model.layers.input_layernorm, model.layers.post_attention_layernorm
+                        if  "norm" in name:
+                            param.requires_grad = True        
+                        elif "lm_head" in name:
+                            param.requires_grad = True
+                        elif "embed_tokens" in name:
+                            param.requires_grad = True
+                        elif "bias" in name:
+                            param.requires_grad = True
+                        elif "lora_" in name:
+                            param.requires_grad = True
+                        else:
+                            param.requires_grad = False
+                elif "gpt2" in model_args.model_name_or_path:
                     # gpt2 
-                # for name, param in model.named_parameters():
-                #     if  "ln_" in name:
-                #         param.requires_grad = True        
-                #     elif "wpe" in name:
-                #         param.requires_grad = True
-                #     elif "lm_head" in name:
-                #         param.requires_grad = True
-                #     elif "wte" in name:
-                #         param.requires_grad = True
-                #     elif "lora_" in name:
-                #         param.requires_grad = True
-                #     else:
-                #         param.requires_grad = False
+                    for name, param in model.named_parameters():
+                        if  "ln_" in name:
+                            param.requires_grad = True        
+                        elif "wpe" in name:
+                            param.requires_grad = True
+                        elif "lm_head" in name:
+                            param.requires_grad = True
+                        elif "wte" in name:
+                            param.requires_grad = True
+                        elif "lora_" in name:
+                            param.requires_grad = True
+                        else:
+                            param.requires_grad = False
 
                     # if  "ln_f" in name:
                     #     param.requires_grad = True  
@@ -387,6 +388,25 @@ class HFDecoderModel(DecoderModel, Tunable):
             # We resize the embeddings only when necessary to avoid index errors.
             # If you are creating a model from scratch on a small vocab and want a
             # smaller embedding size, remove this test.
+            # breakpoint()
+
+            if len(model_args.freeze_layers) > 0:
+                # Compile a regular expression pattern that matches 'layers.' followed by a number
+                layer_pattern = re.compile(r'\.(\d+)\.')
+                
+                for name, param in model.named_parameters():
+                    # Use the regular expression pattern to search for a match in the parameter name
+                    match = layer_pattern.search(name)
+                    if match:
+                        layer_num = int(match.group(1))  # This gets the layer number from the match
+                        if layer_num in model_args.freeze_layers:
+                            print(f"Freezing parameter {name}")
+                            param.requires_grad = False
+
+            # After freezing, print out all parameter statuses to verify
+            for name, param in model.named_parameters():
+                print(f"{name} is {'trainable' if param.requires_grad else 'frozen'}")
+
             # breakpoint()
             embedding_size = model.get_input_embeddings().weight.shape[0]
             if len(tokenizer) > embedding_size:
