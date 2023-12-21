@@ -25,8 +25,10 @@
 
 
 # bash run_relora_full.sh  > log_new/llama2-7b_lionlamb_gpt4_v2_4e-5_ft_print.log 2>&1
-# bash run_relora_full_lion.sh > log_new/llama2-7b_lion_gpt4_v2_4e-6_ft_print.log 2>&1
-bash run_relora_full_adamw.sh > log_new/gpt2_adamw_gpt4_v2_8e-4_freeze_experiments.log 2>&1
+# bash run_relora_full_lion.sh 
+# > log_new/llama2-7b_lion_gpt4_v2_4e-6_ft_print.log 2>&1
+bash run_relora_full_adamw.sh > log_new/gpt2_llama2-7b_adamw_gpt4_v2_2e-4_and_8e-4_freeze_experiments.log 2>&1
+bash run_relora_full.sh > log_new/gpt2_lionlamb_gpt4_v2_8e-4_and_1e-3_freeze_experiments.log 2>&1
 
 
 # bash run_relora.sh > log_new/con_lora_gpt2_lionlamb_gpt4_v2_1e-2_freeze_experiments.log 2>&1

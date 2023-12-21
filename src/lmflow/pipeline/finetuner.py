@@ -283,11 +283,23 @@ class Finetuner(BaseTuner):
             wandb.init(project="optimal_pretain",name=training_args.run_name)
 
 
-        def get_layer_from_name(name):
+        def get_layer_from_name(model_args, name):
             """Extract layer name from parameter name."""
             components = name.split('.')
             # breakpoint()
             if len(components) >= 3:
+                # breakpoint()
+                if "Llama" in model_args.model_name_or_path:
+                    if model_args.use_lora:
+                        return ".".join(components[3:5]) # llama 2 continue lora, eg layer0, layer1
+                    else:
+                        return ".".join(components[1:3]) # llama 2 per layer, eg layer0, layer1
+                elif "gpt2" in  model_args.model_name_or_path:
+                    if model_args.use_lora:
+                        return ".".join(components[3:5]) # gpt2 lora per layer, eg layer0, layer1
+                    else:
+                        return ".".join(components[1:3]) # gpt2 ft per layer, eg layer0, layer1
+
                 # return ".".join(components[0:3]) # gptj 6b per layer, eg layer0, layer1
                 # return ".".join(components[2:5]) # lora gptj 6b per layer, eg layer0, layer1
 
@@ -302,7 +314,7 @@ class Finetuner(BaseTuner):
                 # return ".".join(components[2:6]) # gpt2-xl lora per middle layer, eg layer0.ln_1,layer0.attn, , layer1.mlp
                 # return ".".join(components[2:7]) # gpt2-xl lora per middle layer, eg layer0.ln_1.weight,layer0.attn.c_attn, , layer1.mlp.weight
 
-                return ".".join(components[1:3]) # llama 2 per layer, eg layer0, layer1
+                # return ".".join(components[1:3]) # llama 2 per layer, eg layer0, layer1
                 # return ".".join(components[1:4]) # llama 2 ft, eg layer0.self_attn, layer1.mlp
                 # return ".".join(components[3:6]) # llama 2 continue lora, eg layer0.self_attn, layer1.mlp 
                 # return ".".join(components[3:5]) # llama 2 continue lora, eg layer0, layer1
@@ -330,7 +342,7 @@ class Finetuner(BaseTuner):
             else:
                 return components[1]
             
-        def get_layerwise_params(model):
+        def get_layerwise_params(model_args, model):
             layerwise_params = defaultdict(int)
             
             for name, param in model.named_parameters():
@@ -338,13 +350,13 @@ class Finetuner(BaseTuner):
                 # if '.h.0.attn.c_attn.weight' in name:
                 #     breakpoint()
                 if param.requires_grad:
-                    layer_name = get_layer_from_name(name)
+                    layer_name = get_layer_from_name(model_args, name)
                     layerwise_params[layer_name] += torch.numel(param)
             
             return layerwise_params
 
         # breakpoint()
-        layerwise_counts = get_layerwise_params(model.get_backend_model())
+        layerwise_counts = get_layerwise_params(model_args, model.get_backend_model())
 
         
 
