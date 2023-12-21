@@ -302,10 +302,10 @@ class Finetuner(BaseTuner):
                 # return ".".join(components[2:6]) # gpt2-xl lora per middle layer, eg layer0.ln_1,layer0.attn, , layer1.mlp
                 # return ".".join(components[2:7]) # gpt2-xl lora per middle layer, eg layer0.ln_1.weight,layer0.attn.c_attn, , layer1.mlp.weight
 
-                # return ".".join(components[1:3]) # llama 2 per layer, eg layer0, layer1
+                return ".".join(components[1:3]) # llama 2 per layer, eg layer0, layer1
                 # return ".".join(components[1:4]) # llama 2 ft, eg layer0.self_attn, layer1.mlp
                 # return ".".join(components[3:6]) # llama 2 continue lora, eg layer0.self_attn, layer1.mlp 
-                return ".".join(components[3:5]) # llama 2 continue lora, eg layer0, layer1
+                # return ".".join(components[3:5]) # llama 2 continue lora, eg layer0, layer1
 
                 
                 # return ".".join(components[1:4]) # llama 2, eg layer0.self_attn.k,layer0.self_attn.v, layer1.mlp.up_proj
