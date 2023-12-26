@@ -22,7 +22,8 @@ import hashlib
 import logging
 from typing import List, Union
 import re
-
+import random
+import time
 import deepspeed
 from lmflow.models.utils.modeling_llama import LlamaForCausalLM
 
@@ -389,19 +390,57 @@ class HFDecoderModel(DecoderModel, Tunable):
             # If you are creating a model from scratch on a small vocab and want a
             # smaller embedding size, remove this test.
             # breakpoint()
-
-            if len(model_args.freeze_layers) > 0:
-                # Compile a regular expression pattern that matches 'layers.' followed by a number
+            def freeze_layers(model, model_args):
+                local_random = random.Random()
+                print('local seed')
+                local_random.seed(model_args.local_seed)
                 layer_pattern = re.compile(r'\.(\d+)\.')
-                
-                for name, param in model.named_parameters():
-                    # Use the regular expression pattern to search for a match in the parameter name
+                max_layer = 0
+                for name, _ in model.named_parameters():
                     match = layer_pattern.search(name)
                     if match:
-                        layer_num = int(match.group(1))  # This gets the layer number from the match
-                        if layer_num in model_args.freeze_layers:
-                            print(f"Freezing parameter {name}")
-                            param.requires_grad = False
+                        max_layer = max(max_layer, int(match.group(1)))
+
+                # 如果 freeze_layers 列表为空，根据策略和百分比生成
+                if not model_args.freeze_layers:
+                    num_layers_to_freeze = max_layer * model_args.freeze_percentage // 100
+                    if model_args.freeze_strategy == 'head':
+                        model_args.freeze_layers = list(range(num_layers_to_freeze))
+                    elif model_args.freeze_strategy == 'tail':
+                        model_args.freeze_layers = list(range(max_layer - num_layers_to_freeze, max_layer))
+                    elif model_args.freeze_strategy == 'random':
+                        model_args.freeze_layers = local_random.sample(range(max_layer), num_layers_to_freeze)
+                # sort the list 
+                model_args.freeze_layers.sort()
+                print(f"Freezing layers: {model_args.freeze_layers} on rank {torch.distributed.get_rank()}")
+                return model_args.freeze_layers
+                
+            # only run on local rank 0
+            # if torch.distributed.get_rank() == 0:
+            if model_args.freeze_percentage > 0 or model_args.freeze_layers:
+                freeze_layers(model, model_args)
+
+            # 冻结选定的层
+            if model_args.freeze_layers:
+                layer_pattern = re.compile(r'\.(\d+)\.')
+                for name, param in model.named_parameters():
+                    match = layer_pattern.search(name)
+                    if match and int(match.group(1)) in model_args.freeze_layers:
+                        # print(f"Freezing parameter {name}")
+                        param.requires_grad = False
+
+            # if len(model_args.freeze_layers) > 0:
+            #     # Compile a regular expression pattern that matches 'layers.' followed by a number
+            #     layer_pattern = re.compile(r'\.(\d+)\.')
+                
+            #     for name, param in model.named_parameters():
+            #         # Use the regular expression pattern to search for a match in the parameter name
+            #         match = layer_pattern.search(name)
+            #         if match:
+            #             layer_num = int(match.group(1))  # This gets the layer number from the match
+            #             if layer_num in model_args.freeze_layers:
+            #                 print(f"Freezing parameter {name}")
+            #                 param.requires_grad = False
 
             # After freezing, print out all parameter statuses to verify
             for name, param in model.named_parameters():

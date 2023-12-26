@@ -2,8 +2,8 @@
 # Please run this script under ${project_id} in project directory of
 
 deepspeed_args="--master_port=11000"      # Default argument
-if [ $# -ge 19 ]; then
-  deepspeed_args="${20}"
+if [ $# -ge 22 ]; then
+  deepspeed_args="${23}"
 fi
 
 # exp_id=xl_001_sharegpt_v3_0.1_vicuna7b_lora_3epcoh_lr1e-4
@@ -29,6 +29,9 @@ num_portions="${16}"
 selected_portion="${17}"
 optimizer_name="${18}"
 freeze_layers="${19}" 
+freeze_strategy="${20}"
+freeze_percentage="${21}"
+local_seed="${22}"
 mkdir -p ${output_dir} ${log_dir}
 
 # no save 
@@ -88,6 +91,9 @@ deepspeed ${deepspeed_args} \
     --gradient_accumulation_steps ${gradient_accumulation_steps} \
     --activation_checkpointing ${gradient_checkpointing} \
     ${freeze_layers} \
+    --freeze_percentage ${freeze_percentage} \
+    --freeze_strategy ${freeze_strategy} \
+    --local_seed ${local_seed} \
     | tee ${log_dir}/train.log \
     2> ${log_dir}/train.err
     

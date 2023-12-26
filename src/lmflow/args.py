@@ -218,6 +218,18 @@ class ModelArguments:
         default_factory=list,
         metadata={"help": "List of layer indices to be frozen"}
     )
+    freeze_strategy: str = field(
+        default='head', 
+        metadata={"help": "Strategy to freeze layers: 'head', 'tail', or 'random'"}
+    )
+    freeze_percentage: int = field(
+        default=0, 
+        metadata={"help": "Percentage of layers to freeze"}
+    )
+    local_seed: int = field(
+        default=1,
+        metadata={"help": "seed for freze layers"}
+    )
     custom_model: bool = field(
         default=False,
         metadata={"help": "flag for the model from huggingface or not"}
