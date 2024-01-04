@@ -218,6 +218,10 @@ class ModelArguments:
         default_factory=list,
         metadata={"help": "List of layer indices to be frozen"}
     )
+    activate_layers: List[int] = field(
+        default_factory=list,
+        metadata={"help": "List of layer indices to be activate"}
+    )
     freeze_strategy: str = field(
         default='head', 
         metadata={"help": "Strategy to freeze layers: 'head', 'tail', or 'random'"}

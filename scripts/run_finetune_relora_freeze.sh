@@ -28,7 +28,7 @@ warmup_ratio="${15}"
 num_portions="${16}"
 selected_portion="${17}"
 optimizer_name="${18}"
-freeze_layers="${19}" 
+activate_layers="${19}" 
 freeze_strategy="${20}"
 freeze_percentage="${21}"
 local_seed="${22}"
@@ -90,7 +90,7 @@ deepspeed ${deepspeed_args} \
     --dataloader_num_workers 0 \
     --gradient_accumulation_steps ${gradient_accumulation_steps} \
     --activation_checkpointing ${gradient_checkpointing} \
-    ${freeze_layers} \
+    ${activate_layers} \
     --freeze_percentage ${freeze_percentage} \
     --freeze_strategy ${freeze_strategy} \
     --local_seed ${local_seed} \
