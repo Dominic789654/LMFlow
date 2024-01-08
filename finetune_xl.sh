@@ -32,11 +32,14 @@
 
 # bash run_relora_full_adamw.sh  > log_new/ft_gpt2_adamw_C4_1e-4_freeze_experiment_and_baseline.log 2>&1
 
+bash run_search_gpt2_search.sh > log_new/ft_gpt2_adamw_gpt4_v2_3e-3_freeze_search_freeze_wte_random_1.log
 # bash run_relora_full_adamw.sh  > log_new/ft_gpt2_adamw_C4_1e-4_baseline.log 2>&1
-# bash run_relora_full_adamw.sh  > log_new/ft_gpt2_adamw_C4_3e-4_experiment.log 2>&1
-bash run_adamw_continue_freeze.sh > log_new/ft_gpt2_adamw_C4_3e-3_continue_freeze_experiment.log 2>&1
+# bash run_relora_full_adamw.sh  > log_new/ft_gpt2_adamw_C4_3e-3_activate0_1_11_experiment.log 2>&1
+# bash run_adamw_continue_freeze.sh  > log_new/ft_gpt2_adamw_C4_6e-3_continue_freeze_experiment_activate1-11_total20.log 2>&1
+# bash run_continue_freeze_1.sh  > log_new/ft_gpt2_adamw_C4_3e-3_continue_freeze_experiment_activate1-11_total30.log 2>&1
+# bash run_continue_freeze_2.sh  > log_new/ft_gpt2_adamw_C4_6e-3_continue_freeze_experiment_activate1-11_total_30_freeze_wte.log 2>&1
 
-# bash run_relora_adamw.sh > log_new/one_lora_gpt2_adamw_c4_3e-3_rank512_ft_print_base_lora.log 2>&1
+# bash run_relora_adamw.sh > log_new/one_lora_gpt2_adamw_c4_6e-3_and8e-3_rank512_ft_base_lora.log 2>&1
 # bash run_relora_full.sh > log_new/gpt2_lionlamb_gpt4_v2_1e-3_print.log 2>&1
 
 

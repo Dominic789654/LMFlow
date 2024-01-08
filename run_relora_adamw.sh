@@ -220,8 +220,8 @@ k=3
 # bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7"  
 
 k=1
-run_name="one_lora_gpt2_adamw_c4_3e-3_rank512_ft_print"
-lr=3e-3
+run_name="one_lora_gpt2_adamw_c4_6e-3_rank512_base_lora"
+lr=6e-3
 bs=200
 per_device_eval_batch_size=1
 use_lora=1

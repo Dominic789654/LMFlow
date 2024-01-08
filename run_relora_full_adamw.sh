@@ -36,24 +36,7 @@
 
 
 # gpt2 c4 continue freeze
-
-
-#!/bin/bash
-
-# 生成长度为10的随机列表，元素范围是1到11
-random_list=($(shuf -i 1-11 -n 10))
-
-# 打印生成的随机列表
-echo "Generated list: ${random_list[*]}"
-
-# 使用数组中的元素
-# 假设我们想使用索引为3的元素
-idx=3
-element=${random_list[$idx]}
-echo "Element at index $idx: $element"
-
-
-k=10
+k=1
 
 # python scripts/data_preprocess/split.py \
 #   --dataset_path data/c4_10G/c4_sampled_data_10G.json \
@@ -61,8 +44,8 @@ k=10
 #   --seed 1 \
 #   --k ${k}
 
-run_name="ft_gpt2_adamw_C4_3e-3_continue_freeze_experiment"
-lr=3e-3
+run_name="ft_gpt2_adamw_C4_3e-3_activate0_1_11"
+lr=6e-3
 bs=200
 per_device_eval_batch_size=1
 use_lora=0
@@ -78,21 +61,20 @@ ds_config=configs/ds_config_zero2_custom_optimizer.json
 # model_name_or_path=microsoft/phi-1_5
 model_name_or_path=gpt2
 exp_name="${run_name}_lr${lr}";
-# data_path="data/gpt4_v2"
-data_path="data/c4_10G"
-warmup_ratio=0.01
+data_path="data/gpt4_v2"
+# data_path="data/c4_10G"
+warmup_ratio=0.01 # 0.03
 echo ${data_path}
 eval_dataset_path="data/continue_half_news_wiki_formated_eval/"
 test_dataset_path="data/continue_half_news_wiki_formated_test"
 num_portions=${k}
 selected_portion=1
 optimizer_name=Adamw
-freeze_layers="--freeze_layers  0 11 "
+activate_layers="--activate_layers  0 1 11 "
 freeze_percentage=90
 freeze_strategy="random"
 local_seed=$RANDOM
-bash ./scripts/run_finetune_relora_freeze.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "${freeze_layers}" ${freeze_strategy} ${freeze_percentage} ${local_seed} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7" 
-
+bash ./scripts/run_finetune_relora_freeze.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "${activate_layers}" ${freeze_strategy} ${freeze_percentage} ${local_seed} "--master_port=10002 --include localhost:0" 
 
 
 # llama 2 7b c4
