@@ -401,6 +401,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                     match = layer_pattern.search(name)
                     if match:
                         max_layer = max(max_layer, int(match.group(1)))
+                max_layer += 1
 
                 # 检查是否有需要激活的层
                 if model_args.activate_layers:
@@ -423,68 +424,42 @@ class HFDecoderModel(DecoderModel, Tunable):
                             model_args.freeze_layers = local_random.sample(range(max_layer), num_layers_to_freeze)
                         model_args.freeze_layers.sort()
                         print(f"Freezing layers: {model_args.freeze_layers} on rank {torch.distributed.get_rank()}")
+                        activated_layers = [i for i in range(max_layer) if i not in model_args.freeze_layers]
+                        print(f"Activating layers: {activated_layers} on rank {torch.distributed.get_rank()}")
                         # 冻结选定的层
                         for name, param in model.named_parameters():
                             match = layer_pattern.search(name)
                             if match and int(match.group(1)) in model_args.freeze_layers:
                                 param.requires_grad = False
-
+            # breakpoint()
             freeze_or_activate_layers(model, model_args)
-            # def freeze_layers(model, model_args):
-            #     local_random = random.Random()
-            #     print('local seed')
-            #     local_random.seed(model_args.local_seed)
-            #     layer_pattern = re.compile(r'\.(\d+)\.')
-            #     max_layer = 0
-            #     for name, _ in model.named_parameters():
-            #         match = layer_pattern.search(name)
-            #         if match:
-            #             max_layer = max(max_layer, int(match.group(1)))
+            # freeze model wte layer for gpt2
+            if "gpt2" in model_args.model_name_or_path:
+                for name, param in model.named_parameters():
+                    if "wte" in name:
+                        param.requires_grad = False
 
-            #     # 如果 freeze_layers 列表为空，根据策略和百分比生成
-            #     if not model_args.activate_layers:
-            #         num_layers_to_freeze = max_layer * model_args.freeze_percentage // 100
-            #         if model_args.freeze_strategy == 'head':
-            #             model_args.freeze_layers = list(range(num_layers_to_freeze))
-            #         elif model_args.freeze_strategy == 'tail':
-            #             model_args.freeze_layers = list(range(max_layer - num_layers_to_freeze, max_layer))
-            #         elif model_args.freeze_strategy == 'random':
-            #             model_args.freeze_layers = local_random.sample(range(max_layer), num_layers_to_freeze)
-            #     # sort the list 
-            #     model_args.freeze_layers.sort()
-            #     print(f"Freezing layers: {model_args.freeze_layers} on rank {torch.distributed.get_rank()}")
-            #     return model_args.freeze_layers
-                
-            # # only run on local rank 0
-            # # if torch.distributed.get_rank() == 0:
-            # if model_args.freeze_percentage > 0 or model_args.freeze_layers:
-            #     freeze_layers(model, model_args)
+            def count_active_parameters(model):
+                """
+                计算模型中激活（即requires_grad=True）的参数数量。
+                :param model: PyTorch模型。
+                :return: 激活的参数数量。
+                """
 
-            # # 冻结选定的层
-            # if model_args.freeze_layers:
-            #     layer_pattern = re.compile(r'\.(\d+)\.')
-            #     for name, param in model.named_parameters():
-            #         match = layer_pattern.search(name)
-            #         if match and int(match.group(1)) in model_args.freeze_layers:
-            #             # print(f"Freezing parameter {name}")
-            #             param.requires_grad = False
+                active_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+                # print in MB
+                print(f"Active parameters in the model: {active_params / 2 ** 20:.2f}M")
+                # return active_params
 
-            # if len(model_args.freeze_layers) > 0:
-            #     # Compile a regular expression pattern that matches 'layers.' followed by a number
-            #     layer_pattern = re.compile(r'\.(\d+)\.')
-                
-            #     for name, param in model.named_parameters():
-            #         # Use the regular expression pattern to search for a match in the parameter name
-            #         match = layer_pattern.search(name)
-            #         if match:
-            #             layer_num = int(match.group(1))  # This gets the layer number from the match
-            #             if layer_num in model_args.freeze_layers:
-            #                 print(f"Freezing parameter {name}")
-            #                 param.requires_grad = False
-
+            # 使用示例
+            active_parameters = count_active_parameters(model)
+            # breakpoint()
             # After freezing, print out all parameter statuses to verify
             for name, param in model.named_parameters():
-                print(f"{name} is {'trainable' if param.requires_grad else 'frozen'}")
+                if param.requires_grad:
+                    print(f"{name} is trainable activate, activate param {sum(p.numel() for p in param if p.requires_grad)}")
+            # breakpoint()
+
             # breakpoint()
             # breakpoint()
             embedding_size = model.get_input_embeddings().weight.shape[0]
