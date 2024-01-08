@@ -32,9 +32,9 @@
 
 # bash run_relora_full_adamw.sh  > log_new/ft_gpt2_adamw_C4_1e-4_freeze_experiment_and_baseline.log 2>&1
 
-bash run_search_gpt2_search.sh > log_new/ft_gpt2_adamw_gpt4_v2_3e-3_freeze_search_freeze_wte_random_1.log
+# bash run_search_gpt2_search.sh > log_new/ft_gpt2_adamw_gpt4_v2_6e-4_freeze80_search_freeze_wte_random_1_k3_warm0.06.log  2>&1
 # bash run_relora_full_adamw.sh  > log_new/ft_gpt2_adamw_C4_1e-4_baseline.log 2>&1
-# bash run_relora_full_adamw.sh  > log_new/ft_gpt2_adamw_C4_3e-3_activate0_1_11_experiment.log 2>&1
+bash run_relora_full_adamw.sh  > log_new/ft_gpt2_adamw_gpt4_v2_6e-4_activate0_5_11_experiment.log 2>&1
 # bash run_adamw_continue_freeze.sh  > log_new/ft_gpt2_adamw_C4_6e-3_continue_freeze_experiment_activate1-11_total20.log 2>&1
 # bash run_continue_freeze_1.sh  > log_new/ft_gpt2_adamw_C4_3e-3_continue_freeze_experiment_activate1-11_total30.log 2>&1
 # bash run_continue_freeze_2.sh  > log_new/ft_gpt2_adamw_C4_6e-3_continue_freeze_experiment_activate1-11_total_30_freeze_wte.log 2>&1
