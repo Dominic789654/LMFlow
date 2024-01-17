@@ -38,69 +38,32 @@
 # gpt2 c4 continue freeze
 
 
-#!/bin/bash
+# #!/bin/bash
 
-# 生成长度为10的随机列表，元素范围是1到11
-random_list=($(shuf -i 1-11 -n 10))
+# # 生成长度为10的随机列表，元素范围是1到11
+# random_list=($(shuf -i 1-11 -n 10))
 
-# 打印生成的随机列表
-echo "Generated list: ${random_list[*]}"
+# # 打印生成的随机列表
+# echo "Generated list: ${random_list[*]}"
 
-# 使用数组中的元素
-# 假设我们想使用索引为3的元素
-idx=3
-element=${random_list[$idx]}
-echo "Element at index $idx: $element"
-
-
-k=10
-
-# python scripts/data_preprocess/split.py \
-#   --dataset_path data/c4_10G/c4_sampled_data_10G.json \
-#   --output_path  data/c4_10G_split \
-#   --seed 1 \
-#   --k ${k}
-
-run_name="ft_gpt2_adamw_C4_3e-3_continue_freeze_experiment"
-lr=3e-3
-bs=200
-per_device_eval_batch_size=1
-use_lora=0
-epochs=1
-gradient_checkpointing=True
-gradient_accumulation_steps=1
-lora_r=8
-block_size=512
-ds_config=configs/ds_config_zero2_custom_optimizer.json
-# model_name_or_path=configs/llama_350m.json
-# model_name_or_path=pinkmanlove/llama-7b-hf
-# model_name_or_path=meta-llama/Llama-2-7b-hf
-# model_name_or_path=microsoft/phi-1_5
-model_name_or_path=gpt2
-exp_name="${run_name}_lr${lr}";
-# data_path="data/gpt4_v2"
-data_path="data/c4_10G"
-warmup_ratio=0.01
-echo ${data_path}
-eval_dataset_path="data/continue_half_news_wiki_formated_eval/"
-test_dataset_path="data/continue_half_news_wiki_formated_test"
-num_portions=${k}
-selected_portion=1
-optimizer_name=Adamw
-freeze_layers="--freeze_layers  0 11 "
-freeze_percentage=90
-freeze_strategy="random"
-local_seed=$RANDOM
-bash ./scripts/run_finetune_relora_freeze.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "${freeze_layers}" ${freeze_strategy} ${freeze_percentage} ${local_seed} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7" 
+# # 使用数组中的元素
+# # 假设我们想使用索引为3的元素
+# idx=3
+# element=${random_list[$idx]}
+# echo "Element at index $idx: $element"
 
 
+# k=10
 
-# llama 2 7b c4
+# # python scripts/data_preprocess/split.py \
+# #   --dataset_path data/c4_10G/c4_sampled_data_10G.json \
+# #   --output_path  data/c4_10G_split \
+# #   --seed 1 \
+# #   --k ${k}
 
-# k=1
-# run_name="ft_llama2-7b_adamw_C4_1e-4_baseline"
-# lr=1e-4
-# bs=50
+# run_name="ft_gpt2_adamw_C4_3e-3_continue_freeze_experiment"
+# lr=3e-3
+# bs=200
 # per_device_eval_batch_size=1
 # use_lora=0
 # epochs=1
@@ -111,9 +74,9 @@ bash ./scripts/run_finetune_relora_freeze.sh ${exp_name} ${data_path} ${lr} ${bs
 # ds_config=configs/ds_config_zero2_custom_optimizer.json
 # # model_name_or_path=configs/llama_350m.json
 # # model_name_or_path=pinkmanlove/llama-7b-hf
-# model_name_or_path=meta-llama/Llama-2-7b-hf
+# # model_name_or_path=meta-llama/Llama-2-7b-hf
 # # model_name_or_path=microsoft/phi-1_5
-# # model_name_or_path=gpt2
+# model_name_or_path=gpt2
 # exp_name="${run_name}_lr${lr}";
 # # data_path="data/gpt4_v2"
 # data_path="data/c4_10G"
@@ -128,7 +91,44 @@ bash ./scripts/run_finetune_relora_freeze.sh ${exp_name} ${data_path} ${lr} ${bs
 # freeze_percentage=90
 # freeze_strategy="random"
 # local_seed=$RANDOM
-# bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name}  "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7" 
+# bash ./scripts/run_finetune_relora_freeze.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "${freeze_layers}" ${freeze_strategy} ${freeze_percentage} ${local_seed} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7" 
+
+
+
+# llama 2 7b c4
+
+k=1
+run_name="ft_Llama2-7b_adamw_C4_1e-5_baseline"
+lr=1e-5
+bs=50
+per_device_eval_batch_size=1
+use_lora=0
+epochs=1
+gradient_checkpointing=True
+gradient_accumulation_steps=1
+lora_r=8
+block_size=512
+ds_config=configs/ds_config_zero2_custom_optimizer.json
+# model_name_or_path=configs/llama_350m.json
+# model_name_or_path=pinkmanlove/llama-7b-hf
+model_name_or_path=meta-llama/Llama-2-7b-hf
+# model_name_or_path=microsoft/phi-1_5
+# model_name_or_path=gpt2
+exp_name="${run_name}_lr${lr}";
+# data_path="data/gpt4_v2"
+data_path="data/c4_10G"
+warmup_ratio=0.01
+echo ${data_path}
+eval_dataset_path="data/continue_half_news_wiki_formated_eval/"
+test_dataset_path="data/continue_half_news_wiki_formated_test"
+num_portions=${k}
+selected_portion=1
+optimizer_name=Adamw
+freeze_layers="--freeze_layers  0 31 "
+freeze_percentage=90
+freeze_strategy="random"
+local_seed=$RANDOM
+bash ./scripts/run_finetune_relora.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name}  "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7" 
 
 # bash ./scripts/run_finetune_relora_freeze.sh ${exp_name} ${data_path} ${lr} ${bs} ${model_name_or_path} ${use_lora} ${ds_config} ${epochs} ${gradient_checkpointing} ${gradient_accumulation_steps} ${lora_r} ${eval_dataset_path} ${block_size} ${per_device_eval_batch_size} ${warmup_ratio} ${num_portions} ${selected_portion} ${optimizer_name} "${freeze_layers}" ${freeze_strategy} ${freeze_percentage} ${local_seed} "--master_port=10002 --include localhost:0,1,2,3,4,5,6,7" 
 

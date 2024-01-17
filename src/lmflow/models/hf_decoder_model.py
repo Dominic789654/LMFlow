@@ -280,7 +280,8 @@ class HFDecoderModel(DecoderModel, Tunable):
                     use_auth_token=True if model_args.use_auth_token else None,
                     torch_dtype=torch_dtype,
                     trust_remote_code=True,
-                    quantization_config=nf4_config if model_args.use_qlora else None
+                    quantization_config=nf4_config if model_args.use_qlora else None,
+                    attn_implementation="flash_attention_2",
                     )
             else:
                 # reproduce relora, small llama
@@ -390,7 +391,6 @@ class HFDecoderModel(DecoderModel, Tunable):
             # If you are creating a model from scratch on a small vocab and want a
             # smaller embedding size, remove this test.
             # breakpoint()
-
             def freeze_or_activate_layers(model, model_args):
                 local_random = random.Random()
                 print('local seed')
@@ -401,6 +401,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                     match = layer_pattern.search(name)
                     if match:
                         max_layer = max(max_layer, int(match.group(1)))
+                max_layer += 1
 
                 # 检查是否有需要激活的层
                 if model_args.activate_layers:
@@ -423,11 +424,40 @@ class HFDecoderModel(DecoderModel, Tunable):
                             model_args.freeze_layers = local_random.sample(range(max_layer), num_layers_to_freeze)
                         model_args.freeze_layers.sort()
                         print(f"Freezing layers: {model_args.freeze_layers} on rank {torch.distributed.get_rank()}")
+                        activated_layers = [i for i in range(max_layer) if i not in model_args.freeze_layers]
+                        print(f"Activating layers: {activated_layers} on rank {torch.distributed.get_rank()}")
                         # 冻结选定的层
                         for name, param in model.named_parameters():
                             match = layer_pattern.search(name)
                             if match and int(match.group(1)) in model_args.freeze_layers:
                                 param.requires_grad = False
+            # breakpoint()
+            freeze_or_activate_layers(model, model_args)
+            # freeze model wte layer for gpt2
+            if "gpt2" in model_args.model_name_or_path:
+                for name, param in model.named_parameters():
+                    if "wte" in name:
+                        param.requires_grad = False
+            
+            def count_active_parameters(model):
+                """
+                计算模型中激活（即requires_grad=True）的参数数量。
+                :param model: PyTorch模型。
+                :return: 激活的参数数量。
+                """
+
+                active_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+                # print in MB
+                print(f"Active parameters in the model: {active_params / 2 ** 20:.2f}M")
+                # return active_params
+
+            # 使用示例
+            active_parameters = count_active_parameters(model)
+            # After freezing, print out all parameter statuses to verify
+            for name, param in model.named_parameters():
+                if param.requires_grad:
+                    act_para = sum(p.numel() for p in param if p.requires_grad)
+                    print(f"{name} is trainable activate, activate param {act_para / 2 ** 20:.2f}M")
 
             freeze_or_activate_layers(model, model_args)
             # def freeze_layers(model, model_args):

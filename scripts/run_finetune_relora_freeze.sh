@@ -62,7 +62,7 @@ deepspeed ${deepspeed_args} \
     --output_dir ${output_dir} --overwrite_output_dir \
     --num_train_epochs ${num_train_epochs} \
     --learning_rate ${lr} \
-    --use_flash_attention 1 \
+    --use_flash_attention 0 \
     --block_size ${block_size} \
     --per_device_train_batch_size ${bs} \
     --per_device_eval_batch_size ${per_device_eval_batch_size} \
