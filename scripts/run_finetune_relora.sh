@@ -66,8 +66,8 @@ deepspeed ${deepspeed_args} \
     --use_lora ${use_lora} \
     --lora_r ${lora_r} \
     --use_qlora 0 \
-    --lora_target_modules c_attn c_proj c_fc c_proj \
-    --save_aggregated_lora 1 \
+    --lora_target_modules  q_proj k_proj v_proj o_proj gate_proj up_proj down_proj  \
+    --save_aggregated_lora 0 \
     --deepspeed ${ds_config} \
     --bf16 \
     --run_name ${exp_id}\

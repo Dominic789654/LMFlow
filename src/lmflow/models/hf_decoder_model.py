@@ -309,7 +309,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                     target_modules=lora_target_modules,
                 )
                 # breakpoint()
-
+                # model.gradient_checkpointing_enable()
                 model = get_peft_model(model, peft_config)
                 model.print_trainable_parameters()
                 # breakpoint()
