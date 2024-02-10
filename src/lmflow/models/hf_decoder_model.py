@@ -448,12 +448,13 @@ class HFDecoderModel(DecoderModel, Tunable):
                             if match and int(match.group(1)) in model_args.freeze_layers:
                                 param.requires_grad = False
             # breakpoint()
-            freeze_or_activate_layers(model, model_args)
+                                
+            # freeze_or_activate_layers(model, model_args)
             # freeze model wte layer for gpt2
-            if "gpt2" in model_args.model_name_or_path:
-                for name, param in model.named_parameters():
-                    if "wte" in name:
-                        param.requires_grad = False
+            # if "gpt2" in model_args.model_name_or_path:
+            #     for name, param in model.named_parameters():
+            #         if "wte" in name:
+            #             param.requires_grad = False
             
             def count_active_parameters(model):
                 """
@@ -475,33 +476,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                     act_para = sum(p.numel() for p in param if p.requires_grad)
                     print(f"{name} is trainable activate, activate param {act_para / 2 ** 20:.2f}M")
 
-            freeze_or_activate_layers(model, model_args)
-            # freeze model wte layer for gpt2
-            if "gpt2" in model_args.model_name_or_path:
-                for name, param in model.named_parameters():
-                    if "wte" in name:
-                        param.requires_grad = False
 
-            def count_active_parameters(model):
-                """
-                计算模型中激活（即requires_grad=True）的参数数量。
-                :param model: PyTorch模型。
-                :return: 激活的参数数量。
-                """
-
-                active_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-                # print in MB
-                print(f"Active parameters in the model: {active_params / 2 ** 20:.2f}M")
-                # return active_params
-
-            # 使用示例
-            active_parameters = count_active_parameters(model)
-            # breakpoint()
-            # After freezing, print out all parameter statuses to verify
-            for name, param in model.named_parameters():
-                if param.requires_grad:
-                    print(f"{name} is trainable activate, activate param {sum(p.numel() for p in param if p.requires_grad)}")
-            # breakpoint()
 
             # breakpoint()
             # breakpoint()

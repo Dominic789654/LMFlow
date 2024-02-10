@@ -273,8 +273,10 @@ class Finetuner(BaseTuner):
         training_args.block_size = data_args.block_size
 
         if model_args.use_lora:
-            FinetuningTrainer = PeftTrainer
-            trainer_callbacks = [PeftSavingCallback]
+            FinetuningTrainer = Trainer
+            trainer_callbacks = []
+            # FinetuningTrainer = PeftTrainer
+            # trainer_callbacks = [PeftSavingCallback]
         else:
             FinetuningTrainer = Trainer
             trainer_callbacks = []
@@ -517,7 +519,7 @@ class Finetuner(BaseTuner):
             def setup_training(self, num_training_steps:int):
                 self.create_optimizer()
                 self.create_scheduler(num_training_steps)
-
+        # breakpoint()
         # FinetuningTrainer / OptimizerConloraTrainer
         trainer = OptimizerConloraTrainer(
                 model=model.get_backend_model(),
@@ -571,9 +573,27 @@ class Finetuner(BaseTuner):
             if not model_args.use_lora:
                 trainer.save_model()  # Saves the tokenizer too for easy upload
             else:
-                if model_args.save_aggregated_lora:
-                    model.merge_lora_weights()
-                model.save(finetuner_args.output_dir,model_args.save_aggregated_lora)
+                trainer.save_model() # will only save from the main process
+                from deepspeed.utils.zero_to_fp32 import get_fp32_state_dict_from_zero_checkpoint
+                from peft import get_peft_model_state_dict
+                if training_args.local_rank == 0:
+                    print(model.get_backend_model().state_dict().keys())
+                    if trainer.deepspeed and not os.path.exists(f"{finetuner_args.output_dir}/pytorch_model.bin"):
+                        print("CONVERT Deepspeed Checkpoint to FP32")
+                        state_dict = get_fp32_state_dict_from_zero_checkpoint(finetuner_args.output_dir) # already on cpu
+                    else:
+                        print("TRY to use the model directly")
+                        state_dict = model.get_backend_model().cpu().state_dict()
+                    print("Number of elements in the state dict", sum(p.numel() for p in state_dict.values()))
+                    d = get_peft_model_state_dict(model.get_backend_model(), state_dict=state_dict)
+
+                    model.get_backend_model().save_pretrained(f"{finetuner_args.output_dir}_lora")
+                    torch.save(d, f"{finetuner_args.output_dir}_lora/adapter_model.bin")
+
+
+                # if model_args.save_aggregated_lora:
+                #     model.merge_lora_weights()
+                # model.save(finetuner_args.output_dir,model_args.save_aggregated_lora)
 
             metrics = train_result.metrics
 
