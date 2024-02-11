@@ -314,16 +314,16 @@ class HFDecoderModel(DecoderModel, Tunable):
                 model.print_trainable_parameters()
                 # breakpoint()
 
-                if "llama" in model_args.model_name_or_path:
-                    for name, param in model.named_parameters():
-                        if  "lm_head" in name:
-                            param.requires_grad = True        
-                        elif "embed_tokens" in name:
-                            param.requires_grad = True
-                        elif "lora_" in name:
-                            param.requires_grad = True
-                        else:
-                            param.requires_grad = False
+                # if "llama" in model_args.model_name_or_path:
+                #     for name, param in model.named_parameters():
+                #         if  "lm_head" in name:
+                #             param.requires_grad = True        
+                #         elif "embed_tokens" in name:
+                #             param.requires_grad = True
+                #         elif "lora_" in name:
+                #             param.requires_grad = True
+                #         else:
+                #             param.requires_grad = False
 
 
                 # if "llama" in model_args.model_name_or_path:
@@ -481,8 +481,8 @@ class HFDecoderModel(DecoderModel, Tunable):
             # breakpoint()
             # breakpoint()
             embedding_size = model.get_input_embeddings().weight.shape[0]
-            if len(tokenizer) > embedding_size:
-                model.resize_token_embeddings(len(tokenizer))
+            # if len(tokenizer) > embedding_size:
+            #     model.resize_token_embeddings(len(tokenizer))
 
             self.config = config
             self.backend_model = model

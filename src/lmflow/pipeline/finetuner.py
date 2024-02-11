@@ -588,6 +588,7 @@ class Finetuner(BaseTuner):
                     d = get_peft_model_state_dict(model.get_backend_model(), state_dict=state_dict)
 
                     model.get_backend_model().save_pretrained(f"{finetuner_args.output_dir}_lora")
+                    print("Number of elements in the lora state dict", sum(p.numel() for p in d.values()))
                     torch.save(d, f"{finetuner_args.output_dir}_lora/adapter_model.bin")
 
 
