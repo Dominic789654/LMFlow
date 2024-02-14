@@ -90,3 +90,7 @@ deepspeed ${deepspeed_args} \
     | tee ${log_dir}/train.log \
     2> ${log_dir}/train.err
     
+exit_code=$?
+
+# 退出脚本，并将Python脚本的退出状态码作为a.sh的退出状态码
+exit $exit_code
