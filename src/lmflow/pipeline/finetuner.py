@@ -17,6 +17,12 @@ from transformers import (
     default_data_collator,
     set_seed,
 )
+from transformers.trainer_callback import (
+    TrainerCallback,
+    TrainerControl,
+    TrainerState,
+)
+import numpy as np
 from copy import deepcopy
 from transformers.utils import send_example_telemetry
 from transformers.trainer_utils import get_last_checkpoint
@@ -291,6 +297,92 @@ class Finetuner(BaseTuner):
             trainer_callbacks = []
         if data_collator is None:
             data_collator = default_data_collator
+
+        # # 定义回调类来处理冻结和解冻逻辑
+        # class FreezeUnfreezeCallback(TrainerCallback):
+        #     def __init__(self, freeze_steps, unfreeze_steps, model):
+        #         super().__init__()
+        #         self.freeze_steps = freeze_steps
+        #         self.unfreeze_steps = unfreeze_steps
+        #         self.model = model
+                
+        #     def on_step_begin(self, args, state, control, **kwargs):
+        #         if state.global_step == self.freeze_steps:
+        #             print(f"Freezing layers at step {self.freeze_steps}")
+        #             self.frozen_params = self.simulate_freeze_unfreeze(range(12))
+                    
+        #         if state.global_step == self.unfreeze_steps:
+        #             print(f"Restoring frozen layers' params at step {self.unfreeze_steps}")
+        #             self.restore_frozen_layer_params(range(12))
+            
+        #     def simulate_freeze_unfreeze(self, freeze_indices):
+        #         layers = self.model.transformer.h
+        #         for i in freeze_indices:
+        #             for param in layers[i].parameters():
+        #                 param.requires_grad = False
+
+        #     def restore_frozen_layer_params(self, freeze_indices):
+        #         layers = self.model.transformer.h
+        #         for i in freeze_indices:
+        #             for param in layers[i].parameters():
+        #                 param.requires_grad = True
+
+        # # 创建自定义回调实例
+        # freeze_unfreeze_callback = FreezeUnfreezeCallback(
+        #     freeze_steps=400,  # 在第100步冻结层
+        #     unfreeze_steps=600,  # 在第200步解冻层
+        #     model=model.get_backend_model(),
+        # )
+
+
+# from transformers import TrainerCallback
+
+        class DynamicLayerActivationCallback(TrainerCallback):
+            def __init__(self, n_layers, step_interval, model):
+                super().__init__()
+                self.n_layers = n_layers
+                self.step_interval = step_interval
+                self.model = model
+                # 检测模型类型来决定使用哪种方式访问层
+                if self.model.__class__.__name__ == 'LlamaForCausalLM':
+                    self.layers_attribute = 'model.model.layers'  # LlamaForCausalLM的层访问路径
+                    self.total_layers = len(eval('self.' + self.layers_attribute))  # 动态执行以获取层数
+                else:
+                    self.layers_attribute = 'model.transformer.h'  # 通用访问路径
+                    self.total_layers = len(eval('self.' + self.layers_attribute))  # 动态执行以获取层数
+                self.active_layers_indices = []
+
+            def on_step_begin(self, args, state, control, **kwargs):
+                # 检查是否到了切换活动层的时间
+                if state.global_step % self.step_interval == 0 or state.global_step == 0:
+                    self.switch_active_layers()
+
+            def switch_active_layers(self):
+                # 首先，为所有层禁用梯度
+                layers = eval('self.' + self.layers_attribute)  # 动态执行以获取层
+                for layer in layers:
+                    for param in layer.parameters():
+                        param.requires_grad = False
+
+                # 随机选择n_layers来激活
+                self.active_layers_indices = np.random.choice(range(self.total_layers), self.n_layers, replace=False)
+                print(f"Activating layers at indices: {self.active_layers_indices} for the next steps.")
+
+                # 仅为选定的层启用梯度
+                for idx in self.active_layers_indices:
+                    for param in layers[idx].parameters():
+                        param.requires_grad = True
+        
+        # 实例化回调
+        dynamic_layer_activation_callback = DynamicLayerActivationCallback(
+            n_layers=2,                     # 激活层的数量
+            step_interval=20,               # 更新激活层的步间隔
+            model=model.get_backend_model()
+        )
+
+
+        trainer_callbacks.append(dynamic_layer_activation_callback)
+
         trainer = FinetuningTrainer(
             model=model.get_backend_model(),
             args=training_args,

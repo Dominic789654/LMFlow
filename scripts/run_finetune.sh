@@ -5,7 +5,8 @@
 
 # Parses arguments
 model_name_or_path=gpt2
-dataset_path=data/alpaca/train
+# dataset_path=data/alpaca/train
+dataset_path=data/gpt4_v2
 output_dir=output_models/finetune
 deepspeed_args="--master_port=11000"
 
@@ -35,6 +36,7 @@ while [[ $# -ge 1 ]]; do
   shift
 done
 
+
 # Finetune
 exp_id=finetune
 project_dir=$(cd "$(dirname $0)"/..; pwd)
@@ -43,21 +45,27 @@ mkdir -p ${output_dir} ${log_dir}
 
 deepspeed ${deepspeed_args} \
   examples/finetune.py \
-    --model_name_or_path ${model_name_or_path} \
+    --model_name_or_path meta-llama/Llama-2-7b-hf \
     --dataset_path ${dataset_path} \
     --output_dir ${output_dir} --overwrite_output_dir \
-    --num_train_epochs 0.01 \
-    --learning_rate 2e-5 \
+    --num_train_epochs 1 \
+    --learning_rate 5e-5 \
     --block_size 512 \
-    --per_device_train_batch_size 1 \
-    --deepspeed configs/ds_config_zero3.json \
+    --per_device_train_batch_size 50 \
+    --deepspeed configs/ds_config_zero2.json \
     --fp16 \
-    --run_name finetune \
+    --run_name Llama2-7b_5e-5_bsz50_lisa_n2_k20 \
     --validation_split_percentage 0 \
-    --logging_steps 20 \
+    --logging_steps 10 \
     --do_train \
     --ddp_timeout 72000 \
     --save_steps 5000 \
     --dataloader_num_workers 1 \
+    --gradient_checkpointing True \
     | tee ${log_dir}/train.log \
     2> ${log_dir}/train.err
+
+
+    # --use_lora 1 \
+    # --lora_r 256 \
+    # --lora_target_modules c_attn c_proj c_fc c_proj wtp wpe lm_head \

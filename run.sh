@@ -1,0 +1,1 @@
+bash ./scripts/run_finetune.sh  --deepspeed_args "--master_port=11000 --include localhost:0,1,2,3,4,5,6,7"
