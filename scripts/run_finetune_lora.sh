@@ -5,7 +5,7 @@
 
 # Parses arguments
 model_name_or_path=gpt2
-run_name=Llama2-70b_5e-5_bsz8_lisa_n4_k50
+run_name=Llama2-70b_5e-5_bsz8_lora128_all_layers
 # dataset_path=data/alpaca/train
 dataset_path=data/gpt4_v2
 output_dir=output_models/${run_name}
@@ -53,6 +53,7 @@ deepspeed ${deepspeed_args} \
     --learning_rate 5e-5 \
     --block_size 512 \
     --per_device_train_batch_size 8 \
+    --gradient_accumulation_steps 1 \
     --deepspeed configs/ds_config_zero3.json \
     --fp16 \
     --run_name ${run_name} \
@@ -66,6 +67,9 @@ deepspeed ${deepspeed_args} \
     --dataloader_num_workers 1 \
     --gradient_checkpointing True \
     --torch_dtype float16 \
+    --use_lora 1 \
+    --lora_r 128 \
+    --lora_target_modules q_proj k_proj v_proj o_proj gate_proj up_proj down_proj embed_tokens lm_head \
     | tee ${log_dir}/train.log \
     2> ${log_dir}/train.err
 
@@ -73,3 +77,4 @@ deepspeed ${deepspeed_args} \
     # --use_lora 1 \
     # --lora_r 256 \
     # --lora_target_modules c_attn c_proj c_fc c_proj wtp wpe lm_head \
+    # q_proj k_proj v_proj o_proj gate_proj up_proj down_proj embed_tokens lm_head

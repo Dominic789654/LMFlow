@@ -292,7 +292,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                         torch_dtype=torch_dtype,
                         device_map=device_map,
                         trust_remote_code = model_args.trust_remote_code,
-                        # attn_implementation="flash_attention_2",
+                        attn_implementation="flash_attention_2",
                     )
                 #for deepspeed zero3, we don't need to specify device_map
                 except:
@@ -306,7 +306,7 @@ class HFDecoderModel(DecoderModel, Tunable):
                         use_auth_token=True if model_args.use_auth_token else None,
                         torch_dtype=torch_dtype,
                         trust_remote_code = model_args.trust_remote_code,
-                        # attn_implementation="flash_attention_2",
+                        attn_implementation="flash_attention_2",
                     )
                 if model_args.use_qlora:
                     model.gradient_checkpointing_enable()

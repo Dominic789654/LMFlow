@@ -346,25 +346,31 @@ class Finetuner(BaseTuner):
                 # 检测模型类型来决定使用哪种方式访问层
                 if self.model.__class__.__name__ == 'LlamaForCausalLM':
                     self.layers_attribute = 'model.model.layers'  # LlamaForCausalLM的层访问路径
-                    self.total_layers = len(eval('self.' + self.layers_attribute))  # 动态执行以获取层数
                 else:
                     self.layers_attribute = 'model.transformer.h'  # 通用访问路径
-                    self.total_layers = len(eval('self.' + self.layers_attribute))  # 动态执行以获取层数
+                self.total_layers = len(eval('self.' + self.layers_attribute))  # 动态执行以获取层数
+                
+                # 初始化时冻结所有层
+                self.freeze_all_layers()
                 self.active_layers_indices = []
 
-            def on_step_begin(self, args, state, control, **kwargs):
-                # 检查是否到了切换活动层的时间
-                if state.global_step % self.step_interval == 0 or state.global_step == 0:
-                    self.switch_active_layers()
-
-            def switch_active_layers(self):
-                # 首先，为所有层禁用梯度
+            def freeze_all_layers(self):
                 layers = eval('self.' + self.layers_attribute)  # 动态执行以获取层
                 for layer in layers:
                     for param in layer.parameters():
                         param.requires_grad = False
 
+            def on_step_begin(self, args, state, control, **kwargs):
+                # 检查是否到了切换活动层的时间，包括第0步
+                if state.global_step % self.step_interval == 0 or state.global_step == 1:
+                    self.switch_active_layers()
+
+            def switch_active_layers(self):
+                # 首先，为所有层禁用梯度
+                self.freeze_all_layers()
+                
                 # 随机选择n_layers来激活
+                layers = eval('self.' + self.layers_attribute)  # 重新获取层引用
                 self.active_layers_indices = np.random.choice(range(self.total_layers), self.n_layers, replace=False)
                 print(f"Activating layers at indices: {self.active_layers_indices} for the next steps.")
 
@@ -372,14 +378,13 @@ class Finetuner(BaseTuner):
                 for idx in self.active_layers_indices:
                     for param in layers[idx].parameters():
                         param.requires_grad = True
-        
+
         # 实例化回调
         dynamic_layer_activation_callback = DynamicLayerActivationCallback(
-            n_layers=2,                     # 激活层的数量
-            step_interval=20,               # 更新激活层的步间隔
+            n_layers=4,                     # 激活层的数量
+            step_interval=50,               # 更新激活层的步间隔
             model=model.get_backend_model()
         )
-
 
         trainer_callbacks.append(dynamic_layer_activation_callback)
 
