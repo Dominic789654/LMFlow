@@ -1,0 +1,1 @@
+bash ./scripts/run_finetune.sh > log/7b_lisa_k2_n20_bsz30_lr5e.log 2>&1 
