@@ -4,9 +4,10 @@
 #     COMMIT: d5fecf30ba8011067b10cf51fede53a5ab6574e4
 
 # Parses arguments
-model_name_or_path=gpt2
-dataset_path=data/alpaca/train
-output_dir=output_models/finetune
+model_name_or_path=meta-llama/Llama-2-7b-hf
+dataset_path=/home/liuxiang/LMFlow/data/OWM_8G
+# val_path=./data/gpt4_v2_val/
+output_dir=output_models/con_pretrain
 deepspeed_args="--master_port=11000"
 
 while [[ $# -ge 1 ]]; do
@@ -36,7 +37,9 @@ while [[ $# -ge 1 ]]; do
 done
 
 # Finetune
-exp_id=finetune
+WANDB_PROJECT=lisa_continue_pretrain
+exp_id=llama2-7b_lisa_k1_n2_bsz50_lr4e-5_owm8g
+output_dir=output_models/acl_rebuttal/${exp_id}
 project_dir=$(cd "$(dirname $0)"/..; pwd)
 log_dir=${project_dir}/log/${exp_id}
 mkdir -p ${output_dir} ${log_dir}
@@ -46,19 +49,34 @@ deepspeed ${deepspeed_args} \
     --model_name_or_path ${model_name_or_path} \
     --dataset_path ${dataset_path} \
     --output_dir ${output_dir} --overwrite_output_dir \
-    --num_train_epochs 0.01 \
-    --learning_rate 2e-5 \
-    --disable_group_texts 1 \
-    --block_size 256 \
-    --per_device_train_batch_size 1 \
-    --deepspeed configs/ds_config_zero3.json \
+    --num_train_epochs 1 \
+    --learning_rate 4e-5 \
+    --block_size 512 \
+    --per_device_train_batch_size 50 \
+    --use_flash_attention 1 \
+    --deepspeed configs/ds_config_zero2.json \
     --fp16 \
-    --run_name finetune \
+    --run_name ${exp_id} \
     --validation_split_percentage 0 \
-    --logging_steps 20 \
+    --logging_steps 1 \
     --do_train \
+    --lr_scheduler_type cosine \
     --ddp_timeout 72000 \
     --save_steps 5000 \
     --dataloader_num_workers 1 \
+    --gradient_checkpointing \
+    --use_lisa 1 \
+    --lisa_interval_steps 1 \
+    --gradient_accumulation_steps 1 \
     | tee ${log_dir}/train.log \
     2> ${log_dir}/train.err
+
+    # --warmup_ratio 0.06 \
+    # --weight_decay 0.01 \
+
+    # --eval_dataset_path ${val_path} \
+    # --do_eval \
+    # --evaluation_strategy steps \
+    # --eval_steps 5 \
+        # --use_lisa 1 \
+    # --lisa_step_interval 1 \
