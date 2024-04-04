@@ -55,7 +55,8 @@ deepspeed ${deepspeed_args} \
     --per_device_train_batch_size 50 \
     --use_flash_attention 1 \
     --deepspeed configs/ds_config_zero2.json \
-    --fp16 \
+    --bf16 \
+    --torch_dtype bfloat16 \
     --run_name ${exp_id} \
     --validation_split_percentage 0 \
     --logging_steps 1 \
