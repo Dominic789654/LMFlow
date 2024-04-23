@@ -5,7 +5,7 @@
 
 # Parses arguments
 model_name_or_path=meta-llama/Llama-2-7b-hf
-dataset_path=data/alpaca/train
+dataset_path=data/alpaca/train_conversation
 output_dir=output_models/finetune_lisa
 lisa_activated_layers=1
 lisa_interval_steps=20
@@ -16,6 +16,7 @@ use_flash_attention=0
 gradient_accumulation_steps=1
 block_size=256
 per_device_train_batch_size=1
+conversation_template=llama2
 
 # Enable model parallelism for multiple gpus, modify this if you prefer
 # customized deepspeed zero-redundancy optimization settings
@@ -68,6 +69,10 @@ while [[ $# -ge 1 ]]; do
       block_size="$2"
       shift
       ;;
+    --conversation_template)
+      conversation_template="$2"
+      shift
+      ;;
     --per_device_train_batch_size|--batch_size)
       per_device_train_batch_size="$2"
       shift
@@ -89,8 +94,9 @@ python examples/finetune.py \
     --model_name_or_path ${model_name_or_path} \
     --dataset_path ${dataset_path} \
     --output_dir ${output_dir} --overwrite_output_dir \
+    --conversation_template ${conversation_template} \
     --num_train_epochs 1 \
-    --learning_rate 2e-5 \
+    --learning_rate 1e-5 \
     --disable_group_texts 1 \
     --block_size ${block_size} \
     --per_device_train_batch_size ${per_device_train_batch_size} \

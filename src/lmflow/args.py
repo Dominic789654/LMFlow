@@ -392,10 +392,13 @@ class DatasetArguments:
         a boolean indicating whether to train on prompt for conversation datasets such as ShareGPT.
         
     disable_conversation_bos_token: bool
-        a boolean indicating whether to disable the bos token for conversation datasets.
+        [DEPRECATE SOON] a boolean indicating whether to disable the bos token for conversation datasets.
         
     disable_conversation_eos_token: bool
-        a boolean indicating whether to disable the eos token for conversation datasets.
+        [DEPRECATE SOON] a boolean indicating whether to disable the eos token for conversation datasets.
+
+    conversation_template: str
+        a string representing the template for conversation datasets.
 
     The class also includes some additional parameters that can be used to configure the dataset further, such as `overwrite_cache`,
     `validation_split_percentage`, `preprocessing_num_workers`, `disable_group_texts`, `demo_example_in_prompt`, `explanation_in_prompt`,
@@ -480,16 +483,21 @@ class DatasetArguments:
         }
     )
     disable_group_texts: bool = field(
-        default=False,
+        default=True,
         metadata={
             "help": (
-                "Whether we group original samples together to generate sample"
-                " sequences of length `block_size`. By default, we group every"
-                " 1000 tokenized sequences together, divide them into "
-                " [{total_num_tokens} / {block_size}] sequences, each with"
-                " `block_size` tokens (the remaining tokens are ommited."
-                " If this flag is set to True, we only group 1 tokenized"
-                " sequence, i.e. cutting long sequence into chunks."
+                "Whether we disable group of original samples together to"
+                " generate sample sequences of length `block_size`"
+                " By Default, it is True, which means the long samples"
+                " are truncated to `block_size` tokens"
+                " and short samples are padded to `block_size` tokens."
+                " If set to False, we group every 1000 tokenized"
+                " sequences together, divide them into"
+                " [{total_num_tokens} / {block_size}] sequences,"
+                " each with `block_size` tokens"
+                " (the remaining tokens are ommited."
+                " This group text behavior is useful"
+                " for continual pretrain or pretrain."
             )
         },
     )
@@ -511,6 +519,10 @@ class DatasetArguments:
     disable_conversation_eos_token: bool = field(
         default=False,
         metadata={"help": "Whether to disable the eos token for conversation datasets."}
+    )
+    conversation_template: Optional[str] = field(
+        default='empty',
+        metadata={"help": "The template for conversation datasets."}
     )
 
     def __post_init__(self):
@@ -589,6 +601,12 @@ class FinetunerArguments(TrainingArguments):
         default=20,
         metadata={
             "help": "the number of steps in each freezing interval of LISA, i.e. the selected unfreezed layers are randomly switched every {lisa_interval_steps} steps."
+        }
+    )
+    lisa_layers_attribute: str = field(
+        default="model.model.layers",
+        metadata={
+            "help": "where the layer attribute stores, e.g. model.model.layers"
         }
     )
 

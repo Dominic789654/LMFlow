@@ -9,6 +9,7 @@ dataset_path=/home/liuxiang/LMFlow/data/OWM_8G
 # val_path=./data/gpt4_v2_val/
 output_dir=output_models/con_pretrain
 deepspeed_args="--master_port=11000"
+conversation_template=llama2
 
 while [[ $# -ge 1 ]]; do
   key="$1"
@@ -23,6 +24,10 @@ while [[ $# -ge 1 ]]; do
       ;;
     -o|--output_model_path)
       output_dir="$2"
+      shift
+      ;;
+    --conversation_template)
+      conversation_template="$2"
       shift
       ;;
     --deepspeed_args)

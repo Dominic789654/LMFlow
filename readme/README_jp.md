@@ -15,18 +15,22 @@
     <p>
 </h4>
 
+> [!NOTE]
+> This README file was translated by LLM for reference only. Japanese speakers are welcome to submit PRs to polish the document!  
+
+> [!NOTE]  
 日本語版はChatGPTによって翻訳されました。もし間違いがあれば、contributorに修正していただけると幸いです。また、英語版と内容に差異がある場合は、英語版を優先してください。
 
+[![Website](https://img.shields.io/badge/Website-Demo-20B2AA.svg)](https://lmflow.com)
 [![Code License](https://img.shields.io/badge/Code%20License-Apache_2.0-green.svg)](https://github.com/OptimalScale/LMFlow/blob/main/LICENSE)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/release/python-390/)
+[![Python 3.9+](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/downloads/release/python-390/)
 [![Doc](https://img.shields.io/badge/Website-Doc-ff69b4.svg)](https://optimalscale.github.io/LMFlow/)
-[![Embark](https://img.shields.io/badge/discord-LMFlow-%237289da.svg?logo=discord)](https://discord.gg/u9VJNpzhvA)
-[![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/lmflow/shared_invite/zt-1wju9nicy-woXbNtS~5MavHSAtiMxmxQ)
-[![WeChat badge](https://img.shields.io/badge/WeChat-Join-brightgreen?logo=wechat&amp)](https://i.328888.xyz/2023/04/05/i8gG4z.jpeg)
+[![Embark](https://img.shields.io/badge/Discord-LMFlow-%237289da.svg?logo=discord)](https://discord.gg/u9VJNpzhvA)
+[![slack badge](https://img.shields.io/badge/Slack-Join-blueviolet?logo=slack&amp)](https://join.slack.com/t/lmflow/shared_invite/zt-1wju9nicy-woXbNtS~5MavHSAtiMxmxQ)
+[![WeChat badge](https://img.shields.io/badge/WeChat-Join-brightgreen?logo=wechat&amp)](https://ibb.co/ZhM4hhn)
 
 拡張性、利便性、効率性に優れた、大規模な機械学習モデルのファインチューニングに最適なツールボックスで、ユーザーフレンドリーで高速かつ信頼性があり、コミュニティ全体で利用可能な設計です。
 
-すべての人のための大規模言語モデル。私たちの[ビジョン](https://github.com/OptimalScale/LMFlow#vision)をご覧ください
 
 <p align="center" width="100%">
 <img src="../assets/features.png" alt="LMFlow-features" style="width: 100%; min-width: 300px; display: block; margin: auto;">
@@ -34,327 +38,215 @@
 
 
 ## Latest News
-* [2023-04-02] [Web service is online!](https://lmflow.com/)
-* [2023-04-01] [Release Chinese checkpoints in model zoo: LLaMA-7B-tuned, LLaMA-13B-tuned, LLaMA-33B-tuned.](https://github.com/OptimalScale/LMFlow#model-zoo)
-* [2023-04-01] [Release English checkpoints in model zoo: LLaMA-7B-medical, LLaMA-13B-medical, and LLaMA-33B-medical.](https://github.com/OptimalScale/LMFlow#model-zoo)
-* [2023-03-27] [Support full tuning and lora tuning for all decoder models.](https://github.com/OptimalScale/LMFlow#supported-models)
-* [2023-03-27] [Tasked tuned model beats ChatGPT on medical domain](https://github.com/OptimalScale/LMFlow#model-performance)
-* [2023-03-27] [Release code and checkpoints - version 0.0.1](https://optimalscale.github.io/LMFlow/)
-
-## Demos
-
-### 現在、私たちのチェックポイントダウンロードサービスはキャパシティに達しています。1つのサーバーを割り当ててサポートしています。もし「too many HTTP requests」のエラーが表示された場合は、数分待ってから再度お試しください。ご理解いただきありがとうございます。🙏
-
-私たちは以下の4種類のデモを提供しています。
-- オンラインサービス：コードを実行する必要がなく、私たちのモデルを試したいだけの場合、説明にチューニングされたLLaMA-7BとLLaMA-33Bをデプロイしています。
-- Colabチャットボット（シェル）：対話型のシェルベースのチャットボットで、簡単にColab上でチャットボットをデプロイできます。
-- Colabチャットボット（Web）：対話型のWebベースのチャットボットで、簡単に自分自身のチャットボットをColab上でデプロイできます。
-- ローカルデプロイ：自分のモデル/チャットボットをローカルにデプロイする方法も提供しています。つまり、リソースが十分であれば、前述の3つの方法よりもはるかに大きなモデルをデプロイできます。
+* [2024-03-27] :rocket: [LISA](https://arxiv.org/abs/2403.17919) に対応 —— オフロード不要、24GのGPUで7Bモデルをトレーニング！ :rocket:
+* [2023-09-11] [スペキュラティブ・デコーディング](https://arxiv.org/abs/2211.17192) をサポート、使用方法や簡単な性能統計については [使用ガイド](https://github.com/OptimalScale/LMFlow/blob/main/scripts/speculative_decoding/README.md) を参照してください。
+* [2023-08-14] [位置補間（Linear & NTK scaling）](https://github.com/OptimalScale/LMFlow/blob/main/readme/Position_Interpolation.md) を使用したLLaMAのコンテキストウィンドウを拡張する機能をサポートしています。
+* [2023-08-07] [Flash Attention-2](https://crfm.stanford.edu/2023/07/17/flash2.html) をサポートしています。詳細は[Flash Attentionの使用ガイド](https://github.com/OptimalScale/LMFlow/blob/main/readme/flash_attn2.md)を参照してください。
+* [2023-08-02] [Llama2](https://ai.meta.com/llama/)、[ChatGLM2](https://huggingface.co/THUDM/chatglm2-6b)、[Baichuan](https://huggingface.co/baichuan-inc/Baichuan-7B) をサポートしています。
 
 
-[![Code License](https://img.shields.io/badge/Online%20Service-Web-green.svg)](https://lmflow.com)
-[![colab badge](https://img.shields.io/badge/Colab-(shell)%20%20chatbot:%20gpt--neo-orange?logo=google-colab&amp)](https://colab.research.google.com/drive/1gvW9S6peZY3qfljdBpBbCflqaII8quQW?usp=sharing)
-[![colab badge](https://img.shields.io/badge/Colab-(web)%20%20chatbot:%20gpt--neo-blue?logo=google-colab&amp)](https://colab.research.google.com/drive/1LLtiiQO-ZIIFsTKxYzGWYX9BDRc-v8dq?usp=sharing)
+## Table of Contents
+- [LMFlow](#lmflow)
+  - [Latest News](#latest-news)
+  - [Table of Contents](#table-of-contents)
+  - [Quick Start](#quick-start)
+    - [Setup](#setup)
+    - [Prepare Dataset](#prepare-dataset)
+    - [Fine-Tuning (Full)](#fine-tuning-full)
+    - [Fine-Tuning (LISA)](#fine-tuning-lisa)
+    - [Fine-Tuning (LoRA)](#fine-tuning-lora)
+    - [Inference](#inference)
+    - [Deployment](#deployment)
+    - [Evaluation](#evaluation)
+  - [Supported Features](#supported-features)
+  - [Support](#support)
+  - [License](#license)
+  - [Citation](#citation)
 
 
-### Online Service
-> [Webサービス](https://lmflow.com/)にアクセスしていただきありがとうございます。LLaMA-7B-tunedとLLaMA-33B-tunedをオンラインでプレビュー用にデプロイしています。ウェブサイトのトラフィックが高いため、サイトが応答しないことがあります。その場合は、「ローカルデプロイ」を参照してチャットボットをデプロイすることもできます。
-
-### Colab chatbot(shell)
-<p align="center" width="100%">
-<img src="../assets/colab-shell-chatbot-demo.png">
-</p>
-
-私たちは、Google ColabのT4/P100/V100 GPUを使用した、シンプルなシェルデモのチャットボットを提供しています。
-提供されるgpt-neo-2.7bモデルは、**かなり弱いモデル**であり、英語のみをサポートしており、時には不十分な応答を生成することがあります。パフォーマンスを改善するには、ユーザー自身のデータセットを使用してファインチューニングを行い、LMFlowでより良いモデルを取得することができます。また、他の利用可能なデコーダー専用モデルも試すことができます。🤗 [Hugging Face](https://huggingface.co/models?pipeline_tag=text-generation&sort=downloads)で提供されています。
-
-```sh
-./scripts/run_chatbot.sh {another-model-name}
-```
-### Colab chatbot(web)
-私たちは、Google ColabのT4/P100/V100 GPUを使用した、シンプルなウェブデモのチャットボットを提供しています。
-提供されるgpt-neo-2.7bモデルは、**かなり弱いモデル**であり、英語のみをサポートしており、時には不十分な応答を生成することがあります。
-
-
-### Local Deploy
-もしリソースを持っていてローカルに独自のモデルをデプロイしたい場合は、以下の手順で簡単にFlaskサーバーを実行してバックエンドを起動し、対話型のWebフロントエンドを起動することができます。
-```sh
-cd ./service
-python app.py
-```
-
-## Medical Performance
-
-|                |  PubMedQA (ID) | MedQA-USMLE (OOD) | MedMCQA (ID) |  Average |
-|:---------:|:--------:|:-----------:|:-------:|:----:|
-| Human (pass)   |  60.0   |     50.0    |         |      |
-| Human (expert) |    78.0   |     87.0    |  90.0   | 85.0 |
-|   |      |              |    |  |
-|  InstructGPT 175B   |   73.2   |     46.0    |  44.0   | 54.4 |
-|    ChatGPT |    63.9   |     **57.0**    |  44.7   | 55.2 |
-|      LLaMA 7B   |    5.2   |     27.1    |  24.3   | 18.9 |
-|      LLaMA 33B |    1.8   |     43.4    |  30.3   | 25.2 |
-|   |      |             |            |    |  |
-|   Task-tuned LLaMA 7B (Full) |   **75.1**   |     44.5    |  49.9   | 56.5 |
-| Task-tuned LLaMA 33B (LoRA) |  74.0  |  51.3   | **50.2**|**58.5**|
-
-LLaMA 33B（LoRA）のパフォーマンスは、単一の8 \ * A100サーバーでPubMedQAおよびMedMCQAのトレーニングスプリットで**約16時間**のファインチューニングで達成されます。
-Instruction tuningの結果を含む、より詳細なパフォーマンスについては、当社の[ドキュメント](https://optimalscale.github.io/LMFlow/)を参照してください。
-
-## Model Zoo
-当社はトレーニング済みのチェックポイントをオープンソース化し、誰でも追加のトレーニングや推論に使用できるようにしました。
-
-| Instruct-tuned Models   |  Status | Base Model | Download |
-|----------|:-------------:|----------|:-------------:|
-| LLaMA-7B-tuned | ![completed](https://geps.dev/progress/100) | LLaMA-7B | [Google Drive](https://drive.google.com/file/d/1x5JLae3akVkfFeDhSe3TEyUbPn_GNFyb/view?usp=share_link) |
-| LLaMA-13B-tuned | ![completed](https://geps.dev/progress/100) | LLaMA-13B |  [Google Drive](https://drive.google.com/file/d/1m_rpe6rNpN59kWvjJ3GfKeEmS-68TRYr/view?usp=share_link) |
-| LLaMA-33B-tuned | ![completed](https://geps.dev/progress/100) |LLaMA-33B |  [Google Drive](https://drive.google.com/file/d/1IqgqLHwNkWQ7BffheZnqD6a-8Zul1bk6/view?usp=share_link) |
-| LLaMA-65B-tuned | ![training](https://geps.dev/progress/65) | LLaMA-65B | Google Drive |
-| LLaMA7B-medical | ![completed](https://geps.dev/progress/100) | LLaMA-7B | [Google Drive](https://drive.google.com/file/d/1Z44tsrRvfDFvucbNGFjHC_vbPcBvg3x-/view?usp=share_link) |
-| LLaMA13B-medical | ![completed](https://geps.dev/progress/100) | LLaMA-13B |  [Google Drive](https://drive.google.com/file/d/1uoTAXTMyYQkP6N4ummx7tj-c4v1p91ap/view?usp=share_link) |
-| LLaMA33B-medical | ![completed](https://geps.dev/progress/100) |LLaMA-33B |  [Google Drive](https://drive.google.com/file/d/14N9o_1pwHmVuSikQ3orMVzZDrLYJC0iM/view?usp=share_link) |
-| LLaMA65B-medical | ![training](https://geps.dev/progress/90) | LLaMA-65B | Google Drive |
-
-
-## Supported Pipelines
-
-| Pipelines   |   Status |
-|----------|:-------------:|
-| Task Tuning |  :white_check_mark: Supported |
-| Instruction Tuning |  :white_check_mark: Supported |
-| Parameter-Efficient Tuning |  :white_check_mark: Supported |
-| Large Model Inference |  :white_check_mark: Supported |
-| Alignment Tuning |  :wrench: Developing |
-
-
-
-## Supported Models
-
-🤗 Hugging Faceのすべての[decoder models](https://huggingface.co/models?pipeline_tag=text-generation&sort=downloads)を完全にサポートし、LLaMA、GPT2、GPT-Neo、Galacticaを完全にテストしました。エンコーダーモデルも近日中にサポートする予定です。
-
-
-
-## 1.Setup
-
-私たちのパッケージはLinuxオペレーティングシステム（Ubuntu 20.04）で全面的にテストされています。その他のオペレーティングシステムプラットフォーム（MacOS、Windows）はまだ全面的にテストされていません。
-予期せぬエラーが発生する可能性があります。Linuxマシンで試したり、Google Colabを使って体験したりすることができます。
-
+## Quick Start
+### Setup
+私たちのリポジトリはすでにLinux（Ubuntu 20.04）で包括的なテストを完了しています。他のオペレーティングシステムプラットフォーム（MacOS、Windows）は完全にテストされていませんので、予期しないエラーが発生する可能性があります。まずLinux/Windows WSLで試してみるか、またはGoogle Colabをご利用ください。
+CUDA 10.3-11.7については、`v0.0.5`またはそれ以前のバージョンを使用することをお勧めします。11.7よりも新しいCUDAの場合は、より良い体験を得るために、安定したブランチ`>= v0.0.6`を使用してください。
 ```bash
 git clone https://github.com/OptimalScale/LMFlow.git
 cd LMFlow
 conda create -n lmflow python=3.9 -y
 conda activate lmflow
 conda install mpi4py
-pip install -e .
+bash install.sh
 ```
 
-## 2.Prepare Dataset
-以下のコマンドを実行することで、簡単にトレーニング用のサンプルデータセットとテスト用データセットをダウンロードできます。
-```bash
-cd data
-bash download.sh all
-cd -
-```
+### Prepare Dataset
+当社の[公式ドキュメント（英語版）](https://optimalscale.github.io/LMFlow/examples/DATASETS.html)を参照してください。公式ドキュメントは現在翻訳中ですので、しばらくお待ちください。
 
-独自のデータセットを使用する場合は、以下の形式に変換するだけで使用できます。
-
-```json
-{
-  "type": "text2text",
-  "instances": [
-    {
-      "input": "Question: The Transformer architecture [START_REF]",
-      "output": "N/A"
-    },
-    ...
-  ]
-}
-```
-```json
-{
-  "type": "text_only",
-  "instances": [
-    {
-      "text": "Defintion: In this task, we ask you to write an answer to a question that involves events that may be stationary (not changing over time) or transient (changing over time). For example, the sentence \"he was born in the U.S.\" contains a stationary event since it will last forever; however, \"he is hungry\" contains a transient event since it will remain true for a short period of time. Note that a lot of the questions could have more than one correct answer. We only need a single most-likely answer. Please try to keep your \"answer\" as simple as possible. Concise and simple \"answer\" is preferred over those complex and verbose ones. \n Input: Question: Sentence: It's hail crackled across the comm, and Tara spun to retake her seat at the helm. \nQuestion: Will the hail storm ever end? \n Output: NA \n\n"
-    },
-    ...
-  ]
-}
-```
-## 3. Run Scripts
-### 3.1 Run Finetuning
-
-以下のように、GPT-2ベースモデルの微調整を実行するには、`scripts/run_finetune.sh` を実行できます。
-
+### Fine-Tuning (Full)
+全パラメーターファインチューニングは、モデルのすべてのパラメーターを更新します。GPT-2の全パラメーターファインチューニングの例を以下に示します：
 ```sh
-./scripts/run_finetune.sh
+cd data && ./download.sh alpaca && cd -
+
+./scripts/run_finetune.sh \
+  --model_name_or_path gpt2 \
+  --dataset_path data/alpaca/train \
+  --output_model_path output_models/finetuned_gpt2
 ```
 
-もし、あなたのマシンの設定を反映するためにdeepspeedに引数を提供したい場合は、対応するdeepspeedの引数をスクリプトに渡すことができます。例えば、以下のようになります。
+### Fine-Tuning (LISA)
+[LISA](https://arxiv.org/abs/2403.17919) は、**メモリ効率** の高いファインチューニングアルゴリズムであり、メモリとランダムに解凍された層の間でのバランスを取ることができます。以下のスクリプトは現在、**単一のGPU** 上でのみテストされています。最新情報にご注意ください！ :smile:
 ```sh
-./scripts/run_finetune.sh "--num_gpus=8 --master_port 10001"
+cd data && ./download.sh alpaca && cd -
+
+./scripts/run_finetune_with_lisa.sh \
+  --model_name_or_path meta-llama/Llama-2-7b-hf \
+  --dataset_path data/alpaca/train \
+  --output_model_path output_models/finetuned_llama \
+  --lisa_activated_layers 1 \
+  --lisa_interval_steps 20
 ```
 
-LoRAの微調整を有効にするには、以下を参照してください。
+### Fine-Tuning (LoRA)
+LoRAは、全パラメータ微調整よりも効率的なパラメータ効率微調整アルゴリズムです。
 ```sh
-./scripts/run_finetune_with_lora.sh
+cd data && ./download.sh alpaca && cd -
+
+# Saves lora only
+./scripts/run_finetune_with_lora.sh \
+  --model_name_or_path facebook/galactica-1.3b \
+  --dataset_path data/alpaca/train \
+  --output_lora_path output_models/finetuned_galactica_lora
+
+# Saves lora and merges into original model
+./scripts/run_finetune_with_lora_save_aggregated_weights.sh \
+  --model_name_or_path facebook/galactica-1.3b \
+  --dataset_path data/alpaca/train \
+  --output_model_path output_models/finetuned_galactica
 ```
-同様の方法で実行できます。
-
-詳細な設定については、これらのスクリプトを直接変更することができます。これらのスクリプトは実際には、Pythonスクリプト`examples/finetune.py`を呼び出しているだけです。以下のように実行することができます。
 
 
-
+### Inference
+微調が終了したら、以下のコマンドを使用してモデルと対話できます。
 ```sh
-deepspeed ${deepspeed_args} \
-  examples/finetune.py \
-    --deepspeed configs/ds_config_zero3.json \
-    --bf16 \
-    --run_name finetune_with_lora \
-    --model_name_or_path facebook/galactica-1.3b \
-    --num_train_epochs 0.01 \
-    --learning_rate 2e-5 \
-    --dataset_path ${dataset_path} \
-    --per_device_train_batch_size 1 \
-    --per_device_eval_batch_size 1 \
-    --validation_split_percentage 0 \
-    --logging_steps 20 \
-    --block_size 512 \
-    --do_train \
-    --output_dir output_models/finetune \
-    --overwrite_output_dir \
-    --ddp_timeout 72000 \
-    --save_steps 5000 \
-    --dataloader_num_workers 1
+./scripts/run_chatbot.sh output_models/finetuned_gpt2
 ```
-ここでは、エポック数`--num_train_epochs`を`0.01`に設定して、微調整プロセスを迅速に終了できるようにしています。より良い性能を持つモデルを取得したい場合は、これらのハイパーパラメータを自由に調整してください。すべての可能な微調整引数を表示するには、
-```python
-python examples/finetune.py -h
-```
-注意：トレーニングデータセットが小さい場合、``block_size``の値を小さくする必要があります。そうしないと、Epochイテレータで利用できるサンプルがなくなってしまいます。
 
-を実行できます。微調整されたモデルのチェックポイントは、`--output_dir`で指定された引数に保存されます。上記の例では、`output_models/finetune`に保存されます。
-### 3.2 Run Evaluation
-
-既存のHugging Faceモデルで直接評価を実行することができます。たとえば、GPT2 largeを実行するには、以下のように実行できます。
+### Deployment
+ローカルでモデルを展開したい場合、GradioをベースにしたチャットボットUIが提供されています。
+以下のコマンドでrobin-7bのデモを起動できます。詳細は次のとおりです：
 ```sh
-./scripts/run_evaluation.sh
+pip install gradio
+python ./examples/chatbot_gradio.py --deepspeed configs/ds_config_chatbot.json --model_name_or_path YOUR-LLAMA  --lora_model_path ./robin-7b --prompt_structure "A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the human's questions.###Human: {input_text}###Assistant:"       --end_string "#" --max_new_tokens 200
 ```
-または、対応するPythonスクリプトを実行することもできます
-```python
-CUDA_VISIBLE_DEVICES=0 \
-    deepspeed examples/evaluate.py \
-    --answer_type medmcqa \
-    --model_name_or_path gpt2-large \
-    --dataset_path data/MedQA-USMLE/validation \
-    --deepspeed examples/ds_config.json
-```
-微調整済みモデルをロードするには、保存されたモデルのチェックポイントディレクトリパスを`--model_name_or_path`で指定します。
 
-LoRAで微調整されたモデルについては、以下を参照してください
+### Evaluation
+[LMFlow Benchmark](https://blog.gopenai.com/lmflow-benchmark-an-automatic-evaluation-framework-for-open-source-llms-ef5c6f142418) はオープンソースLLMの自動評価フレームワークです。我々はNegative Log Likelihood (NLL) を使用して、LLMのチャット、一般的な推論、および命令に従う能力など、さまざまな側面を評価します。お手持ちのモデルを評価するために、LMFlow Benchmarkをご利用ください。そして、[モデルの比較](https://docs.google.com/spreadsheets/d/1JYh4_pxNzmNA9I0YM2epgRA7VXBIeIGS64gPJBg5NHA/edit?usp=sharing)にご参加ください。
+
+GPT-2 XLを例に挙げますと、次のコマンドを使用して評価を開始します：
 ```sh
-./scripts/run_evaluation_with_lora.sh
+./scripts/run_benchmark.sh --model_name_or_path gpt2-xl
 ```
+`--model_name_or_path`は必須のパラメータであり、Hugging Faceのモデル名またはモデルのローカルパスを渡すことができます。
+評価結果は、`./output_dir/gpt2-xl_lmflow_chat_nll_eval`、`./output_dir/gpt2-xl_all_nll_eval`、および `./output_dir/gpt2-xl_commonsense_qa_eval`の`benchmark.log`で確認できます。
 
-これらのスクリプトは、当社のAPIを基に構築された例`examples/*.py`を呼び出します。APIに関連するより詳細な例については、`tests`のユニットテスト内のメソッドを参照してください。
 
-## 4. Additional Notes
-### 4.1 LLaMA Checkpoint
+## Supported Features
+<details> <summary>微調加速＆メモリ最適化</summary>
 
-1. まず、[facebookresearch/llama](https://github.com/facebookresearch/llama)からLLaMAモデルへのアクセスを取得する必要があります。公式のチェックポイントをダウンロードし`${llama-path}`に保存します。
-2. 次に、公式のチェックポイント`${llama-path}`をHuggingFaceがサポートするチェックポイント`${llama-hf-path}`に変換するには、次を実行してください。
-    `python ./scripts/convert_llama_weights_to_hf.py --input_dir ${llama-path} --model_size 7B --output_dir ${llama-hf-path}/llama-7b-hf`
+* LISA: Layerwise Importance Sampling for Memory-Efficient Large Language Model Fine-Tuning
 
-3. これで、`${llama-hf-path}/llama-7b-hf`へのチェックポイントパスを設定することで、準備ができました。お楽しみください！
+  LISAはメモリ効率の高いLLMファインチューニングアルゴリズムです。微調整プロセス中に層を選択的に凍結することにより、LISAは既存のファインチューニング方法（LoRAなど）を超えています。詳細については[論文](https://arxiv.org/abs/2403.17919)をご覧ください。
+  LISAを使用するには、トレーニングコマンドでパラメータ `--use_lisa 1` を指定します。アクティブ化される層の数を `--lisa_activated_layers 2` で制御し、フリーズされる層の間隔を `--lisa_step_interval 20` で調整できます。
 
-4. （オプション）これで、元のllama-7b-hf事前学習モデルがあります。を
-```sh
-cd output_models && ./download.sh all && cd -
-```
-使用して、当社によって微調整されたモデルの差分を取得できます。`./scripts/run_evaluation_with_lora.sh`と同様の方法で、以下を実行してください。
-```sh
-CUDA_VISIBLE_DEVICES=0 \
-    deepspeed examples/evaluate.py \
-    --answer_type text \
-    --model_name_or_path ${llama-hf-path}/llama-7b-hf \
-    --lora_model_path output_models/${llama-model-diff-path} \
-    --dataset_path data/alpaca/test \
-    --prompt_structure "Input: {input}" \
-    --deepspeed examples/ds_config.json
-```
-これで、微調整されたllamaモデルで評価を実行できます。
+* LoRA
 
-### 4.2 DeepSpeed Config
-configsフォルダー内でdeepspeedを設定できます。詳細については、[DeepSpeed Configuration](https://www.deepspeed.ai/docs/config-json/)を参照してください。
-## 5. Model Release
+  LoRAは、全パラメータ微調整よりも効率的なパラメータ効率（parameter-efficient）の微調整アルゴリズムです。詳細はこちらを参照してください：[微調（LoRA）](#fine-tuning-lora)。
 
-### 5.1 Medical Model Checkpoints
-当社の医療モデルのチェックポイントをダウンロードするには、以下のスクリプトを実行できます:
+* FlashAttention
 
-```bash
-cd output_models
-bash download.sh medical_ckpt
-cd -
-```
-また、以下のGoogleドライブリンクから直接当社のモデルをダウンロードすることもできます : [medical_ckpt.tar.gz](https://drive.google.com/file/d/1bnsQGNGNYchsOfiNyRAmL2fNiowbmFNw/view?usp=share_link)
+  FlashAttention-1とFlashAttention-2をサポートしています。詳細については[FlashAttention](https://github.com/OptimalScale/LMFlow/blob/main/readme/flash_attn2.md)をご覧ください。
 
-### 5.2 Instruction Model Checkpoints
-同様に、以下のスクリプトを実行して、当社の説明書モデルのチェックポイントをダウンロードできます:
-```bash
-cd output_models
-bash download.sh instruction_ckpt
-cd -
-```
+* Gradient Checkpointing
 
-また、以下のGoogleドライブリンクから直接当社のモデルをダウンロードすることもできます:[instruction_ckpt.tar.gz](https://drive.google.com/file/d/1d_ioQ-ViVweeifbsFSO4pczc3UORFHZO/view?usp=share_link)
+  [Gradient checkpointing](https://github.com/cybertronai/gradient-checkpointing)は、メモリ最適化技術の一種であり、計算をメモリとの交換により显存の使用量を削減します。トレーニングコマンドに `--gradient_checkpointing` を追加すると使用できます。
 
-### 5.3 Begin Reproduce
+* Deepspeed Zero3
 
-モデルのチェックポイントをダウンロードした後、`LMFlow/scripts/run_evaluation_with_lora.sh`内の`--lora_model_path`を`output_models/instruction_ckpt/llama7b-lora(instruction`用の例)に置き換え、`--model_name_or_path`を変換済みのllamaモデルに置き換えます。そして、このシェルスクリプトを実行して、結果を再現できます。
+  LMFlowは[Deepspeed Zero-3 Offload](https://www.deepspeed.ai/2021/03/07/zero3-offload.html)をサポートしています。我々は使いやすい [deepspeed設定ファイル](https://github.com/OptimalScale/LMFlow/blob/main/configs/ds_config_zero3.json) を提供しています。
 
-その後、[ドキュメント](https://optimalscale.github.io/LMFlow/)でモデルのパフォーマンスを確認できます。
+</details>
 
-## Documentation
-より詳しいAPIリファレンスや実験結果については、[ドキュメント](https://optimalscale.github.io/LMFlow/)を参照してください。
 
-## Vision
-こんにちは！ 私たちは、完全なLLMトレーニングプロセスを含むコードリポジトリの近日リリースをお知らせできることを喜んでいます。これにより、ユーザーは自分自身の言語モデルを迅速に構築し、効果的にトレーニングすることができます。
+<details> <summary>推論の高速化</summary>
 
-私たちのコードリポジトリは単なるモデルだけでなく、完全なトレーニングワークフロー、モデルの最適化、およびテストツールを含んでいます。会話モデル、質問応答モデル、テキスト生成モデルなど、さまざまな種類の言語モデルを構築するために使用できます。
+* LLaMA CPU推論
+  
+  [llama.cpp](https://github.com/ggerganov/llama.cpp)に感謝します。これにより、誰もがCPU上で自分のLLaMA（4ビット量子化）を実行できるようになりました！LLaMA LoRA重みを`.pt`ファイルに変換するスクリプトを提供しており、`convert-pth-to-ggml.py`を使用してモデルを量子化するだけで、LLaMA CPU推論を行うことができます。
 
-さらに、私たちは、人々がチェックポイントや経験を共有し、コミュニティのスキルを集団で向上させることができるオープンで民主的なLLM共有プラットフォームを作成することを目指しています。LLMに興味のある人は誰でも参加し、オープンでフレンドリーなコミュニティの構築に参加することを歓迎します！
+* FlashAttention
+  
+  FlashAttention-1とFlashAttention-2をサポートしています。詳細はこちらをご覧ください：[FlashAttention](https://github.com/OptimalScale/LMFlow/blob/main/readme/flash_attn2.md)。
 
-初心者でもエキスパートでも、私たちはこのプラットフォームから利益を得ることができると信じています。一緒に活気ある革新的なLLMコミュニティを築いていきましょう！
+</details>
 
-[![Embark](https://img.shields.io/badge/discord-LMFlow-%237289da.svg?logo=discord)](https://discord.gg/u9VJNpzhvA)
-[![slack badge](https://img.shields.io/badge/Slack-join-blueviolet?logo=slack&amp)](https://join.slack.com/t/lmflow/shared_invite/zt-1wju9nicy-woXbNtS~5MavHSAtiMxmxQ)
-[![WeChat badge](https://img.shields.io/badge/WeChat-Join-brightgreen?logo=wechat&amp)](https://i.328888.xyz/2023/04/05/i8gG4z.jpeg)
 
-## Disclaimer
-このパッケージは、大規模モデルの調整のための簡素化されたユーザーフレンドリーなパイプラインを提供することを目的としています。その機能はユーザーによって参照されることを意図しており、データと事前学習済みモデルの準備に関する責任はユーザーに完全にあります。このパッケージは、ユーザーの準備からのコンポーネントの正確性、完全性、適用性、および合法性を保証しません。ユーザーはモデルとデータの準備に関連するすべてのリスクと責任を認識し、本パッケージを利用する前に法的、商業的、および技術的なアドバイスを受ける必要があります。パイプラインは、ユーザーのデータと事前学習済みモデルの不適切な準備によって生じた直接的、間接的、特別な、付随的、または結果的な損害について責任を負いません。
+<details> <summary>長文</summary>
 
-私たちのチェックポイントには、英語版と中国語版の両方が含まれており、研究目的にのみ提供されています。これらのチェックポイントに含まれるトレーニングデータには、ChatGPT言語モデルから生成された結果が含まれています。これらのチェックポイントの配布や使用を商業目的で推奨または促進することはできません。これらのチェックポイントのユーザーは、正しく適切に使用されるように責任を負う必要があります。
+* LLaMAモデルの位置補間（Position Interpolation）
 
-モデルによって生成された結果は確率モデルに基づいており、このパイプラインと直接関係があるわけではありません。結果の正確性、信頼性、適用性、法的性質は、このパイプラインによって保証されるものではありません。したがって、ユーザーは結果に関連するリスクと責任を認識し、法的、商業的、技術的なアドバイスを受けてから、モデル生成の結果に依存する必要があります。このパイプラインは、ユーザーがモデル生成の結果に依存することによって生じる直接的、間接的、特別、偶発的、または結果的な損害について、一切責任を負いません。
+  位置補間（Linear & NTK scaling）を使用してLLaMAのコンテキストウィンドウを拡張することができます。詳細はこちら：[位置補間](https://github.com/OptimalScale/LMFlow/blob/main/readme/Position_Interpolation.md)。
+
+</details>
+
+
+<details> <summary>モデルのカスタマイズ</summary>
+
+* 語彙の拡張
+
+  独自のsentencepiece tokenizerをトレーニングし、それをモデルに含まれるhuggingface tokenizerとマージします。詳細はこちら：[語彙の拡張](https://github.com/OptimalScale/LMFlow/blob/main/scripts/vocab_extension)。
+
+</details>
+
+
+<details> <summary>マルチモーダル</summary>
+
+* マルチモーダルチャットボット
+
+  LMFlowはマルチモーダル（画像、テキスト）入力をサポートしています。詳細はこちら：[LMFlowマルチモーダルチャットボット](https://github.com/OptimalScale/LMFlow/blob/main/scripts/run_vis_chatbot_gradio_minigpt4.sh)。
+
+</details>
+
 
 ## Support
 何かお困りのことがございましたら、[GitHub](https://github.com/OptimalScale/LMFlow)のissueにご投稿ください。
 
-## Contributors
-<a href="https://github.com/OptimalScale/LMFlow/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=OptimalScale/LMFlow" />
-</a>
+
+## License
+このプロジェクトに含まれるコードはApache 2.0ライセンスで提供されています。このプロジェクトに含まれるモデルを商業目的で使用したい場合は、プロジェクトの開発者に連絡して許可を取得してください。
+
 
 ## Citation
 もしこのリポジトリが役立った場合は、ぜひ⭐をつけて引用してください。
 
 ```
-@misc{lmflow,
-  author = {Shizhe Diao and Rui Pan and Hanze Dong and KaShun Shum and Jipeng Zhang and Wei Xiong and Tong Zhang},
-  title = {LMFlow: An Extensible Toolkit for Finetuning and Inference of Large Foundation Models},
-  year = {2023},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://optimalscale.github.io/LMFlow/}},
+@article{diao2023lmflow,
+  title={Lmflow: An extensible toolkit for finetuning and inference of large foundation models},
+  author={Diao, Shizhe and Pan, Rui and Dong, Hanze and Shum, Ka Shun and Zhang, Jipeng and Xiong, Wei and Zhang, Tong},
+  journal={arXiv preprint arXiv:2306.12420},
+  year={2023}
+}
+```
+```
+@article{dong2023raft,
+  title={Raft: Reward ranked finetuning for generative foundation model alignment},
+  author={Dong, Hanze and Xiong, Wei and Goyal, Deepanshu and Pan, Rui and Diao, Shizhe and Zhang, Jipeng and Shum, Kashun and Zhang, Tong},
+  journal={arXiv preprint arXiv:2304.06767},
+  year={2023}
+}
+```
+```
+@article{pan2024lisa,
+  title={LISA: Layerwise Importance Sampling for Memory-Efficient Large Language Model Fine-Tuning}, 
+  author={Pan, Rui and Liu, Xiang and Diao, Shizhe and Pi, Renjie and Zhang, Jipeng and Han, Chi and Zhang, Tong},
+  journal={arXiv preprint arXiv:2403.17919},
+  year={2024}
 }
 ```

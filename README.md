@@ -70,6 +70,7 @@ An extensible, convenient, and efficient toolbox for finetuning large machine le
     - [Setup](#setup)
     - [Prepare Dataset](#prepare-dataset)
     - [Finetuning (Full)](#finetuning-full)
+    - [Finetuning (LISA)](#finetuning-lisa)
     - [Finetuning (LoRA)](#finetuning-lora)
     - [Inference](#inference)
     - [Deployment](#deployment)
@@ -82,8 +83,8 @@ An extensible, convenient, and efficient toolbox for finetuning large machine le
 
 ### Setup
 
-Our package has been fully tested on Linux OS (Ubuntu 20.04). Other OS platforms (MacOS, Windows) are not fully tested.
-You may encounter some unexpected errors. You may try it first on a Linux machine or use Google Colab to experience it.
+Our package has been tested on Linux OS (Ubuntu 20.04). Other OS platforms (MacOS, Windows) are not fully tested, where you may encounter unexpected errors. If you are using LMFlow for the first time, we recommend you to try on a Linux machine or Google Colab.
+
 CUDA versions 10.3-11.7 are supported in versions `v0.0.5` or older. For CUDA versions greater than 11.7, one can use our stable branch `>= v0.0.6`.
 
 ```bash
@@ -95,32 +96,31 @@ conda install mpi4py
 bash install.sh
 ```
 
-You may try `pip install packaging torch` before `bash install.sh` if the installation process freezed due to limited RAM.
-
 ### Prepare Dataset
 
-Please refer to our [doc](https://github.com/OptimalScale/LMFlow/blob/main/docs/dataset.md).
+Please refer to our [doc](https://optimalscale.github.io/LMFlow/examples/DATASETS.html).
 
 ### Finetuning (Full)
 Full training updates all the parameters to finetune a language model.
-Here is an example to finetune a GPT-2 base model
+Here is an example to finetune a GPT-2 base model.
+
 ```sh
 cd data && ./download.sh alpaca && cd -
 
 ./scripts/run_finetune.sh \
   --model_name_or_path gpt2 \
-  --dataset_path data/alpaca/train \
+  --dataset_path data/alpaca/train_conversation \
   --output_model_path output_models/finetuned_gpt2
 ```
 
 ### Finetuning (LISA)
-[LISA](https://arxiv.org/abs/2403.17919) is a memory-efficient finetuning algorithm that allows tradeoff between memory and the number of randomly unfreezed layers.
+[LISA](https://arxiv.org/abs/2403.17919) is a memory-efficient finetuning algorithm that allows tradeoff between memory and the number of randomly unfreezed layers. This script currently is only tested in single gpus. Please stay tuned for our latest updates :smile:
 ```sh
 cd data && ./download.sh alpaca && cd -
 
 ./scripts/run_finetune_with_lisa.sh \
   --model_name_or_path meta-llama/Llama-2-7b-hf \
-  --dataset_path data/alpaca/train \
+  --dataset_path data/alpaca/train_conversation \
   --output_model_path output_models/finetuned_llama \
   --lisa_activated_layers 1 \
   --lisa_interval_steps 20
@@ -158,7 +158,6 @@ Running the following command will launch the demo for robin-7b:
 pip install gradio
 python ./examples/chatbot_gradio.py --deepspeed configs/ds_config_chatbot.json --model_name_or_path YOUR-LLAMA  --lora_model_path ./robin-7b --prompt_structure "A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the human's questions.###Human: {input_text}###Assistant:"       --end_string "#" --max_new_tokens 200
 ```
-We also hosted it on Hugging Face [Space](https://huggingface.co/spaces/OptimalScale/Robin-7b).
 
 
 ### Evaluation
@@ -209,7 +208,6 @@ To check the evaluation results, you may check `benchmark.log` in `./output_dir/
 
 <details> <summary>Inference Acceleration</summary>
 
-
 * LLaMA Inference on CPU
 
   Thanks to the great efforts of [llama.cpp](https://github.com/ggerganov/llama.cpp). It is possible for everyone to run their LLaMA models on CPU by 4-bit quantization. We provide a script to convert LLaMA LoRA weights to `.pt` files. You only need to use `convert-pth-to-ggml.py` in llama.cpp to perform quantization.
@@ -230,7 +228,6 @@ To check the evaluation results, you may check `benchmark.log` in `./output_dir/
 
 <details> <summary>Model Customization</summary>
 
-
 * Vocabulary Extension
 
   Now you can train your own sentencepiece tokenizer and merge it with model's origin hf tokenizer. Check out [vocab_extension](https://github.com/OptimalScale/LMFlow/blob/main/scripts/vocab_extension) for more details.
@@ -243,9 +240,8 @@ To check the evaluation results, you may check `benchmark.log` in `./output_dir/
 * Multimodal Chatbot
 
   LMFlow supports multimodal inputs of images and texts. Check out our [LMFlow multimodal chatbot](https://github.com/OptimalScale/LMFlow/blob/main/scripts/run_vis_chatbot_gradio_minigpt4.sh).
-  [Online Demo](http://multimodal.lmflow.online) is also provided.
-</details>
 
+</details>
 
 
 ## Support
